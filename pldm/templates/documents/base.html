@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block html_title %}{{ document.get_title() }}{% endblock %}
+
+{% block body %}
+    <div class="crumbs">
+        <a href="/">Projects</a>
+        {% for parent in path %}
+             &gt; <a href="/view/{{ parent.uid }}/">{{ parent.get_label() }}: {{ parent.get_title() }}</a>
+        {% endfor %}
+    </div>
+    <h1>{% if document.get_number() %}{{ document.get_label() }}: {% endif %}{{ document.get_title() }}</h1>
+    {% block document_body %}
+    {% endblock %}
+    <aside>
+    {% block document_actions%}
+    {% endblock %}
+    </aside>
+{% endblock %}
+

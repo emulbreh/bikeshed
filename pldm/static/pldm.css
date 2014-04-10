@@ -1,0 +1,159 @@
+body{
+    margin: 0px;
+    padding: 0px;
+}
+
+body, textarea, input{
+    font-family: "Monaco", monospace;
+    line-height: 21px;
+    font-size: 14px;
+}
+
+form{
+    margin: 0px;
+    padding: 0px;
+}
+
+header{
+    background-color: #222628;
+    color: #fff;
+    padding: 20px;
+}
+
+header .actions{
+    float: right;
+}
+
+header .actions a{
+    color: #fff;
+}
+
+textarea {
+    padding: 0px;
+    border: none;
+}
+
+#page{
+    padding-left: 20px;
+    position: relative;
+    margin: 0px;
+}
+
+aside{
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    width: 30em;
+    background-color: #eee;
+    padding: 0px 20px;
+    height: 100%;
+}
+
+aside a{
+    display: block;
+    padding: 10px 20px 10px 20px;
+    margin-left: -20px;
+    margin-right: -20px;
+}
+
+aside a:hover{
+    background-color: #fff;
+}
+
+a{
+    color: #1099ee;
+    text-decoration: none;
+}
+a:hover{
+    text-decoration: underline;
+}
+
+h1{
+    margin: 0px;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    font-size: 150%;
+    margin-right: 30em;
+    line-height: 30px;
+}
+
+.headers, .document{
+    font-size: 14px;
+    margin: 0px;
+    padding: 0px;
+}
+
+.document-display{
+    margin-right: 30em;
+}
+
+.document{
+    float: left;
+    margin-top: 21px;
+}
+
+.document p{
+    margin: 0px;
+    padding: 0px;
+    padding-bottom: 21px;
+}
+
+.document-display .headers b{
+    font-weight: normal;
+}
+.document-display .headers > .extra{
+    color: #999;
+}
+
+.history{
+    clear: both;
+}
+
+.crumbs{
+    padding-top: 1em;
+}
+
+.crumbs a{
+    display: inline-block;
+    max-width: 150px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+textarea.ticket {
+    width: 800px;
+    height: 400px;
+}
+
+textarea.ticket:focus{
+    outline: none;
+    border: none;
+    background-color: #cceeff;
+}
+
+input[type=submit]{
+    border: none;
+    background-color: transparent;
+    font-size: 100%;
+    color: #1099ee;
+    padding: 0px;
+    display: inline;
+}
+
+input[type=submit]:hover{
+    text-decoration: underline;
+}
+
+form.search input[type=text]{
+    width: 600px;
+    padding: 6px;
+    outline: none;
+    border: none;
+    background-color: #effedd;
+}
+
+form.search input[type=text]:focus{
+    background-color: #cceeff;
+}
+

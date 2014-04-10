@@ -1,0 +1,16 @@
+{% extends 'documents/base.html' %}
+
+{% block html_title %}List{% endblock %}
+
+{% block body %}
+    <h1>List</h1>
+    <form action="" class="search">
+        <input type="text" name="q" value="{{ q }}" />
+        <input type="submit" value="Search" />
+    </form>
+    {% for doc in documents %}
+        <div>
+            <a href="/view/{{ doc.uid }}/">#{{ doc.get_number() }}: {{ doc.get_title() }}</a>
+        </div>
+    {% endfor %}
+{% endblock %}

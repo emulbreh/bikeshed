@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block html_title %}Create{% endblock %}
+
+{% block body %}
+    <h1>Create</h1>
+    <form action="" method="post" id="ticketForm">
+        <textarea name="text" class="ticket"></textarea>
+    </form>
+
+    <aside>
+        <a href="javascript:document.getElementById('ticketForm').submit()">Save</a>
+        <a href="/list/">Cancel</a>
+    </aside>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+    document.getElementsByTagName('textarea')[0].focus();
+</script>
+{% endblock %}

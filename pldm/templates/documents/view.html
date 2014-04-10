@@ -1,0 +1,33 @@
+{% extends 'documents/base.html' %}
+
+{% block document_body %}
+<section class="document-display">
+    <div class="headers">
+        {% for value in document %}
+            {% if not value.attribute.hidden and value.value %}
+                <b>{{ value.attribute.key }}</b>: {{ value.html_value()|safe }}<br/>
+            {% endif %}
+        {% endfor %}
+        <div class="extra">
+        {% for key, value in document.extra_attributes.iteritems() %}
+            {% if value %}
+            <b>{{ key }}</b>: {{ value }}<br/>
+            {% endif %}
+        {% endfor %}
+        </div>
+    </div>
+    {{ document.html_body()|safe }}
+</section>
+<section class="history">
+</section>
+{% endblock %}
+
+{% block document_actions %}
+    <a href="/edit/{{ document.uid }}/">Edit</a>
+    <a href="/create/">Create New Ticket</a>
+    {{ super() }}
+    {% if document.type_name == 'Project' %}
+        <a href="/list/?q=Project:{{ document.uid }}+AND+Type:Story">Stories</a>
+    {% endif %}
+{% endblock %}
+
