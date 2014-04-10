@@ -10,7 +10,7 @@ from pldm.server.app import Application
 logger = logging.getLogger()
 
 if __name__ == '__main__':
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.INFO)
     app = Application()
     app.listen(7001)
     ioloop = tornado.ioloop.IOLoop.instance()

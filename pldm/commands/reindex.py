@@ -14,6 +14,7 @@ renumber = True
 if __name__ == '__main__':
     logger.setLevel(logging.DEBUG)
     app = Application()
+    renumber = '--renumber' in sys.argv
     if renumber:
         app.manager.reset_numbering()
     for doc in app.manager.list():
