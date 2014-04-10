@@ -137,7 +137,7 @@ class BaseDocumentStore(object):
         for hit in result['hits']['hits']:
             yield self.deserialize(hit['_source'])
 
-    def lookup(self, key, value, doctype='_all'):
+    def lookup(self, key, value, doctype=''):
         es_filter = {
             'term': {
                 key: value,
@@ -149,7 +149,6 @@ class BaseDocumentStore(object):
             doc_type=doctype,
             body={'filter': es_filter},
         )
-        print es_filter
         hits = result['hits']['hits']
         if not hits:
             raise DocumentDoesNotExist()
