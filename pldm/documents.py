@@ -4,6 +4,7 @@ from StringIO import StringIO
 import docutils
 
 from pldm.attributes import Attribute, Value
+from pldm.exceptions import ReferenceLookupError
 
 
 def parse_document(f):
@@ -49,7 +50,7 @@ class Document(object):
 
     root = False
 
-    def __init__(self, store, values=None, body='', number=None, uid=None):
+    def __init__(self, store, values=None, body='', number=None, uid=None, ignore_reference_errors=False):
         self.store = store
         self.uid = uid
         self.values = OrderedDict()
@@ -59,7 +60,11 @@ class Document(object):
             self[attribute.key] = attribute.default
         if values:
             for key, value in values.iteritems():
-                self[key] = value
+                try:
+                    self[key] = value
+                except ReferenceLookupError:
+                    if not ignore_reference_errors:
+                        raise
     
     def get_number(self):
         return None

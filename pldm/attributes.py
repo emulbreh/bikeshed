@@ -67,7 +67,7 @@ class DatetimeAttribute(Attribute):
 
     def serialize(self, value):
         if value:
-            return value.strftime('%y-%m-%d %H:%M')
+            return value.strftime('%Y-%m-%dT%H:%M')
 
     def mapping_type(self):
         return {'type': 'date'}

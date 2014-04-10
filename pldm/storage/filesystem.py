@@ -31,14 +31,14 @@ class FileSystemDocumentStore(BaseDocumentStore):
         doc.uid = uid
         doc.revision = 1
 
-    def list(self):
+    def list(self, ignore_reference_errors=False):
         for name in os.listdir(self.root_dir):
             if not name.endswith('.txt'):
                 continue
             uid = name[:-4]
             path = self._get_document_path(uid)
             with open(path, 'r') as f:
-                doc = self.load(f)
+                doc = self.load(f, ignore_reference_errors=ignore_reference_errors)
                 doc.uid = uid
                 yield doc
 

@@ -81,10 +81,10 @@ class BaseDocumentStore(object):
     def loads(self, text):
         return self.load(StringIO(text))
 
-    def load(self, f):
+    def load(self, f, ignore_reference_errors=False):
         headers, body = parse_document(f)
         doctype = self._get_type(headers)
-        doc = doctype(self, headers, body=body)
+        doc = doctype(self, headers, body=body, ignore_reference_errors=ignore_reference_errors)
         return doc
 
     def save(self, doc):
@@ -99,7 +99,6 @@ class BaseDocumentStore(object):
         path = []
         parent = doc.get_parent()
         while parent:
-            print parent
             path.insert(0, parent)
             parent = parent.get_parent()
         return path
@@ -118,6 +117,22 @@ class BaseDocumentStore(object):
         except DocumentDoesNotExist:
             pass
         raise ReferenceLookupError(ref)
+
+    def create_index(self):
+        mappings = {}
+        for name, doctype in self.doctypes.iteritems():
+            mappings[name] = {
+                'properties': {attr.key: attr.mapping_type() for attr in doctype.attributes}
+            }
+        self.es.indices.create(
+            index=self.index_name,
+            body={
+                'mappings': mappings,
+            },
+        )
+
+    def delete_index(self):
+        self.es.indices.delete(index=self.index_name)
 
     def search(self, query='', doctype=None, limit=50):
         body = {}
