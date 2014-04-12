@@ -1,8 +1,16 @@
 {% extends 'base.html' %}
 
 {% block body %}
+<ul>
+    {% for project in projects %}
+        <li>
+            <a href="/view/{{ project.uid }}/">{{ project.get_label() }}</a>
+        </li>
+    {% endfor %}
+</ul>
+
 <aside>
-<a href="/list/">List documents</a>
-<a href="/create/">Create document</a>
+    <a href="/list/">List documents</a>
+    <a href="/create/">Create document</a>
 </aside>
 {% endblock %}

@@ -134,7 +134,7 @@ class BaseDocumentStore(object):
     def delete_index(self):
         self.es.indices.delete(index=self.index_name)
 
-    def search(self, query='', doctype=None, limit=50):
+    def search(self, query='', doctype='', limit=50):
         body = {}
         if query:
             body = {
@@ -147,6 +147,7 @@ class BaseDocumentStore(object):
         result = self.es.search(
             size=limit,
             index=self.index_name,
+            doc_type=doctype,
             body=body,
         )
         for hit in result['hits']['hits']:
