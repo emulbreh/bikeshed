@@ -191,5 +191,5 @@ class Document(object):
                 'initial_header_level': 2,
             }
         )
-        return parts['html_body']
+        return parts['body']
 
