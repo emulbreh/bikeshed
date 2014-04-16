@@ -5,6 +5,7 @@ import docutils
 
 from pldm.attributes import Attribute, Value
 from pldm.exceptions import ReferenceLookupError
+from pldm.markup import markup
 
 
 def parse_document(f):
@@ -184,12 +185,4 @@ class Document(object):
         )
 
     def html_body(self):
-        parts = docutils.core.publish_parts(
-            source=self.body,
-            writer_name='html',
-            settings_overrides={
-                'initial_header_level': 2,
-            }
-        )
-        return parts['body']
-
+        return markup(self.store, self.body)

@@ -157,3 +157,6 @@ form.search input[type=text]:focus{
     background-color: #cceeff;
 }
 
+.deadref{
+    color: #ff6600;
+}
