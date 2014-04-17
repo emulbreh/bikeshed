@@ -126,6 +126,10 @@ class Document(object):
             if not self.key_map[key.lower()].readonly:
                 del self.values[key]
 
+    def update(self, values):
+        for key, value in values.iteritems():
+            self[key] = value
+
     def load(self, f, **kwargs):
         self.clear()
         headers, body = parse_document(f)
