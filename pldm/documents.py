@@ -4,7 +4,7 @@ from StringIO import StringIO
 import docutils
 
 from pldm.attributes import Attribute, Value
-from pldm.exceptions import ReferenceLookupError
+from pldm.exceptions import ReferenceLookupError, FileFormatError
 from pldm.markup import markup
 
 
