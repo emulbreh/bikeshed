@@ -66,10 +66,10 @@ class Document(object):
                 except ReferenceLookupError:
                     if not ignore_reference_errors:
                         raise
-    
+
     def get_number(self):
         return None
-        
+
     def get_label(self):
         return '#%s' % self.get_number()
 
@@ -81,10 +81,10 @@ class Document(object):
 
     def get_parent(self):
         return None
-    
+
     def is_root(self):
         return not self.get_parent()
-    
+
     def get_root(self):
         if self.is_root():
             return self
@@ -92,7 +92,7 @@ class Document(object):
         while parent and not parent.is_root():
             parent = parent.get_parent()
         return parent
-        
+
     def __setitem__(self, key, value):
         try:
             attribute = self.key_map[key.lower()]
@@ -110,13 +110,13 @@ class Document(object):
         if isinstance(value, Value):
             return value.value
         return value
-        
+
     def __delitem__(self, key):
         if key in self.values:
             del self.values[key]
         elif key in self.extra_attributes:
             del self.extra_attributes[key]
-        
+
     def __iter__(self):
         return self.values.itervalues()
 
