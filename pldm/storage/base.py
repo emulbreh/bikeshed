@@ -8,7 +8,6 @@ import elasticsearch
 from pldm.exceptions import DocumentDoesNotExist, ReferenceLookupError
 from pldm.documents import parse_document
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -22,8 +21,6 @@ class BaseDocumentStore(object):
         self.default_type = default_type
         self.default_project = default_project
         self.doctypes = {}
-        if not self.es.indices.exists(index=self.index_name):
-            self.es.indices.create(index=self.index_name)
 
     @abc.abstractmethod
     def save_raw(self, data):
