@@ -13,7 +13,6 @@ setup(
     long_description=description,
     include_package_data=True,
     install_requires=[
-        'couchquery==0.10.1',
         'docutils==0.11',
         'elasticsearch==1.0.0',
         'httplib2==0.9',

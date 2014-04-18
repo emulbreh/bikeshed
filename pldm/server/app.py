@@ -5,7 +5,6 @@ from datetime import datetime, timedelta
 
 import elasticsearch
 import redis
-import couchquery
 
 from jinja2 import Environment, FileSystemLoader, TemplateNotFound
 
@@ -17,7 +16,6 @@ from pldm.server.documents import (ViewDocumentHandler, EditDocumentHandler,
     CreateDocumentHandler, ListDocumentsHandler)
 from pldm.server.session import RedisSessionStore
 
-from pldm.storage.couchdb import CouchDBDocumentStore
 from pldm.storage.filesystem import FileSystemDocumentStore
 from pldm import builtin_types
 from pldm.server import api
@@ -44,12 +42,10 @@ class Application(web.Application):
         })
         super(Application, self).__init__(**kwargs)
         
-        self.db = couchquery.Database('http://localhost:5984/pldm')
         self.redis = redis.StrictRedis()
         self.session_store = RedisSessionStore(self.redis)
         self.jinja_env = Environment(loader=FileSystemLoader([template_dir]))
         self.manager = FileSystemDocumentStore(
-            #db=self.db, 
             es = elasticsearch.Elasticsearch(),
             root_dir='./_documents',
             redis=self.redis, 
