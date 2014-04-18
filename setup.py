@@ -23,5 +23,6 @@ setup(
         'python-dateutil==2.2',
         'redis==2.9.1',
         'tornado==3.2',
+        'Sphinx==1.2.2',
     ],
 )
