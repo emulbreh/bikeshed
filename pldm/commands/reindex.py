@@ -12,20 +12,20 @@ renumber = True
 if __name__ == '__main__':
     logger.setLevel(logging.DEBUG)
     app = Application()
-    app.manager.delete_index()
-    app.manager.create_index()
+    app.store.delete_index()
+    app.store.create_index()
     renumber = '--renumber' in sys.argv
     if renumber:
-        app.manager.reset_numbering()
+        app.store.reset_numbering()
 
-    for doc in app.manager.list(ignore_reference_errors=True):
-        app.manager.index(doc)
+    for doc in app.store.list(ignore_reference_errors=True):
+        app.store.index(doc)
 
     time.sleep(1)  # FIXME: wait for index to catch up
 
-    for doc in app.manager.list():
+    for doc in app.store.list():
         if renumber and hasattr(doc, 'number'):
             doc.number = None
-            app.manager.save(doc)
+            app.store.save(doc)
         else:
-            app.manager.index(doc)
+            app.store.index(doc)

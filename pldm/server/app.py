@@ -3,7 +3,6 @@ import hashlib
 import time
 from datetime import datetime, timedelta
 
-import elasticsearch
 import redis
 
 from jinja2 import Environment, FileSystemLoader, TemplateNotFound
@@ -16,13 +15,11 @@ from pldm.server.documents import (ViewDocumentHandler, EditDocumentHandler,
     CreateDocumentHandler, ListDocumentsHandler)
 from pldm.server.session import RedisSessionStore
 
-from pldm.storage.filesystem import FileSystemDocumentStore
-from pldm import builtin_types
 from pldm.server import api
 
 
 class Application(web.Application):
-    def __init__(self, **kwargs):
+    def __init__(self, store, **kwargs):
         base_dir = os.path.dirname(__file__)
         static_path = os.path.join(base_dir, '..', 'static')
         template_dir = os.path.join(base_dir, '..', 'templates')
@@ -44,19 +41,7 @@ class Application(web.Application):
         self.redis = redis.StrictRedis()
         self.session_store = RedisSessionStore(self.redis)
         self.jinja_env = Environment(loader=FileSystemLoader([template_dir]))
-        self.manager = FileSystemDocumentStore(
-            es = elasticsearch.Elasticsearch(),
-            root_dir='./_documents',
-            redis=self.redis, 
-            default_type=builtin_types.Ticket,
-            default_project='pldm',
-        )
-        self.manager.register(builtin_types.Ticket)
-        self.manager.register(builtin_types.Feature)
-        self.manager.register(builtin_types.Bug)
-        self.manager.register(builtin_types.Story)
-        self.manager.register(builtin_types.Project)
-        self.manager.register(builtin_types.User)
+        self.store = store
 
 
 

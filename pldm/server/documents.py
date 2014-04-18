@@ -14,7 +14,7 @@ class DocumentHandler(BaseHandler):
     def document(self):
         if not hasattr(self, '_document'):
             uid = self.path_kwargs.get('uid')
-            self._document = self.application.manager.get(uid)
+            self._document = self.application.store.get(uid)
         return self._document
 
 
@@ -23,7 +23,7 @@ class ViewDocumentHandler(DocumentHandler):
         log = [] #self.application.repository.get_log(self.document.path)
         self.render_template('documents/view.html',
             document=self.document,
-            path=self.application.manager.get_path(self.document),
+            path=self.application.store.get_path(self.document),
         )
 
 
@@ -32,7 +32,7 @@ class EditDocumentHandler(DocumentHandler):
     def get(self, uid=None):
         self.render_template('documents/edit.html',
             document=self.document,
-            path=self.application.manager.get_path(self.document),
+            path=self.application.store.get_path(self.document),
             text=self.document.dumps(include_hidden=True),
         )
 
@@ -40,7 +40,7 @@ class EditDocumentHandler(DocumentHandler):
     def post(self, uid=None):
         doc = self.document
         doc.loads(self.get_body_argument('text'))
-        self.application.manager.save(doc)
+        self.application.store.save(doc)
         self.redirect(self.reverse_url('view-document', doc.uid))
 
 
@@ -51,13 +51,13 @@ class CreateDocumentHandler(BaseHandler):
 
     @coroutine
     def post(self):
-        doc = self.application.manager.loads(self.get_argument('text'))
-        self.application.manager.save(doc)
+        doc = self.application.store.loads(self.get_argument('text'))
+        self.application.store.save(doc)
         self.redirect(self.reverse_url('view-document', doc.uid))
 
 
 class ListDocumentsHandler(BaseHandler):
     def get(self):
         q = self.get_argument('q', '')
-        result = list(self.application.manager.search(query=q))
+        result = list(self.application.store.search(query=q))
         self.render_template('documents/list.html', documents=result, q=q)

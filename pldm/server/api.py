@@ -38,7 +38,7 @@ class DocumentHandler(BaseHandler):
     def document(self):
         if not hasattr(self, '_document'):
             uid = self.path_kwargs.get('uid')
-            self._document = self.application.manager.get(uid)
+            self._document = self.application.store.get(uid)
         return self._document
 
     def apply_update(self):
@@ -61,7 +61,7 @@ class DocumentHandler(BaseHandler):
         else:
             self.set_status(400)
             return
-        self.application.manager.save(self.document)
+        self.application.store.save(self.document)
         self.return_document()
 
     def patch(self, uid):
@@ -77,7 +77,7 @@ class DocumentHandler(BaseHandler):
             self.document.loads('\n'.join(lines))
         else:
             self.set_status(400)
-        self.application.manager.save(self.document)
+        self.application.store.save(self.document)
         self.return_document()
 
 
@@ -87,7 +87,7 @@ class DocumentsHandler(BaseHandler):
         t = self.get_argument('type', '')
         limit = self.get_argument('limit', 20)
         offset = self.get_argument('offset', 0)
-        result = self.application.manager.search(
+        result = self.application.store.search(
             query=q,
             doctype=t,
             limit=limit,
