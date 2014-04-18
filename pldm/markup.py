@@ -69,7 +69,7 @@ def markup(store, text, initial_header_level=2):
     )
     html = parts['body']
     parser = HTMLParser(target=ReferenceParser(store))
-    fragments = fragments_fromstring(html, parser)
-    return '\n'.join(etree.tostring(fragment) for fragment in fragments)
+    tree = etree.fromstring(u'<html><body>%s</body></html>' % parts['body'], parser)
+    return '\n'.join(etree.tostring(fragment) for fragment in tree[0])
 
 
