@@ -150,12 +150,12 @@ class Document(object):
             if value.value is None:
                 continue
             f.write(unicode(value))
-            f.write("\n")
+            f.write(u"\n")
         for key, value in self.extra_attributes.iteritems():
             if value is None:
                 continue
             f.write(u'{}: {}\n'.format(key, value))
-        f.write("\n")
+        f.write(u"\n")
         f.writelines(self.body)
 
     def dumps(self, **kwargs):
