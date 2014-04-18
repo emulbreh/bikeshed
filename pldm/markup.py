@@ -3,7 +3,7 @@ import functools
 
 import docutils
 from lxml import etree
-from lxml.html import HTMLParser
+from lxml.html import HTMLParser, fragments_fromstring
 
 from pldm.exceptions import ReferenceLookupError
 
@@ -17,7 +17,7 @@ class ReferenceParser(etree.TreeBuilder):
         self.store = store
         self._path = []
         self._text_buffer = []
-        
+
     def _flush_text_buffer(self):
         text = ''.join(self._text_buffer)
         self._text_buffer = []
@@ -32,11 +32,11 @@ class ReferenceParser(etree.TreeBuilder):
         self._flush_text_buffer()
         self._path.pop()
         super(ReferenceParser, self).end(tag)
-        
+
     def close(self):
         self._flush_text_buffer()
         return super(ReferenceParser, self).close()
-    
+
     def data(self, text):
         self._text_buffer.append(text)
 
@@ -69,8 +69,7 @@ def markup(store, text, initial_header_level=2):
     )
     html = parts['body']
     parser = HTMLParser(target=ReferenceParser(store))
-    tree = etree.HTML('<div>%s</div>' % html, parser)
-    return etree.tostring(tree)
+    fragments = fragments_fromstring(html, parser)
+    return '\n'.join(etree.tostring(fragment) for fragment in fragments)
 
 
-    
