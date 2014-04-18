@@ -9,7 +9,7 @@ setup(
     name='pldm',
     version='0.1.0',
     packages=['pldm'],
-    license=u'BSD 2-Clause License',
+    license=u'BSD 3-Clause License',
     long_description=description,
     include_package_data=True,
     install_requires=[
