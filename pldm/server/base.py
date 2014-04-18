@@ -10,7 +10,7 @@ class BaseHandler(RequestHandler):
     def render_template(self, template_name, **ctx):
         template = self.application.jinja_env.get_template(template_name)
         self.write(template.render(ctx))
-    
+
     @property
     def session(self):
         session_id = self.get_secure_cookie(PLDM_SESSION_COOKIE)

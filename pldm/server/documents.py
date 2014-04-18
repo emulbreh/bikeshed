@@ -31,7 +31,7 @@ class EditDocumentHandler(DocumentHandler):
     @coroutine
     def get(self, uid=None):
         self.render_template('documents/edit.html',
-            document=self.document, 
+            document=self.document,
             path=self.application.manager.get_path(self.document),
             text=self.document.dumps(include_hidden=True),
         )
