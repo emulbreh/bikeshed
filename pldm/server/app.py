@@ -38,7 +38,6 @@ class Application(web.Application):
                 web.URLSpec(r"/api/documents/", api.DocumentsHandler, name='api-search'),
                 web.URLSpec(r"/api/document/(?P<uid>[^/]+)/", api.DocumentHandler, name='api-details'),
             ],
-            'template_loader': template.Loader(template_dir)
         })
         super(Application, self).__init__(**kwargs)
         
