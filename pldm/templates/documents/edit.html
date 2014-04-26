@@ -1,30 +1,34 @@
 {% extends 'documents/base.html' %}
 
 {% block document_body %}
-    <form action="" method="post" id="ticketForm">
-        <textarea name="text" class="ticket">{{ text }}</textarea>
-    </form>
+    <div id="viewport"></div>
 {% endblock %}
 
 
 {% block document_actions%}
-    <a href="javascript:document.getElementById('ticketForm').submit()">Save</a>
+    <a href="#save">Save</a>
     <a href="/view/{{ document.uid }}/">Cancel</a>
     {{ super() }}
 {% endblock %}
 
 
 {% block javascript %}
-    <script type="text/javascript" src="/static/ace-builds-1.1.3/src-noconflict/ace.js" charset="utf-8"></script>
-    
+    {{ super() }}
     <script type="text/javascript">
-    document.getElementsByTagName('textarea')[0].focus();
-
-    /*
-    var editor = ace.edit("editor");
-    editor.setTheme("ace/theme/monokai");
-    //editor.getSession().setMode("ace/mode/javascript");
-    */
-
+        $.ajax('/api/document/{{ document.uid }}/', {
+            type: 'GET',
+            success: function(data){
+                var doc = new pldm.Document(data);
+                var e = new pldm.DocumentEditor({
+                    doc: doc
+                });
+                $('#viewport').append(e.$element);
+                e.focus();
+                $('a[href=#save]').on('click', function(){
+                    e.save();
+                    return false;
+                });
+            }
+        });
     </script>
 {% endblock %}

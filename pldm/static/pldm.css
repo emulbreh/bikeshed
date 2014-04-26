@@ -3,7 +3,7 @@ body{
     padding: 0px;
 }
 
-body, textarea, input{
+body, textarea, input, .pldm-editor.ace_editor{
     font-family: "Monaco", monospace;
     line-height: 21px;
     font-size: 14px;
@@ -31,6 +31,7 @@ header .actions a{
 textarea {
     padding: 0px;
     border: none;
+    white-space: pre;
 }
 
 #page{
@@ -159,4 +160,37 @@ form.search input[type=text]:focus{
 
 .deadref{
     color: #ff6600;
+}
+
+.ref-dropdown{
+    background-color: #effedd;
+    position: absolute;
+    display: none;
+    z-index: 10000;
+    box-shadow: 0px 2px 2px #ccc;
+    max-width: 300px;
+}
+
+.ref-dropdown ul{
+    margin: 0px;
+    padding: 0px;
+}
+
+.ref-dropdown li{
+    padding: 3px;
+    list-style: none;
+    white-space: pre;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    border-top: 1px solid transparent;
+    border-bottom: 1px solid transparent;
+}
+
+.ref-dropdown li:hover{
+    background-color: #cceeff;
+}
+
+.ref-dropdown li.selected{
+    background-color: #cceeff;
+    border-color: #fff;
 }
