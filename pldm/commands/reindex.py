@@ -3,6 +3,7 @@ import logging
 import time
 
 from pldm.server.app import Application
+from pldm.commands.base import get_store
 
 
 logger = logging.getLogger()
@@ -11,21 +12,21 @@ renumber = True
 
 if __name__ == '__main__':
     logger.setLevel(logging.DEBUG)
-    app = Application()
-    app.store.delete_index()
-    app.store.create_index()
+    store = get_store()
+    store.delete_index()
+    store.create_index()
     renumber = '--renumber' in sys.argv
     if renumber:
-        app.store.reset_numbering()
+        store.reset_numbering()
 
-    for doc in app.store.list(ignore_reference_errors=True):
-        app.store.index(doc)
+    for doc in store.list(ignore_reference_errors=True):
+        store.index(doc)
 
     time.sleep(1)  # FIXME: wait for index to catch up
 
-    for doc in app.store.list():
+    for doc in store.list():
         if renumber and hasattr(doc, 'number'):
             doc.number = None
-            app.store.save(doc)
+            store.save(doc)
         else:
-            app.store.index(doc)
+            store.index(doc)
