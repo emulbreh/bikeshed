@@ -67,7 +67,7 @@ class Feature(Ticket):
 
 class User(Document):
     type_name = 'User'
-    name = Identifier('Name')
+    name = Attribute('Name')
 
     def get_label(self):
         return '@%s' % self.name
