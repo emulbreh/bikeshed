@@ -16,6 +16,11 @@ form{
     padding: 0px;
 }
 
+ul, li, div, form{
+    margin: 0px;
+    padding: 0px;
+}
+
 header{
     background-color: #222628;
     color: #fff;
@@ -44,14 +49,27 @@ a{
 @import 'autocomplete.scss';
 @import 'editor.scss';
 
-aside a{
-    display: block;
-    padding: 10px 20px 10px 20px;
-    margin-left: -20px;
-    margin-right: -20px;
+#viewport{
+    border-top: 3px solid #990000;
+    position: relative;
+}
+
+.pldm-sidebar {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    width: 30em;
+    background-color: #eee;
+    padding: 10px 10px;
+
+    a{
+        display: block;
+        padding: 0px 10px;
+        margin: 10px;
     
-    &:hover{
-        background-color: #fff;
+        &:hover{
+            background-color: #fff;
+        }
     }
 }
 
@@ -118,3 +136,12 @@ form.search {
     color: #ff6600;
 }
 
+
+.pldm-list{
+    & > ul{
+        & > li{
+            list-style: none;
+            padding: 2px 0px;
+        }
+    }
+}

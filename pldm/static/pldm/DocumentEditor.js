@@ -1,4 +1,4 @@
-import {Component} from './Component'
+import {Component} from './framework/Component'
 import {Document} from './Document'
 import {Completer} from './Completer'
 
@@ -42,8 +42,9 @@ class DocumentEditor extends Component{
         this.doc.save();
     }
     
-    loadDocument(doc){
+    setDocument(doc){
         this.doc = doc;
+        this.editor.getSession().setValue(doc.text);
     }
 
 }

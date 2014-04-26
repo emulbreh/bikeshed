@@ -209,35 +209,6 @@ System.register("EventEmitter", [], function() {
       return EventEmitter;
     }};
 });
-System.register("pldm/Component", [], function() {
-  "use strict";
-  var __moduleName = "pldm/Component";
-  var EventEmitter = $traceurRuntime.assertObject(System.get("EventEmitter")).EventEmitter;
-  var Component = function Component(options) {
-    options = options || {};
-    $traceurRuntime.superCall(this, $Component.prototype, "constructor", []);
-    this.$element = $('<div class="pldm-component"></div>');
-    if (options.cssClass) {
-      this.$element.addClass(options.cssClass);
-    }
-  };
-  var $Component = Component;
-  ($traceurRuntime.createClass)(Component, {
-    get element() {
-      return this.$element.get(0);
-    },
-    hide: function() {
-      this.$element.hide();
-    },
-    show: function() {
-      this.$element.show();
-    }
-  }, {}, EventEmitter);
-  var Component = Component;
-  return {get Component() {
-      return Component;
-    }};
-});
 System.register("pldm/Collection", [], function() {
   "use strict";
   var __moduleName = "pldm/Collection";
@@ -264,18 +235,21 @@ System.register("pldm/Document", [], function() {
     load: function(data) {
       this.headers = {};
       if (data.headers) {
-        for (var $__5 = data.headers[Symbol.iterator](),
-            $__6; !($__6 = $__5.next()).done; ) {
-          var attr = $__6.value;
+        for (var $__3 = data.headers[Symbol.iterator](),
+            $__4; !($__4 = $__3.next()).done; ) {
+          var attr = $__4.value;
           {
             this.headers[attr.key.toLowerCase()] = attr;
           }
         }
       }
+      this.uid = data.uid;
       this.body = data.body || '';
       this._label = data.label;
       this.text = data.text || '';
       this.url = data.url;
+      this.html = data.html;
+      this.title = data.title;
     },
     getHeader: function(key) {
       var header = this.headers[key.toLowerCase()];
@@ -328,20 +302,81 @@ System.register("pldm/Document", [], function() {
     }
   };
 });
+System.register("pldm/framework/Component", [], function() {
+  "use strict";
+  var __moduleName = "pldm/framework/Component";
+  var EventEmitter = $traceurRuntime.assertObject(System.get("EventEmitter")).EventEmitter;
+  var ACTIONS_DATA_KEY = 'pldm-component-actions';
+  var Component = function Component(options) {
+    options = options || {};
+    $traceurRuntime.superCall(this, $Component.prototype, "constructor", []);
+    this.$element = $('<div class="pldm-component"></div>');
+    if (options.cssClass) {
+      this.$element.addClass(options.cssClass);
+    }
+    this.actions = null;
+  };
+  var $Component = Component;
+  ($traceurRuntime.createClass)(Component, {
+    appendElement: function(el) {
+      var $el = $(el);
+      this.$element.append($el);
+      return $el;
+    },
+    onActionClick: function(name, e) {
+      this.actions[name].call(this, e);
+    },
+    addAction: function(name, handler) {
+      if (!this.actions) {
+        this.actions = {};
+        this.$element.on('click', 'a', (function(e) {
+          var url = $(e.target).attr('href');
+          if (url && url[0] == '#') {
+            var action = url.substring(1);
+            this.onActionClick(action, e);
+            return false;
+          }
+        }).bind(this));
+      }
+      this.actions[name] = handler;
+    },
+    addActions: function(mapping) {
+      var $__6 = this;
+      _.each(mapping, (function(handler, name) {
+        return $__6.addAction(name, handler);
+      }));
+    },
+    get element() {
+      return this.$element.get(0);
+    },
+    hide: function() {
+      this.$element.hide();
+    },
+    show: function() {
+      this.$element.show();
+    }
+  }, {}, EventEmitter);
+  var Component = Component;
+  return {get Component() {
+      return Component;
+    }};
+});
 System.register("pldm/List", [], function() {
   "use strict";
   var __moduleName = "pldm/List";
-  var Component = $traceurRuntime.assertObject(System.get("pldm/Component")).Component;
+  var Component = $traceurRuntime.assertObject(System.get("pldm/framework/Component")).Component;
   var Document = $traceurRuntime.assertObject(System.get("pldm/Document")).Document;
   var ITEM_INDEX_DATA_KEY = 'pldm-list-item-index';
   var List = function List(options) {
-    options = options || {};
+    options = _.defaults(options, {cssClass: 'pldm-list'});
     $traceurRuntime.superCall(this, $List.prototype, "constructor", [options]);
-    this.$container = $('<ul>');
-    this.$element.append(this.$container);
+    this.$container = this.appendElement('<ul>');
     this.$container.on('click', this.onClick.bind(this));
     this.items = [];
     this.selectedItem = null;
+    if (options.render) {
+      this.render = options.render;
+    }
   };
   var $List = List;
   ($traceurRuntime.createClass)(List, {
@@ -394,9 +429,9 @@ System.register("pldm/List", [], function() {
     },
     onLoadSuccess: function(result) {
       this.clear();
-      for (var $__9 = result.documents[Symbol.iterator](),
-          $__10; !($__10 = $__9.next()).done; ) {
-        var data = $__10.value;
+      for (var $__10 = result.documents[Symbol.iterator](),
+          $__11; !($__11 = $__10.next()).done; ) {
+        var data = $__11.value;
         {
           this.appendItem(new Document(data));
         }
@@ -577,7 +612,7 @@ System.register("pldm/Completer", [], function() {
 System.register("pldm/DocumentEditor", [], function() {
   "use strict";
   var __moduleName = "pldm/DocumentEditor";
-  var Component = $traceurRuntime.assertObject(System.get("pldm/Component")).Component;
+  var Component = $traceurRuntime.assertObject(System.get("pldm/framework/Component")).Component;
   var Document = $traceurRuntime.assertObject(System.get("pldm/Document")).Document;
   var Completer = $traceurRuntime.assertObject(System.get("pldm/Completer")).Completer;
   var DocumentEditor = function DocumentEditor(options) {
@@ -614,8 +649,9 @@ System.register("pldm/DocumentEditor", [], function() {
       this.doc.setText(this.editor.getValue());
       this.doc.save();
     },
-    loadDocument: function(doc) {
+    setDocument: function(doc) {
       this.doc = doc;
+      this.editor.getSession().setValue(doc.text);
     }
   }, {}, Component);
   var DocumentEditor = DocumentEditor;
@@ -623,20 +659,295 @@ System.register("pldm/DocumentEditor", [], function() {
       return DocumentEditor;
     }};
 });
+System.register("pldm/framework/Page", [], function() {
+  "use strict";
+  var __moduleName = "pldm/framework/Page";
+  var Component = $traceurRuntime.assertObject(System.get("pldm/framework/Component")).Component;
+  var Page = function Page(options) {
+    options = _.defaults(options, {cssClass: 'pldm-page'});
+    $traceurRuntime.superCall(this, $Page.prototype, "constructor", [options]);
+    this.hide();
+  };
+  var $Page = Page;
+  ($traceurRuntime.createClass)(Page, {
+    open: function(params) {
+      this.show();
+    },
+    close: function() {
+      this.hide();
+    }
+  }, {}, Component);
+  var Page = Page;
+  return {get Page() {
+      return Page;
+    }};
+});
+System.register("pldm/PageWithSidebar", [], function() {
+  "use strict";
+  var __moduleName = "pldm/PageWithSidebar";
+  var Page = $traceurRuntime.assertObject(System.get("pldm/framework/Page")).Page;
+  var PageWithSidebar = function PageWithSidebar(options) {
+    $traceurRuntime.superCall(this, $PageWithSidebar.prototype, "constructor", [options]);
+    this.$sidebar = this.appendElement('<div class="pldm-sidebar"/>');
+  };
+  var $PageWithSidebar = PageWithSidebar;
+  ($traceurRuntime.createClass)(PageWithSidebar, {addToSidebar: function(el) {
+      this.$sidebar.append(el);
+    }}, {}, Page);
+  var PageWithSidebar = PageWithSidebar;
+  return {get PageWithSidebar() {
+      return PageWithSidebar;
+    }};
+});
+System.register("pldm/DocumentPage", [], function() {
+  "use strict";
+  var __moduleName = "pldm/DocumentPage";
+  var PageWithSidebar = $traceurRuntime.assertObject(System.get("pldm/PageWithSidebar")).PageWithSidebar;
+  var Document = $traceurRuntime.assertObject(System.get("pldm/Document")).Document;
+  var DocumentPage = function DocumentPage(options) {
+    $traceurRuntime.superCall(this, $DocumentPage.prototype, "constructor", [options]);
+    this.$header = this.appendElement('<h1/>');
+  };
+  var $DocumentPage = DocumentPage;
+  ($traceurRuntime.createClass)(DocumentPage, {
+    onLoadError: function() {
+      console.log("error", arguments);
+    },
+    onDocumentLoaded: function(doc) {
+      console.log("document loaded", doc);
+      this.doc = doc;
+      this.$header.html((doc.label + ": " + doc.title));
+    },
+    open: function(params) {
+      $.ajax('/api/document/' + params.uid + '/', {
+        type: 'GET',
+        error: this.onLoadError.bind(this),
+        success: (function(data) {
+          var doc = new Document(data);
+          this.onDocumentLoaded(doc);
+        }).bind(this)
+      });
+      $traceurRuntime.superCall(this, $DocumentPage.prototype, "open", [params]);
+    }
+  }, {}, PageWithSidebar);
+  var DocumentPage = DocumentPage;
+  return {get DocumentPage() {
+      return DocumentPage;
+    }};
+});
+System.register("pldm/EditorPage", [], function() {
+  "use strict";
+  var __moduleName = "pldm/EditorPage";
+  var DocumentPage = $traceurRuntime.assertObject(System.get("pldm/DocumentPage")).DocumentPage;
+  var Document = $traceurRuntime.assertObject(System.get("pldm/Document")).Document;
+  var DocumentEditor = $traceurRuntime.assertObject(System.get("pldm/DocumentEditor")).DocumentEditor;
+  var EditorPage = function EditorPage(options) {
+    $traceurRuntime.superCall(this, $EditorPage.prototype, "constructor", [options]);
+    this.addToSidebar($('<a href="#save">Save</a>'));
+    this.addToSidebar($('<a href="#cancel">Cancel</a>'));
+    this.editor = new DocumentEditor({});
+    this.$element.append(this.editor.$element);
+    this.addActions({
+      cancel: function(e) {
+        if (this.doc.uid) {
+          this.app.visit(("/view/" + this.doc.uid + "/"));
+        } else {
+          this.app.visit('/');
+        }
+      },
+      save: function(e) {
+        console.log("SAVE");
+        this.editor.save();
+      }
+    });
+  };
+  var $EditorPage = EditorPage;
+  ($traceurRuntime.createClass)(EditorPage, {onDocumentLoaded: function(doc) {
+      $traceurRuntime.superCall(this, $EditorPage.prototype, "onDocumentLoaded", [doc]);
+      this.editor.setDocument(doc);
+      this.editor.focus();
+    }}, {}, DocumentPage);
+  var EditorPage = EditorPage;
+  return {get EditorPage() {
+      return EditorPage;
+    }};
+});
+System.register("pldm/IndexPage", [], function() {
+  "use strict";
+  var __moduleName = "pldm/IndexPage";
+  var PageWithSidebar = $traceurRuntime.assertObject(System.get("pldm/PageWithSidebar")).PageWithSidebar;
+  var IndexPage = function IndexPage(options) {
+    $traceurRuntime.superCall(this, $IndexPage.prototype, "constructor", [options]);
+    this.addToSidebar($('<a href="/create/">Create</a>'));
+    this.addToSidebar($('<a href="/list/">Search</a>'));
+  };
+  var $IndexPage = IndexPage;
+  ($traceurRuntime.createClass)(IndexPage, {}, {}, PageWithSidebar);
+  var IndexPage = IndexPage;
+  return {get IndexPage() {
+      return IndexPage;
+    }};
+});
+System.register("pldm/ListPage", [], function() {
+  "use strict";
+  var __moduleName = "pldm/ListPage";
+  var PageWithSidebar = $traceurRuntime.assertObject(System.get("pldm/PageWithSidebar")).PageWithSidebar;
+  var Document = $traceurRuntime.assertObject(System.get("pldm/Document")).Document;
+  var List = $traceurRuntime.assertObject(System.get("pldm/List")).List;
+  var ListPage = function ListPage(options) {
+    _.defaults(options, {cssClass: 'pldm-search'});
+    $traceurRuntime.superCall(this, $ListPage.prototype, "constructor", [options]);
+    this.list = new List({render: function(item) {
+        var doc = item.data;
+        return $(("<li><a href=\"/view/" + doc.uid + "/\">" + doc.label + ": " + doc.title + "</a></li>"));
+      }});
+    this.$element.append(this.list.$element);
+  };
+  var $ListPage = ListPage;
+  ($traceurRuntime.createClass)(ListPage, {open: function(params) {
+      this.list.load('/api/documents/');
+      $traceurRuntime.superCall(this, $ListPage.prototype, "open", [params]);
+    }}, {}, PageWithSidebar);
+  var ListPage = ListPage;
+  return {get ListPage() {
+      return ListPage;
+    }};
+});
+System.register("pldm/ViewerPage", [], function() {
+  "use strict";
+  var __moduleName = "pldm/ViewerPage";
+  var DocumentPage = $traceurRuntime.assertObject(System.get("pldm/DocumentPage")).DocumentPage;
+  var Document = $traceurRuntime.assertObject(System.get("pldm/Document")).Document;
+  var ViewerPage = function ViewerPage(options) {
+    $traceurRuntime.superCall(this, $ViewerPage.prototype, "constructor", [options]);
+    this.$display = this.appendElement('<div class="document-display"/>');
+    this.addToSidebar('<a href="#edit">Edit</a>');
+    this.addActions({edit: function() {
+        this.app.visit(("/edit/" + this.doc.uid + "/"));
+      }});
+  };
+  var $ViewerPage = ViewerPage;
+  ($traceurRuntime.createClass)(ViewerPage, {onDocumentLoaded: function(doc) {
+      $traceurRuntime.superCall(this, $ViewerPage.prototype, "onDocumentLoaded", [doc]);
+      this.$display.html(doc.html);
+    }}, {}, DocumentPage);
+  var ViewerPage = ViewerPage;
+  return {get ViewerPage() {
+      return ViewerPage;
+    }};
+});
+System.register("pldm/framework/Application", [], function() {
+  "use strict";
+  var __moduleName = "pldm/framework/Application";
+  var Application = function Application(options) {
+    this.$element = $(options.element);
+    this.pages = {};
+    this.currentPage = null;
+    $('body').on('click', 'a', this.onLinkClick.bind(this));
+    $(window).on('popstate', this.onHistoryChange.bind(this));
+    this.routes = [];
+    _.each(options.pages, function(page, path) {
+      this.addPage(path, page);
+    }, this);
+  };
+  ($traceurRuntime.createClass)(Application, {
+    addPage: function(path, page) {
+      this.pages[path] = page;
+      page.app = this;
+      var params = ['__path__'];
+      var pattern = path.replace(/:\w+/g, function(match) {
+        params.push(match.substring(1));
+        return '([^/]+)';
+      });
+      var re = new RegExp(("^" + pattern + "$"));
+      this.routes.push({
+        re: re,
+        params: params,
+        page: page,
+        path: path
+      });
+      this.$element.append(page.$element);
+    },
+    start: function() {
+      this.visit(location.pathname);
+    },
+    visit: function(path) {
+      var page = null,
+          params = null;
+      for (var $__32 = this.routes[Symbol.iterator](),
+          $__33; !($__33 = $__32.next()).done; ) {
+        var route = $__33.value;
+        {
+          var match = route.re.exec(path);
+          if (match) {
+            page = route.page;
+            params = _.zipObject(route.params, match);
+            break;
+          }
+        }
+      }
+      console.log(page, params);
+      if (!page) {
+        throw new Error(("404: " + path));
+      }
+      if (this.currentPage !== page) {
+        if (this.currentPage) {
+          this.currentPage.close();
+        }
+        this.currentPage = page;
+      }
+      page.open(params);
+    },
+    onLinkClick: function(e) {
+      var url = $(e.target).attr('href');
+      if (url.match(/:\/\//)) {
+        return true;
+      }
+      if (url == '#') {
+        return false;
+      }
+      e.preventDefault();
+      console.log("push state");
+      history.pushState(null, null, url);
+      this.visit(url);
+    },
+    onHistoryChange: function() {
+      this.visit(location.pathname);
+    }
+  }, {});
+  var Application = Application;
+  return {get Application() {
+      return Application;
+    }};
+});
 System.register("pldm/init", [], function() {
   "use strict";
   var __moduleName = "pldm/init";
-  var Component = $traceurRuntime.assertObject(System.get("pldm/Component")).Component;
+  var Component = $traceurRuntime.assertObject(System.get("pldm/framework/Component")).Component;
+  var Page = $traceurRuntime.assertObject(System.get("pldm/framework/Page")).Page;
+  var Application = $traceurRuntime.assertObject(System.get("pldm/framework/Application")).Application;
   var List = $traceurRuntime.assertObject(System.get("pldm/List")).List;
   var Completer = $traceurRuntime.assertObject(System.get("pldm/Completer")).Completer;
   var DocumentEditor = $traceurRuntime.assertObject(System.get("pldm/DocumentEditor")).DocumentEditor;
   var Document = $traceurRuntime.assertObject(System.get("pldm/Document")).Document;
+  var EditorPage = $traceurRuntime.assertObject(System.get("pldm/EditorPage")).EditorPage;
+  var ViewerPage = $traceurRuntime.assertObject(System.get("pldm/ViewerPage")).ViewerPage;
+  var IndexPage = $traceurRuntime.assertObject(System.get("pldm/IndexPage")).IndexPage;
+  var PageWithSidebar = $traceurRuntime.assertObject(System.get("pldm/PageWithSidebar")).PageWithSidebar;
+  var ListPage = $traceurRuntime.assertObject(System.get("pldm/ListPage")).ListPage;
   var pldm = {
+    Application: Application,
     Component: Component,
     List: List,
+    Page: Page,
     Completer: Completer,
     Document: Document,
-    DocumentEditor: DocumentEditor
+    DocumentEditor: DocumentEditor,
+    PageWithSidebar: PageWithSidebar,
+    ListPage: ListPage,
+    IndexPage: IndexPage,
+    EditorPage: EditorPage,
+    ViewerPage: ViewerPage
   };
   window.pldm = pldm;
   $(function() {

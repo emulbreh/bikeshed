@@ -1,4 +1,4 @@
-import {Component} from './Component'
+import {Component} from './framework/Component'
 import {Document} from './Document'
 
 var ITEM_INDEX_DATA_KEY = 'pldm-list-item-index';
@@ -6,13 +6,17 @@ var ITEM_INDEX_DATA_KEY = 'pldm-list-item-index';
 
 class List extends Component{
     constructor(options) {
-        options = options || {};
+        options = _.defaults(options, {
+            cssClass: 'pldm-list'
+        });
         super.constructor(options);
-        this.$container = $('<ul>');
-        this.$element.append(this.$container);
+        this.$container = this.appendElement('<ul>');
         this.$container.on('click', this.onClick.bind(this));
         this.items = [];
         this.selectedItem = null;
+        if(options.render){
+            this.render = options.render;
+        }
     }
     
     get selectedIndex() {

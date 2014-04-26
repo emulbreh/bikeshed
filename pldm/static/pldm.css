@@ -11,6 +11,10 @@ form {
   margin: 0px;
   padding: 0px; }
 
+ul, li, div, form {
+  margin: 0px;
+  padding: 0px; }
+
 header {
   background-color: #222628;
   color: #fff;
@@ -30,15 +34,6 @@ a {
   padding-left: 20px;
   position: relative;
   margin: 0px; }
-
-aside {
-  position: absolute;
-  right: 0px;
-  top: 0px;
-  width: 30em;
-  background-color: #eee;
-  padding: 0px 20px;
-  height: 100%; }
 
 .pldm-autocomplete {
   background-color: #eeffff;
@@ -75,13 +70,23 @@ aside {
     line-height: 21px;
     font-size: 14px; }
 
-aside a {
-  display: block;
-  padding: 10px 20px 10px 20px;
-  margin-left: -20px;
-  margin-right: -20px; }
-  aside a:hover {
-    background-color: #fff; }
+#viewport {
+  border-top: 3px solid #990000;
+  position: relative; }
+
+.pldm-sidebar {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  width: 30em;
+  background-color: #eee;
+  padding: 10px 10px; }
+  .pldm-sidebar a {
+    display: block;
+    padding: 0px 10px;
+    margin: 10px; }
+    .pldm-sidebar a:hover {
+      background-color: #fff; }
 
 h1 {
   margin: 0px;
@@ -126,3 +131,7 @@ form.search input[type=text] {
 
 .deadref {
   color: #ff6600; }
+
+.pldm-list > ul > li {
+  list-style: none;
+  padding: 2px 0px; }

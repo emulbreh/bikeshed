@@ -15,10 +15,13 @@ class Document{
                 this.headers[attr.key.toLowerCase()] = attr;
             }
         }
+        this.uid = data.uid;
         this.body = data.body || '';
         this._label = data.label;
         this.text = data.text || '';
         this.url = data.url;
+        this.html = data.html;
+        this.title = data.title;
     }
     
     getHeader(key){

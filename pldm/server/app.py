@@ -25,15 +25,10 @@ class Application(web.Application):
         template_dir = os.path.join(base_dir, '..', 'templates')
         kwargs.update({
             'handlers': [
-                web.URLSpec(r"/", IndexHandler),
-                web.URLSpec(r"/list/", ListDocumentsHandler, name='list-documents'),
-                web.URLSpec(r"/view/(?P<uid>[^/]+)/", ViewDocumentHandler, name='view-document'),
-                web.URLSpec(r"/edit/(?P<uid>[^/]+)/", EditDocumentHandler, name='edit-document'),
-                web.URLSpec(r"/create/", CreateDocumentHandler, name='create-document'),
                 web.URLSpec(r"/static/(.*)", web.StaticFileHandler, {'path': static_path}),
-                
                 web.URLSpec(r"/api/documents/", api.DocumentsHandler, name='api-search'),
                 web.URLSpec(r"/api/document/(?P<uid>[^/]+)/", api.DocumentHandler, name='api-details'),
+                web.URLSpec(r"/.*", IndexHandler),
             ],
         })
         super(Application, self).__init__(**kwargs)
