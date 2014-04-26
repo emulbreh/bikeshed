@@ -7,35 +7,39 @@ from tornado.web import HTTPError
 from pldm.server.base import BaseHandler
 
 
-def serialize_document(doc):
-    headers = []
-    for header in doc:
-        if not header.value:
-            continue
-        headers.append({
-            'key': header.attribute.key,
-            'value': header.attribute.serialize(header.value),
-            'well_known': True,
-        })
-    for key, value in doc.extra_attributes.iteritems():
-        headers.append({
-            'key': key,
-            'value': value,
-            'well_known': False,
-        })
-    return {
-        'type': doc.type_name,
-        'headers': headers,
-        'uid': doc.uid,
-        'url': '/api/document/%s/' % doc.uid,
-        'body': doc.body,
-        'html_body': doc.html_body(),
-        'label': doc.get_label(),
-        'text': doc.dumps(include_hidden=True),
-    }
+class BaseDocumentHandler(BaseHandler):
+    def serialize_document(self, doc):
+        html_tpl = self.application.jinja_env.get_template('document.snippet.html')
+        headers = []
+        for header in doc:
+            if not header.value:
+                continue
+            headers.append({
+                'key': header.attribute.key,
+                'value': header.attribute.serialize(header.value),
+                'well_known': True,
+            })
+        for key, value in doc.extra_attributes.iteritems():
+            headers.append({
+                'key': key,
+                'value': value,
+                'well_known': False,
+            })
+        return {
+            'type': doc.type_name,
+            'headers': headers,
+            'uid': doc.uid,
+            'url': '/api/document/%s/' % doc.uid,
+            'body': doc.body,
+            'html_body': doc.html_body(),
+            'label': doc.get_label(),
+            'title': doc.get_title(),
+            'text': doc.dumps(include_hidden=True),
+            'html': html_tpl.render({'document': doc}),
+        }
 
 
-class DocumentHandler(BaseHandler):
+class DocumentHandler(BaseDocumentHandler):
     @property
     def document(self):
         if not hasattr(self, '_document'):
@@ -48,7 +52,7 @@ class DocumentHandler(BaseHandler):
         self.document.update(data)
 
     def return_document(self):
-        self.write(serialize_document(self.document))
+        self.write(self.serialize_document(self.document))
 
     def get(self, uid):
         self.return_document()
@@ -87,7 +91,7 @@ class DocumentHandler(BaseHandler):
         self.return_document()
 
 
-class DocumentsHandler(BaseHandler):
+class DocumentsHandler(BaseDocumentHandler):
     def get(self):
         q = self.get_argument('q', '')
         t = self.get_argument('type', '')
@@ -101,5 +105,5 @@ class DocumentsHandler(BaseHandler):
         )
         self.content_type = 'application/json'
         self.write({
-            'documents': [serialize_document(doc) for doc in result],
+            'documents': [self.serialize_document(doc) for doc in result],
         })
