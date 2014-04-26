@@ -30,6 +30,7 @@ def serialize_document(doc):
         'url': '/api/document/%s/' % doc.uid,
         'body': doc.body,
         'html_body': doc.html_body(),
+        'label': doc.get_label(),
     }
 
 
