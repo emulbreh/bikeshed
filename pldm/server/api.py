@@ -107,3 +107,20 @@ class DocumentsHandler(BaseDocumentHandler):
         self.write({
             'documents': [self.serialize_document(doc) for doc in result],
         })
+
+    def post(self):
+        content_type = self.request.headers['Content-Type']
+        if content_type == 'application/json':
+            data = json.loads(self.request.body)
+            doc = self.application.store.create(data)
+        elif content_type == 'text/plain':
+            try:
+                body = self.request.body.decode('utf-8')
+            except UnicodeDecodeError:
+                self.set_status(400)
+            doc = self.application.store.loads(body)
+        else:
+            self.set_status(400)
+            return
+        self.application.store.save(doc)
+        self.write(self.serialize_document(doc))
