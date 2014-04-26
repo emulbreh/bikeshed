@@ -4,7 +4,7 @@ Promise less or do more
 Installation
 ------------
 
-Install elasticsearch, listening on the default port on localhost.
+Install elasticsearch and redis, listening on default ports on localhost.
 
 .. code::
     
@@ -14,3 +14,15 @@ Install elasticsearch, listening on the default port on localhost.
     $ python -m pldm.commands.server
 
 Go to http://127.0.0.1:7001
+
+Development
+-----------
+
+To build the static resources, install `traceur`_. Then run:
+
+.. code::
+
+    $ ./make.sh
+    
+
+.. _traceur: https://github.com/google/traceur-compiler
