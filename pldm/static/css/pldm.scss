@@ -1,9 +1,11 @@
+@import 'config.scss';
+
 body{
     margin: 0px;
     padding: 0px;
 }
 
-body, textarea, input, .pldm-editor.ace_editor{
+body, textarea, input{
     font-family: "Monaco", monospace;
     line-height: 21px;
     font-size: 14px;
@@ -40,6 +42,7 @@ a{
 
 @import 'layout.scss';
 @import 'autocomplete.scss';
+@import 'editor.scss';
 
 aside a{
     display: block;

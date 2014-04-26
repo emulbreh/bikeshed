@@ -10,10 +10,9 @@ class DocumentEditor extends Component{
         });
         super.constructor(options);
         this.doc = options.doc || new Document({headers:[], body: '', text: ''});
-        this.$element.css({
-            width: '600px'
-        });
-        var editor = this.editor = ace.edit(this.element);
+        var aceWrapper = $('<div style="width:600px"/>');
+        this.$element.append(aceWrapper);
+        var editor = this.editor = ace.edit(aceWrapper.get(0));
         editor.setOptions({
             maxLines: Infinity
         })
@@ -27,7 +26,6 @@ class DocumentEditor extends Component{
 
         var text = options.text || this.doc.text;
         session.setValue(text);
-        console.log(text);
         
         this.completer = new Completer({
             editor: editor,

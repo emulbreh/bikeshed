@@ -2,7 +2,7 @@ body {
   margin: 0px;
   padding: 0px; }
 
-body, textarea, input, .pldm-editor.ace_editor {
+body, textarea, input {
   font-family: "Monaco", monospace;
   line-height: 21px;
   font-size: 14px; }
@@ -64,6 +64,16 @@ aside {
       .pldm-autocomplete > ul > li.selected {
         background-color: #cceeff;
         border-color: #a3becc; }
+
+.pldm-editor {
+  overflow: hidden; }
+  .pldm-editor > div.ace_editor {
+    /* ace sets padding: 0px 4px for .ace_text-layer. */
+    margin-left: -4px;
+    width: 600px;
+    font-family: "Monaco", monospace;
+    line-height: 21px;
+    font-size: 14px; }
 
 aside a {
   display: block;

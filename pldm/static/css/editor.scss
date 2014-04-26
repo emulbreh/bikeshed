@@ -1,0 +1,11 @@
+
+.pldm-editor{
+    overflow: hidden;
+    
+    & > div.ace_editor{
+        /* ace sets padding: 0px 4px for .ace_text-layer. */
+        margin-left: -4px; 
+        width: 600px;
+        @include font;
+    }
+}

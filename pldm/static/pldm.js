@@ -588,8 +588,9 @@ System.register("pldm/DocumentEditor", [], function() {
       body: '',
       text: ''
     });
-    this.$element.css({width: '600px'});
-    var editor = this.editor = ace.edit(this.element);
+    var aceWrapper = $('<div style="width:600px"/>');
+    this.$element.append(aceWrapper);
+    var editor = this.editor = ace.edit(aceWrapper.get(0));
     editor.setOptions({maxLines: Infinity});
     editor.setTheme("ace/theme/github");
     editor.setHighlightActiveLine(false);
@@ -599,7 +600,6 @@ System.register("pldm/DocumentEditor", [], function() {
     session.setUseSoftTabs(true);
     var text = options.text || this.doc.text;
     session.setValue(text);
-    console.log(text);
     this.completer = new Completer({
       editor: editor,
       url: '/api/documents/'

@@ -1,0 +1,9 @@
+$dropdown-shadow-color: #ddd;
+$dropdown-selection-color: #cceeff;
+$dropdown-background-color: #eeffff;
+
+@mixin font{
+    font-family: "Monaco", monospace;
+    line-height: 21px;
+    font-size: 14px;
+}
