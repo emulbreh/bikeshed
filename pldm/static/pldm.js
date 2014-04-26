@@ -459,7 +459,7 @@ System.register("pldm/Completer", [], function() {
     this.focusedToken = null;
     this.active = false;
     this.activeStart = null;
-    this.dropdownList = new List({cssClass: 'ref-dropdown'});
+    this.dropdownList = new List({cssClass: 'pldm-autocomplete'});
     for (var i = 0; i < 5; i++) {
       this.dropdownList.appendItem({label: ("#" + i + "1 Ticket")});
     }

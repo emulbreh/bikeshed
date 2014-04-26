@@ -24,7 +24,7 @@ class Completer{
         this.active = false;
         this.activeStart = null;
         this.dropdownList = new List({
-            cssClass: 'ref-dropdown'
+            cssClass: 'pldm-autocomplete'
         });
         for(var i=0;i<5;i++){
             this.dropdownList.appendItem({

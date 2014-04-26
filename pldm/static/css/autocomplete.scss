@@ -1,0 +1,38 @@
+$dropdown-shadow-color: #ddd;
+$dropdown-selection-color: #cceeff;
+$dropdown-background-color: #eeffff;
+
+
+.pldm-autocomplete{
+    background-color: $dropdown-background-color;;
+    position: absolute;
+    display: none;
+    z-index: 10000;
+    box-shadow: 9px 7px 20px $dropdown-shadow-color, -9px 7px 20px $dropdown-shadow-color;
+    max-width: 300px;
+    min-width: 100px;
+    
+    & > ul{
+        margin: 0px;
+        padding: 0px;
+        
+        & > li{
+            padding: 1px 3px;
+            list-style: none;
+            white-space: pre;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            border-top: 1px solid transparent;
+            border-bottom: 1px solid transparent;
+            
+            &:hover{
+                background-color: $dropdown-selection-color;
+            }
+            
+            &.selected{
+                background-color: $dropdown-selection-color;
+                border-color: $dropdown-selection-color * 0.8;
+            }
+        }
+    }
+}

@@ -1,0 +1,117 @@
+body{
+    margin: 0px;
+    padding: 0px;
+}
+
+body, textarea, input, .pldm-editor.ace_editor{
+    font-family: "Monaco", monospace;
+    line-height: 21px;
+    font-size: 14px;
+}
+
+form{
+    margin: 0px;
+    padding: 0px;
+}
+
+header{
+    background-color: #222628;
+    color: #fff;
+    padding: 20px;
+    
+    .actions{
+        float: right;
+
+        a{
+            color: #fff;
+        }
+    }
+}
+
+a{
+    color: #1099ee;
+    text-decoration: none;
+    
+    &:hover{
+        text-decoration: underline;
+    }
+}
+
+
+@import 'layout.scss';
+@import 'autocomplete.scss';
+
+aside a{
+    display: block;
+    padding: 10px 20px 10px 20px;
+    margin-left: -20px;
+    margin-right: -20px;
+    
+    &:hover{
+        background-color: #fff;
+    }
+}
+
+h1{
+    margin: 0px;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    font-size: 150%;
+    margin-right: 30em;
+    line-height: 30px;
+}
+
+.document-display{
+    margin-right: 30em;
+    
+    & > .headers {
+        b{
+            font-weight: normal;
+        }
+
+        & > .extra{
+            color: #999;
+        }
+    }
+}
+
+.document{
+    float: left;
+    margin-top: 21px;
+    
+    p{
+        margin: 0px;
+        padding: 0px;
+        padding-bottom: 21px;
+    }
+}
+
+.crumbs{
+    padding-top: 1em;
+    a{
+        display: inline-block;
+        max-width: 150px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+}
+
+form.search {
+    input[type=text]{
+        width: 600px;
+        padding: 6px;
+        outline: none;
+        border: none;
+        background-color: #effedd;
+        
+        &:focus{
+            background-color: #cceeff;
+        }
+    }
+}
+
+.deadref{
+    color: #ff6600;
+}
+

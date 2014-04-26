@@ -18,7 +18,7 @@ Go to http://127.0.0.1:7001
 Development
 -----------
 
-To build the static resources, install `traceur`_. Then run:
+To build the static resources, install `traceur`_ and `sass`_. Then run:
 
 .. code::
 
@@ -26,3 +26,4 @@ To build the static resources, install `traceur`_. Then run:
     
 
 .. _traceur: https://github.com/google/traceur-compiler
+.. _sass: http://sass-lang.com/
