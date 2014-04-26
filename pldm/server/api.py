@@ -31,6 +31,7 @@ def serialize_document(doc):
         'body': doc.body,
         'html_body': doc.html_body(),
         'label': doc.get_label(),
+        'text': doc.dumps(include_hidden=True),
     }
 
 
@@ -58,7 +59,11 @@ class DocumentHandler(BaseHandler):
             self.document.clear()
             self.apply_update()
         elif content_type == 'text/plain':
-            self.document.loads(self.request.body)
+            try:
+                body = self.request.body.decode('utf-8')
+            except UnicodeDecodeError:
+                self.set_status(400)
+            self.document.loads(body)
         else:
             self.set_status(400)
             return
