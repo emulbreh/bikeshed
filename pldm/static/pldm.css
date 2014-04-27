@@ -16,13 +16,13 @@ ul, li, div, form, input[type=text] {
   margin: 0px;
   padding: 0px; }
 
-header {
+body > header {
   background-color: #222628;
   color: #fff;
   padding: 20px; }
-  header .actions {
+  body > header .actions {
     float: right; }
-    header .actions a {
+    body > header .actions a {
       color: #fff; }
 
 a {
@@ -70,6 +70,46 @@ a {
     font-family: "Monaco", monospace;
     line-height: 21px;
     font-size: 14px; }
+
+.pldm-overlay {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  left: 0px;
+  top: 0px;
+  z-index: 100000;
+  display: box;
+  display: -moz-box;
+  display: -webkit-box;
+  box-align: center;
+  -moz-box-align: center;
+  -webkit-box-align: center;
+  box-orient: vertical;
+  -moz-box-orient: vertical;
+  -webkit-box-orient: vertical;
+  background-color: rgba(0, 0, 0, 0.4); }
+
+.pldm-popup {
+  background-color: #fff;
+  min-height: 200px;
+  margin-top: 50px; }
+  .pldm-popup > header {
+    padding: 3px 10px;
+    height: 21px;
+    border-bottom: 1px solid #eee;
+    overflow: hidden; }
+    .pldm-popup > header > a[href="#close"] {
+      float: right;
+      text-align: center;
+      font-size: 30px;
+      color: #ccc;
+      position: relative;
+      top: -4px; }
+      .pldm-popup > header > a[href="#close"]:hover {
+        text-decoration: none;
+        color: #1099ee; }
+  .pldm-popup > .pldm-component {
+    margin: 10px; }
 
 #viewport {
   position: relative;
@@ -138,8 +178,6 @@ h1 {
   padding: 2px 0px;
   border-top: 1px solid transparent;
   border-bottom: 1px solid transparent; }
-  .pldm-list > ul > li:hover {
-    background-color: #cceeff; }
   .pldm-list > ul > li.selected {
     border-color: #a3becc; }
 

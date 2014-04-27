@@ -7,9 +7,7 @@ html, body{
 }
 
 body, textarea, input{
-    font-family: "Monaco", monospace;
-    line-height: 21px;
-    font-size: 14px;
+    @include font;
 }
 
 form{
@@ -22,7 +20,7 @@ ul, li, div, form, input[type=text]{
     padding: 0px;
 }
 
-header{
+body > header{
     background-color: #222628;
     color: #fff;
     padding: 20px;
@@ -37,7 +35,7 @@ header{
 }
 
 a{
-    color: #1099ee;
+    color: $link-color;
     text-decoration: none;
     
     &:hover{
@@ -49,6 +47,7 @@ a{
 @import 'layout.scss';
 @import 'autocomplete.scss';
 @import 'editor.scss';
+@import 'popup.scss';
 
 #viewport{
     position: relative;
@@ -147,7 +146,7 @@ h1{
             border-bottom: 1px solid transparent;
             
             &:hover{
-                background-color: $dropdown-selection-color;
+                //background-color: $dropdown-selection-color;
             }
             
             &.selected{

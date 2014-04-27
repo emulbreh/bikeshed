@@ -329,6 +329,10 @@ System.register("pldm/framework/Component", [], function() {
       this.$element.append($el);
       return $el;
     },
+    append: function(component) {
+      this.$element.append(component.$element);
+      return component;
+    },
     onActionClick: function(name, e) {
       this.actions[name].call(this, e);
     },
@@ -360,6 +364,9 @@ System.register("pldm/framework/Component", [], function() {
     },
     show: function() {
       this.$element.show();
+    },
+    dispose: function() {
+      this.$element.remove();
     }
   }, {}, EventEmitter);
   var Component = Component;
@@ -399,7 +406,7 @@ System.register("pldm/List", [], function() {
       }
       var index = $el.data(ITEM_INDEX_DATA_KEY);
       this.select(index);
-      this.emit('select');
+      this.emit('select', this.selectedItem.data);
     },
     appendItem: function(data) {
       var item = {
@@ -483,10 +490,166 @@ System.register("pldm/List", [], function() {
       return List;
     }};
 });
+System.register("pldm/SearchForm", [], function() {
+  "use strict";
+  var __moduleName = "pldm/SearchForm";
+  var Component = $traceurRuntime.assertObject(System.get("pldm/framework/Component")).Component;
+  var Document = $traceurRuntime.assertObject(System.get("pldm/Document")).Document;
+  var SearchForm = function SearchForm(options) {
+    options = _.defaults(options, {cssClass: 'pldm-searchform'});
+    $traceurRuntime.superCall(this, $SearchForm.prototype, "constructor", [options]);
+    this.$input = this.appendElement('<input type="text"/>');
+    this.$input.on('keydown', this.onSearchInputChange.bind(this));
+    this.typingTimeout = null;
+    this.lastQuery = null;
+  };
+  var $SearchForm = SearchForm;
+  ($traceurRuntime.createClass)(SearchForm, {
+    onQueryChange: function(query) {
+      if (query !== this.lastQuery) {
+        this.emit('change');
+        this.lastQuery = query;
+      }
+    },
+    onSearchInputChange: function() {
+      var $__15 = this;
+      if (this.typingTimeout) {
+        clearTimeout(this.typingTimeout);
+        this.typingTimeout = null;
+      }
+      this.typingTimeout = setTimeout((function() {
+        $__15.onQueryChange($__15.query);
+        $__15.typingTimeout = null;
+      }), 333);
+    },
+    get query() {
+      return this.$input.val();
+    },
+    set query(q) {
+      this.$input.val(q);
+      this.onQueryChange(q);
+    },
+    focus: function() {
+      this.$input.focus();
+    }
+  }, {}, Component);
+  var SearchForm = SearchForm;
+  return {get SearchForm() {
+      return SearchForm;
+    }};
+});
+System.register("pldm/Picker", [], function() {
+  "use strict";
+  var __moduleName = "pldm/Picker";
+  var Component = $traceurRuntime.assertObject(System.get("pldm/framework/Component")).Component;
+  var List = $traceurRuntime.assertObject(System.get("pldm/List")).List;
+  var SearchForm = $traceurRuntime.assertObject(System.get("pldm/SearchForm")).SearchForm;
+  var Picker = function Picker(options) {
+    _.defaults(options, {cssClass: 'pldm-picker'});
+    $traceurRuntime.superCall(this, $Picker.prototype, "constructor", [options]);
+    this.searchForm = new SearchForm({});
+    this.$element.append(this.searchForm.$element);
+    this.searchForm.on('change', this.onSearchChange.bind(this));
+    this.searchForm.$input.on('keydown', this.onSearchInputKeyDown.bind(this));
+    this.list = new List({render: function(item) {
+        var doc = item.data;
+        return $(("<li><a href=\"/view/" + doc.uid + "/\">" + doc.label + ": " + doc.title + "</a></li>"));
+      }});
+    this.$element.append(this.list.$element);
+    this.list.on('select', this.select.bind(this));
+  };
+  var $Picker = Picker;
+  ($traceurRuntime.createClass)(Picker, {
+    select: function(doc) {
+      this.emit('select', doc);
+    },
+    onSearchInputKeyDown: function(e) {
+      switch (e.keyCode) {
+        case 13:
+          var doc = this.list.getSelection();
+          if (doc) {
+            this.select(doc);
+            e.preventDefault();
+            return false;
+          }
+          break;
+        case 38:
+          this.list.selectPreviousItem();
+          e.preventDefault();
+          return false;
+        case 40:
+          this.list.selectNextItem();
+          e.preventDefault();
+          return false;
+      }
+    },
+    onSearchChange: function() {
+      var query = this.searchForm.query;
+      this.list.load(("/api/documents/?q=" + query));
+    },
+    set query(q) {
+      this.searchForm.query = q;
+    },
+    get query() {
+      return this.searchForm.query;
+    },
+    focus: function() {
+      this.searchForm.focus();
+    }
+  }, {}, Component);
+  var Picker = Picker;
+  return {get Picker() {
+      return Picker;
+    }};
+});
+System.register("pldm/framework/Popup", [], function() {
+  "use strict";
+  var __moduleName = "pldm/framework/Popup";
+  var Component = $traceurRuntime.assertObject(System.get("pldm/framework/Component")).Component;
+  var Popup = function Popup(options) {
+    var $__20 = this;
+    _.defaults(options, {
+      cssClass: 'pldm-popup',
+      title: ''
+    });
+    $traceurRuntime.superCall(this, $Popup.prototype, "constructor", [options]);
+    this.appendElement(("<header><span>" + options.title + "</span><a href=\"#close\">⨯</a></header>"));
+    this.content = options.content;
+    if (this.content) {
+      this.append(this.content);
+    }
+    this.addActions({close: (function() {
+        $__20.hide();
+      })});
+    this.$overlay = $('<div class="pldm-overlay"></div>');
+    this.$overlay.append(this.$element);
+    $('body').append(this.$overlay);
+  };
+  var $Popup = Popup;
+  ($traceurRuntime.createClass)(Popup, {
+    show: function() {
+      $traceurRuntime.superCall(this, $Popup.prototype, "show", []);
+      this.$overlay.show();
+    },
+    hide: function() {
+      this.$overlay.hide();
+      $traceurRuntime.superCall(this, $Popup.prototype, "hide", []);
+    },
+    dispose: function() {
+      this.$overlay.remove();
+    }
+  }, {}, Component);
+  var Popup = Popup;
+  return {get Popup() {
+      return Popup;
+    }};
+});
 System.register("pldm/Completer", [], function() {
   "use strict";
   var __moduleName = "pldm/Completer";
   var List = $traceurRuntime.assertObject(System.get("pldm/List")).List;
+  var Popup = $traceurRuntime.assertObject(System.get("pldm/framework/Popup")).Popup;
+  var Picker = $traceurRuntime.assertObject(System.get("pldm/Picker")).Picker;
   function positionEqual(a, b) {
     return a && b && a.row == b.row & a.column == b.column;
   }
@@ -574,14 +737,13 @@ System.register("pldm/Completer", [], function() {
     hijackCommandKeyEvents: function(hijack) {
       this.editor.keyBinding.onCommandKey = hijack !== false ? this.hijackedOnCommandKey : this.editorOnCommandKey;
     },
-    complete: function() {
-      var s = this.dropdownList.getSelection();
+    complete: function(doc) {
       var session = this.editor.getSession();
-      console.log(s);
-      session.replace(this.focusedToken.range, s.label);
+      session.replace(this.focusedToken.range, doc.label);
       this.deactivate();
     },
     onCommandKey: function(e, hashId, keyCode) {
+      var $__23 = this;
       if (!this.focusedToken) {
         return this.boundEditorOnCommandKey(e, hashId, keyCode);
       }
@@ -589,17 +751,30 @@ System.register("pldm/Completer", [], function() {
         case 9:
           var s = this.dropdownList.getSelection();
           if (s) {
-            this.complete();
+            this.complete(s);
           } else {
+            var picker = new Picker({});
+            var popup = new Popup({
+              title: 'Pick a document',
+              content: picker
+            });
+            popup.show();
             this.editor.blur();
+            picker.focus();
+            picker.on('select', (function(doc) {
+              popup.dispose();
+              $__23.complete(doc);
+              $__23.editor.focus();
+            }));
           }
           break;
         case 13:
-          if (!this.dropdownList.getSelection()) {
+          var doc = this.dropdownList.getSelection();
+          if (!doc) {
             this.deactivate();
             return this.boundEditorOnCommandKey(e, hashId, keyCode);
           }
-          this.complete();
+          this.complete(doc);
           break;
         case 27:
           this.deactivate();
@@ -683,9 +858,9 @@ System.register("pldm/framework/Page", [], function() {
   var $Page = Page;
   ($traceurRuntime.createClass)(Page, {
     open: function(params) {
-      var $__19 = this;
+      var $__28 = this;
       return new Promise((function(resolve, reject) {
-        $__19.show();
+        $__28.show();
         resolve();
       }));
     },
@@ -735,7 +910,7 @@ System.register("pldm/DocumentPage", [], function() {
       this.$header.html((doc.label + ": " + doc.title));
     },
     open: function(params) {
-      var $__24 = this;
+      var $__33 = this;
       var loaded = new Promise((function(resolve, reject) {
         if (!params.uid) {
           resolve();
@@ -743,10 +918,10 @@ System.register("pldm/DocumentPage", [], function() {
         }
         $.ajax('/api/document/' + params.uid + '/', {
           type: 'GET',
-          error: $__24.onLoadError.bind($__24),
+          error: $__33.onLoadError.bind($__33),
           success: (function(data) {
             var doc = new Document(data);
-            $__24.onDocumentLoaded(doc);
+            $__33.onDocumentLoaded(doc);
             resolve();
           })
         });
@@ -766,7 +941,7 @@ System.register("pldm/EditorPage", [], function() {
   var Document = $traceurRuntime.assertObject(System.get("pldm/Document")).Document;
   var DocumentEditor = $traceurRuntime.assertObject(System.get("pldm/DocumentEditor")).DocumentEditor;
   var EditorPage = function EditorPage(options) {
-    var $__27 = this;
+    var $__36 = this;
     $traceurRuntime.superCall(this, $EditorPage.prototype, "constructor", [options]);
     this.addToSidebar($('<a href="#save">Save</a>'));
     this.addToSidebar($('<a href="#cancel">Cancel</a>'));
@@ -774,15 +949,15 @@ System.register("pldm/EditorPage", [], function() {
     this.$element.append(this.editor.$element);
     this.addActions({
       cancel: (function(e) {
-        if ($__27.doc.uid) {
-          $__27.app.visit(("/view/" + $__27.doc.uid + "/"));
+        if ($__36.doc.uid) {
+          $__36.app.visit(("/view/" + $__36.doc.uid + "/"));
         } else {
-          $__27.app.visit('/');
+          $__36.app.visit('/');
         }
       }),
       save: (function(e) {
-        $__27.editor.save().then((function(doc) {
-          $__27.app.visit(("/view/" + doc.uid + "/"));
+        $__36.editor.save().then((function(doc) {
+          $__36.app.visit(("/view/" + doc.uid + "/"));
         }));
       })
     });
@@ -794,9 +969,9 @@ System.register("pldm/EditorPage", [], function() {
       this.editor.setDocument(doc);
     },
     open: function(params) {
-      var $__27 = this;
+      var $__36 = this;
       return $traceurRuntime.superCall(this, $EditorPage.prototype, "open", [params]).then((function(doc) {
-        return $__27.editor.focus();
+        return $__36.editor.focus();
       }));
     }
   }, {}, DocumentPage);
@@ -822,112 +997,29 @@ System.register("pldm/IndexPage", [], function() {
       return IndexPage;
     }};
 });
-System.register("pldm/SearchForm", [], function() {
-  "use strict";
-  var __moduleName = "pldm/SearchForm";
-  var Component = $traceurRuntime.assertObject(System.get("pldm/framework/Component")).Component;
-  var Document = $traceurRuntime.assertObject(System.get("pldm/Document")).Document;
-  var SearchForm = function SearchForm(options) {
-    options = _.defaults(options, {cssClass: 'pldm-searchform'});
-    $traceurRuntime.superCall(this, $SearchForm.prototype, "constructor", [options]);
-    this.$input = this.appendElement('<input type="text"/>');
-    this.$input.on('keydown', this.onSearchInputChange.bind(this));
-    this.typingTimeout = null;
-    this.lastQuery = null;
-  };
-  var $SearchForm = SearchForm;
-  ($traceurRuntime.createClass)(SearchForm, {
-    onQueryChange: function(query) {
-      if (query !== this.lastQuery) {
-        this.emit('change');
-        this.lastQuery = query;
-      }
-    },
-    onSearchInputChange: function() {
-      var $__32 = this;
-      if (this.typingTimeout) {
-        clearTimeout(this.typingTimeout);
-        this.typingTimeout = null;
-      }
-      this.typingTimeout = setTimeout((function() {
-        $__32.onQueryChange($__32.query);
-        $__32.typingTimeout = null;
-      }), 333);
-    },
-    get query() {
-      return this.$input.val();
-    },
-    set query(q) {
-      this.$input.val(q);
-      this.onQueryChange(q);
-    },
-    focus: function() {
-      this.$input.focus();
-    }
-  }, {}, Component);
-  var SearchForm = SearchForm;
-  return {get SearchForm() {
-      return SearchForm;
-    }};
-});
 System.register("pldm/ListPage", [], function() {
   "use strict";
   var __moduleName = "pldm/ListPage";
   var PageWithSidebar = $traceurRuntime.assertObject(System.get("pldm/PageWithSidebar")).PageWithSidebar;
-  var Document = $traceurRuntime.assertObject(System.get("pldm/Document")).Document;
-  var List = $traceurRuntime.assertObject(System.get("pldm/List")).List;
-  var SearchForm = $traceurRuntime.assertObject(System.get("pldm/SearchForm")).SearchForm;
+  var Picker = $traceurRuntime.assertObject(System.get("pldm/Picker")).Picker;
   var ListPage = function ListPage(options) {
+    var $__41 = this;
     _.defaults(options, {cssClass: 'pldm-search'});
     $traceurRuntime.superCall(this, $ListPage.prototype, "constructor", [options]);
-    this.searchForm = new SearchForm({});
-    this.$element.append(this.searchForm.$element);
-    this.searchForm.on('change', this.onSearchChange.bind(this));
-    this.searchForm.$input.on('keydown', this.onSearchInputKeyDown.bind(this));
-    this.list = new List({render: function(item) {
-        var doc = item.data;
-        return $(("<li><a href=\"/view/" + doc.uid + "/\">" + doc.label + ": " + doc.title + "</a></li>"));
-      }});
-    this.$element.append(this.list.$element);
+    this.picker = new Picker({});
+    this.$element.append(this.picker.$element);
+    this.picker.on('select', (function(doc) {
+      $__41.app.visit(("/view/" + doc.uid + "/"));
+    }));
   };
   var $ListPage = ListPage;
-  ($traceurRuntime.createClass)(ListPage, {
-    onSearchInputKeyDown: function(e) {
-      switch (e.keyCode) {
-        case 13:
-          var doc = this.list.getSelection();
-          if (doc) {
-            this.app.visit(("/view/" + doc.uid + "/"));
-            e.preventDefault();
-            return false;
-          }
-          break;
-        case 38:
-          this.list.selectPreviousItem();
-          e.preventDefault();
-          return false;
-        case 40:
-          this.list.selectNextItem();
-          e.preventDefault();
-          return false;
-      }
-    },
-    onSearchChange: function() {
-      var query = this.searchForm.query;
-      this.list.load(("/api/documents/?q=" + query));
-    },
-    open: function(params) {
-      var $__35 = this;
-      if (params.q) {
-        this.searchForm.query = params.q;
-      } else {
-        this.onSearchChange();
-      }
+  ($traceurRuntime.createClass)(ListPage, {open: function(params) {
+      var $__41 = this;
+      this.picker.query = params.q || '';
       return $traceurRuntime.superCall(this, $ListPage.prototype, "open", [params]).then((function() {
-        return $__35.searchForm.focus();
+        return $__41.picker.focus();
       }));
-    }
-  }, {}, PageWithSidebar);
+    }}, {}, PageWithSidebar);
   var ListPage = ListPage;
   return {get ListPage() {
       return ListPage;
@@ -939,12 +1031,12 @@ System.register("pldm/ViewerPage", [], function() {
   var DocumentPage = $traceurRuntime.assertObject(System.get("pldm/DocumentPage")).DocumentPage;
   var Document = $traceurRuntime.assertObject(System.get("pldm/Document")).Document;
   var ViewerPage = function ViewerPage(options) {
-    var $__38 = this;
+    var $__44 = this;
     $traceurRuntime.superCall(this, $ViewerPage.prototype, "constructor", [options]);
     this.$display = this.appendElement('<div class="document-display"/>');
     this.addToSidebar('<a href="#edit">Edit</a>');
     this.addActions({edit: (function(e) {
-        $__38.app.visit(("/edit/" + $__38.doc.uid + "/"));
+        $__44.app.visit(("/edit/" + $__44.doc.uid + "/"));
       })});
   };
   var $ViewerPage = ViewerPage;
@@ -1012,9 +1104,9 @@ System.register("pldm/framework/Application", [], function() {
       if (querystring) {
         querystring = querystring.substring(1);
         querystring.split('&').forEach((function(pair) {
-          var $__45 = $traceurRuntime.assertObject(pair.split('=')),
-              key = $__45[0],
-              value = $__45[1];
+          var $__51 = $traceurRuntime.assertObject(pair.split('=')),
+              key = $__51[0],
+              value = $__51[1];
           params[decodeURIComponent(key)] = decodeURIComponent(value);
         }));
       }
@@ -1024,7 +1116,7 @@ System.register("pldm/framework/Application", [], function() {
       };
     },
     visit: function(url, pushstate) {
-      var $__41 = this;
+      var $__47 = this;
       var pathInfo = this.parsePath(url);
       if (pushstate !== false) {
         history.pushState(pathInfo.params, null, url);
@@ -1032,9 +1124,9 @@ System.register("pldm/framework/Application", [], function() {
       var path = pathInfo.path;
       var page = null,
           params = pathInfo.params;
-      for (var $__43 = this.routes[Symbol.iterator](),
-          $__44; !($__44 = $__43.next()).done; ) {
-        var route = $__44.value;
+      for (var $__49 = this.routes[Symbol.iterator](),
+          $__50; !($__50 = $__49.next()).done; ) {
+        var route = $__50.value;
         {
           var match = route.re.exec(path);
           if (match) {
@@ -1055,7 +1147,7 @@ System.register("pldm/framework/Application", [], function() {
       }
       this.loading = true;
       page.open(params).then((function() {
-        $__41.loading = false;
+        $__47.loading = false;
       }));
     },
     onLinkClick: function(e) {

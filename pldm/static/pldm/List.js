@@ -34,7 +34,7 @@ class List extends Component{
         }
         var index = $el.data(ITEM_INDEX_DATA_KEY);
         this.select(index);
-        this.emit('select');
+        this.emit('select', this.selectedItem.data);
     }
 
     appendItem(data){

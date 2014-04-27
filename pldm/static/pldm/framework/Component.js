@@ -20,6 +20,11 @@ class Component extends EventEmitter{
         return $el;
     }
     
+    append(component){
+        this.$element.append(component.$element);
+        return component;
+    }
+    
     onActionClick(name, e){
         this.actions[name].call(this, e);
     }
@@ -53,6 +58,10 @@ class Component extends EventEmitter{
     
     show(){
         this.$element.show();
+    }
+    
+    dispose(){
+        this.$element.remove();
     }
 }
 

@@ -1,4 +1,6 @@
 import {List} from './List'
+import {Popup} from './framework/Popup'
+import {Picker} from './Picker'
 
 
 function positionEqual(a, b){
@@ -100,11 +102,9 @@ class Completer{
         this.editor.keyBinding.onCommandKey = hijack !== false ? this.hijackedOnCommandKey : this.editorOnCommandKey;
     }
     
-    complete(){
-        var s = this.dropdownList.getSelection();
+    complete(doc){
         var session = this.editor.getSession();
-        console.log(s);
-        session.replace(this.focusedToken.range, s.label);
+        session.replace(this.focusedToken.range, doc.label);
         this.deactivate();
     }
     
@@ -117,19 +117,31 @@ class Completer{
             case 9: // TAB
                 var s = this.dropdownList.getSelection();
                 if(s){
-                    this.complete();
+                    this.complete(s);
                 }
                 else{
-                    // open popup
+                    var picker = new Picker({});
+                    var popup = new Popup({
+                        title: 'Pick a document',
+                        content: picker
+                    });
+                    popup.show();
                     this.editor.blur();
+                    picker.focus();
+                    picker.on('select', (doc) => {
+                        popup.dispose();
+                        this.complete(doc);
+                        this.editor.focus();
+                    });
                 }
                 break;
             case 13: // ENTER
-                if(!this.dropdownList.getSelection()){
+                var doc = this.dropdownList.getSelection();
+                if(!doc){
                     this.deactivate();
                     return this.boundEditorOnCommandKey(e, hashId, keyCode);
                 }
-                this.complete();
+                this.complete(doc);
                 break;
             case 27: // ESCAPE
                 this.deactivate();

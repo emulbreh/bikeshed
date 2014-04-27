@@ -2,8 +2,28 @@ $dropdown-shadow-color: #ddd;
 $dropdown-selection-color: #cceeff;
 $dropdown-background-color: #eeffff;
 
+$link-color: #1099ee;
+
 @mixin font{
     font-family: "Monaco", monospace;
     line-height: 21px;
     font-size: 14px;
+}
+
+@mixin boxdisplay{
+    display: box;
+    display: -moz-box;
+    display: -webkit-box;
+}
+
+@mixin boxalign($align){
+    box-align: $align;
+    -moz-box-align: $align;
+    -webkit-box-align: $align;
+}
+
+@mixin boxorient($orient){
+    box-orient: $orient;
+    -moz-box-orient: $orient;
+    -webkit-box-orient: $orient;
 }
