@@ -43,7 +43,9 @@ class Completer{
 
     install(){
         var session = this.editor.getSession();
-        session.selection.on('changeCursor', this.onCursorChange.bind(this));
+        session.selection.on('changeCursor', () => {
+            setTimeout(this.onCursorChange.bind(this), 1);
+        });
     }
 
     onCursorChange(){
