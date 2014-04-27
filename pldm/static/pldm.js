@@ -251,9 +251,9 @@ System.register("pldm/Document", [], function() {
       this.html = data.html;
       this.title = data.title;
     },
-    getHeader: function(key) {
+    getHeader: function(key, defaultValue) {
       var header = this.headers[key.toLowerCase()];
-      return header ? header.value : null;
+      return header ? header.value : defaultValue;
     },
     get number() {
       return this.getHeader('number');
@@ -554,7 +554,10 @@ System.register("pldm/Picker", [], function() {
     this.searchForm.$input.on('keydown', this.onSearchInputKeyDown.bind(this));
     this.list = new List({render: function(item) {
         var doc = item.data;
-        return $(("<li><b>" + doc.label + "</b> " + doc.title + "<span class=\"type\">" + doc.getHeader('Type') + "</span></li>"));
+        var type = doc.getHeader('Type', '');
+        var label = doc.label[0] == '#' ? (doc.label + ":") : '';
+        var title = label ? doc.title : doc.label;
+        return $(("<li><b>" + label + "</b> " + title + "<span class=\"type\">" + type + "</span></li>"));
       }});
     this.$element.append(this.list.$element);
     this.list.on('select', this.onSelect.bind(this));
@@ -834,12 +837,13 @@ System.register("pldm/DocumentEditor", [], function() {
       body: '',
       text: ''
     });
-    var aceWrapper = $('<div style="width:600px"/>');
+    var aceWrapper = $('<div/>');
     this.$element.append(aceWrapper);
     var editor = this.editor = ace.edit(aceWrapper.get(0));
     editor.setOptions({maxLines: Infinity});
     editor.setTheme("ace/theme/github");
     editor.setHighlightActiveLine(false);
+    editor.setShowPrintMargin(false);
     editor.renderer.setShowGutter(false);
     var session = editor.getSession();
     session.setTabSize(4);

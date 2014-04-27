@@ -10,7 +10,7 @@ class DocumentEditor extends Component{
         });
         super.constructor(options);
         this.doc = options.doc || new Document({headers:[], body: '', text: ''});
-        var aceWrapper = $('<div style="width:600px"/>');
+        var aceWrapper = $('<div/>');
         this.$element.append(aceWrapper);
         var editor = this.editor = ace.edit(aceWrapper.get(0));
         editor.setOptions({
@@ -18,6 +18,7 @@ class DocumentEditor extends Component{
         })
         editor.setTheme("ace/theme/github");
         editor.setHighlightActiveLine(false);
+        editor.setShowPrintMargin(false);
         editor.renderer.setShowGutter(false);
         var session = editor.getSession();
         //.setMode("ace/mode/javascript");

@@ -24,9 +24,9 @@ class Document{
         this.title = data.title;
     }
     
-    getHeader(key){
+    getHeader(key, defaultValue){
         var header = this.headers[key.toLowerCase()];
-        return header ? header.value : null;
+        return header ? header.value : defaultValue;
     }
     
     get number(){
