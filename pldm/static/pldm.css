@@ -136,7 +136,13 @@ h1 {
 
 .pldm-list > ul > li {
   list-style: none;
-  padding: 2px 0px; }
+  padding: 2px 0px;
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid transparent; }
+  .pldm-list > ul > li:hover {
+    background-color: #cceeff; }
+  .pldm-list > ul > li.selected {
+    border-color: #a3becc; }
 
 .loading {
   opacity: 0.5; }

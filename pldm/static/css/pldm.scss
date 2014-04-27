@@ -144,6 +144,16 @@ h1{
         & > li{
             list-style: none;
             padding: 2px 0px;
+            border-top: 1px solid transparent;
+            border-bottom: 1px solid transparent;
+            
+            &:hover{
+                background-color: $dropdown-selection-color;
+            }
+            
+            &.selected{
+                border-color: $dropdown-selection-color * 0.8;
+            }
         }
     }
 }

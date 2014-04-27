@@ -4,6 +4,7 @@ class Application{
         this.$element = $(options.element);
         this.pages = {};
         this.currentPage = null;
+        this.helperA = document.createElement('a');
         $('body').on('click', 'a', this.onLinkClick.bind(this));
         $(window).on('popstate', this.onHistoryChange.bind(this));
         this.routes = [];
@@ -27,7 +28,7 @@ class Application{
     }
     
     start(){
-        this.visit(location.pathname);
+        this.visit(location.pathname + location.search);
     }
     
     get loading(){
@@ -38,18 +39,41 @@ class Application{
         this._loading = load;
         this.$element[load ? 'addClass' : 'removeClass']('loading');
     }
+
+    onHistoryChange(){
+        this.visit(location.pathname + location.search, false);
+    }
     
-    visit(path){
-        var page = null, params = null;
+    parsePath(url){
+        this.helperA.href = url;
+        var path = this.helperA.pathname
+        var querystring = this.helperA.search;
+        var params = {};
+        if(querystring){
+            querystring = querystring.substring(1);
+            querystring.split('&').forEach((pair) => {
+                var [key, value] = pair.split('=');
+                params[decodeURIComponent(key)] = decodeURIComponent(value);
+            });
+        }
+        return {path, params};
+    }
+
+    visit(url, pushstate){
+        var pathInfo = this.parsePath(url);
+        if(pushstate !== false){
+            history.pushState(pathInfo.params, null, url);
+        }
+        var path = pathInfo.path;
+        var page = null, params = pathInfo.params;
         for(var route of this.routes){
             var match = route.re.exec(path);
             if(match){
                 page = route.page;
-                params = _.zipObject(route.params, match);
+                _.extend(params, _.zipObject(route.params, match));
                 break;
             }
         }
-        console.log(page, params);
         if(!page){
             throw new Error(`404: ${path}`);
         }
@@ -74,13 +98,7 @@ class Application{
             return false;
         }
         e.preventDefault();
-        console.log("push state");
-        history.pushState(null, null, url);
         this.visit(url);
-    }
-    
-    onHistoryChange(){
-        this.visit(location.pathname);
     }
 }
 

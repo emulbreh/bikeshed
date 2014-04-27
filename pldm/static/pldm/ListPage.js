@@ -13,6 +13,7 @@ class ListPage extends PageWithSidebar{
         this.searchForm = new SearchForm({});
         this.$element.append(this.searchForm.$element);
         this.searchForm.on('change', this.onSearchChange.bind(this));
+        this.searchForm.$input.on('keydown', this.onSearchInputKeyDown.bind(this));
         this.list = new List({
             render: function(item){
                 var doc = item.data;
@@ -22,14 +23,40 @@ class ListPage extends PageWithSidebar{
         this.$element.append(this.list.$element);
     }
     
+    onSearchInputKeyDown(e){
+        switch(e.keyCode){
+            case 13: // ENTER
+                var doc = this.list.getSelection();
+                if(doc){
+                    this.app.visit(`/view/${doc.uid}/`);
+                    e.preventDefault();
+                    return false;
+                }
+                break;
+            case 38: // UP
+                this.list.selectPreviousItem();
+                e.preventDefault();
+                return false;
+            case 40: // DOWN
+                this.list.selectNextItem();
+                e.preventDefault();
+                return false;
+        }
+    }
+    
     onSearchChange(){
-        var query = this.searchForm.getQuery();
+        var query = this.searchForm.query;
         this.list.load(`/api/documents/?q=${query}`);
     }
     
     open(params){
-        var loaded = this.list.load('/api/documents/');
-        return Promise.all([super.open(params), loaded]);
+        if(params.q){
+            this.searchForm.query = params.q;
+        }
+        else{
+            this.onSearchChange();
+        }
+        return super.open(params);
     }
 }
 

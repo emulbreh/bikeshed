@@ -811,8 +811,9 @@ System.register("pldm/IndexPage", [], function() {
   var PageWithSidebar = $traceurRuntime.assertObject(System.get("pldm/PageWithSidebar")).PageWithSidebar;
   var IndexPage = function IndexPage(options) {
     $traceurRuntime.superCall(this, $IndexPage.prototype, "constructor", [options]);
-    this.addToSidebar($('<a href="/create/">Create</a>'));
-    this.addToSidebar($('<a href="/list/">Search</a>'));
+    this.addToSidebar($('<a href="/new/">New</a>'));
+    this.addToSidebar($('<a href="/search/">Search</a>'));
+    this.addToSidebar($('<a href="/search/?q=Type:Project">Projects</a>'));
   };
   var $IndexPage = IndexPage;
   ($traceurRuntime.createClass)(IndexPage, {}, {}, PageWithSidebar);
@@ -836,6 +837,12 @@ System.register("pldm/SearchForm", [], function() {
   };
   var $SearchForm = SearchForm;
   ($traceurRuntime.createClass)(SearchForm, {
+    onQueryChange: function(query) {
+      if (query !== this.lastQuery) {
+        this.emit('change');
+        this.lastQuery = query;
+      }
+    },
     onSearchInputChange: function() {
       var $__32 = this;
       if (this.typingTimeout) {
@@ -843,16 +850,16 @@ System.register("pldm/SearchForm", [], function() {
         this.typingTimeout = null;
       }
       this.typingTimeout = setTimeout((function() {
-        var query = $__32.getQuery();
-        if (query !== $__32.lastQuery) {
-          $__32.emit('change');
-          $__32.lastQuery = query;
-        }
+        $__32.onQueryChange($__32.query);
         $__32.typingTimeout = null;
       }), 333);
     },
-    getQuery: function() {
+    get query() {
       return this.$input.val();
+    },
+    set query(q) {
+      this.$input.val(q);
+      this.onQueryChange(q);
     }
   }, {}, Component);
   var SearchForm = SearchForm;
@@ -873,6 +880,7 @@ System.register("pldm/ListPage", [], function() {
     this.searchForm = new SearchForm({});
     this.$element.append(this.searchForm.$element);
     this.searchForm.on('change', this.onSearchChange.bind(this));
+    this.searchForm.$input.on('keydown', this.onSearchInputKeyDown.bind(this));
     this.list = new List({render: function(item) {
         var doc = item.data;
         return $(("<li><a href=\"/view/" + doc.uid + "/\">" + doc.label + ": " + doc.title + "</a></li>"));
@@ -881,13 +889,37 @@ System.register("pldm/ListPage", [], function() {
   };
   var $ListPage = ListPage;
   ($traceurRuntime.createClass)(ListPage, {
+    onSearchInputKeyDown: function(e) {
+      switch (e.keyCode) {
+        case 13:
+          var doc = this.list.getSelection();
+          if (doc) {
+            this.app.visit(("/view/" + doc.uid + "/"));
+            e.preventDefault();
+            return false;
+          }
+          break;
+        case 38:
+          this.list.selectPreviousItem();
+          e.preventDefault();
+          return false;
+        case 40:
+          this.list.selectNextItem();
+          e.preventDefault();
+          return false;
+      }
+    },
     onSearchChange: function() {
-      var query = this.searchForm.getQuery();
+      var query = this.searchForm.query;
       this.list.load(("/api/documents/?q=" + query));
     },
     open: function(params) {
-      var loaded = this.list.load('/api/documents/');
-      return Promise.all([$traceurRuntime.superCall(this, $ListPage.prototype, "open", [params]), loaded]);
+      if (params.q) {
+        this.searchForm.query = params.q;
+      } else {
+        this.onSearchChange();
+      }
+      return $traceurRuntime.superCall(this, $ListPage.prototype, "open", [params]);
     }
   }, {}, PageWithSidebar);
   var ListPage = ListPage;
@@ -926,6 +958,7 @@ System.register("pldm/framework/Application", [], function() {
     this.$element = $(options.element);
     this.pages = {};
     this.currentPage = null;
+    this.helperA = document.createElement('a');
     $('body').on('click', 'a', this.onLinkClick.bind(this));
     $(window).on('popstate', this.onHistoryChange.bind(this));
     this.routes = [];
@@ -953,7 +986,7 @@ System.register("pldm/framework/Application", [], function() {
       this.$element.append(page.$element);
     },
     start: function() {
-      this.visit(location.pathname);
+      this.visit(location.pathname + location.search);
     },
     get loading() {
       return this._loading;
@@ -962,10 +995,37 @@ System.register("pldm/framework/Application", [], function() {
       this._loading = load;
       this.$element[load ? 'addClass' : 'removeClass']('loading');
     },
-    visit: function(path) {
+    onHistoryChange: function() {
+      this.visit(location.pathname + location.search, false);
+    },
+    parsePath: function(url) {
+      this.helperA.href = url;
+      var path = this.helperA.pathname;
+      var querystring = this.helperA.search;
+      var params = {};
+      if (querystring) {
+        querystring = querystring.substring(1);
+        querystring.split('&').forEach((function(pair) {
+          var $__44 = $traceurRuntime.assertObject(pair.split('=')),
+              key = $__44[0],
+              value = $__44[1];
+          params[decodeURIComponent(key)] = decodeURIComponent(value);
+        }));
+      }
+      return {
+        path: path,
+        params: params
+      };
+    },
+    visit: function(url, pushstate) {
       var $__40 = this;
+      var pathInfo = this.parsePath(url);
+      if (pushstate !== false) {
+        history.pushState(pathInfo.params, null, url);
+      }
+      var path = pathInfo.path;
       var page = null,
-          params = null;
+          params = pathInfo.params;
       for (var $__42 = this.routes[Symbol.iterator](),
           $__43; !($__43 = $__42.next()).done; ) {
         var route = $__43.value;
@@ -973,12 +1033,11 @@ System.register("pldm/framework/Application", [], function() {
           var match = route.re.exec(path);
           if (match) {
             page = route.page;
-            params = _.zipObject(route.params, match);
+            _.extend(params, _.zipObject(route.params, match));
             break;
           }
         }
       }
-      console.log(page, params);
       if (!page) {
         throw new Error(("404: " + path));
       }
@@ -1002,12 +1061,7 @@ System.register("pldm/framework/Application", [], function() {
         return false;
       }
       e.preventDefault();
-      console.log("push state");
-      history.pushState(null, null, url);
       this.visit(url);
-    },
-    onHistoryChange: function() {
-      this.visit(location.pathname);
     }
   }, {});
   var Application = Application;

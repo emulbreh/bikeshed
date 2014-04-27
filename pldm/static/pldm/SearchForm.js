@@ -14,23 +14,31 @@ class SearchForm extends Component{
         this.lastQuery = null;
     }
     
+    onQueryChange(query){
+        if(query !== this.lastQuery){
+            this.emit('change');
+            this.lastQuery = query;
+        }
+    }
+    
     onSearchInputChange(){
         if(this.typingTimeout){
             clearTimeout(this.typingTimeout);
             this.typingTimeout = null;
         }
         this.typingTimeout = setTimeout(() => {
-            var query = this.getQuery();
-            if(query !== this.lastQuery){
-                this.emit('change');
-                this.lastQuery = query;
-            }
+            this.onQueryChange(this.query);
             this.typingTimeout = null;
         }, 333);
     }
     
-    getQuery(){
+    get query(){
         return this.$input.val();
+    }
+    
+    set query(q){
+        this.$input.val(q);
+        this.onQueryChange(q);
     }
 
 }
