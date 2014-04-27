@@ -10,26 +10,40 @@ body, textarea, input{
     @include font;
 }
 
+textarea, input[type=text]{
+    background-color: transparent;
+}
+
 form{
     margin: 0px;
     padding: 0px;
 }
 
-ul, li, div, form, input[type=text]{
+ul, li, div, form, input[type=text], h1, h2, h3, h4, h5, h6{
     margin: 0px;
     padding: 0px;
 }
 
 body > header{
-    background-color: #222628;
+    background-color: #fff; //#222628;
     color: #fff;
-    padding: 20px;
+    padding: 16px 20px 20px 20px;
+    border-bottom: 1px solid #eee;
+    
+    b{
+        color: #000;
+    }
+    
+    & > a{
+        color: #777;
+    }
     
     .actions{
         float: right;
 
         a{
-            color: #fff;
+            color: #000;
+            margin-left: 20px;
         }
     }
 }
@@ -52,6 +66,8 @@ a{
 #viewport{
     position: relative;
     background-color: #ffffff;
+    padding-top: 20px;
+    height: 100%;
 }
 
 .pldm-sidebar {
@@ -59,8 +75,9 @@ a{
     right: 0px;
     top: 0px;
     width: 30em;
-    background-color: #eee;
+    height: 100%;
     padding: 10px 10px;
+    border-left: 1px solid #eee;
 
     a{
         display: block;
@@ -68,18 +85,17 @@ a{
         margin: 10px;
     
         &:hover{
-            background-color: #fff;
         }
     }
 }
 
 h1{
     margin: 0px;
-    padding-top: 1em;
     padding-bottom: 1em;
-    font-size: 150%;
+    font-size: 26px;
     margin-right: 30em;
     line-height: 30px;
+    font-weight: normal;
 }
 
 .document-display{
@@ -119,15 +135,24 @@ h1{
 }
 
 .pldm-searchform {
-    input[type=text]{
+    & > .glyphicon-search{
+        margin-left: -26px;
+    }
+
+    & > input[type=text]{
+        margin-left: -7px;
         width: 600px;
         padding: 6px;
         outline: none;
         border: none;
-        background-color: #effedd;
+        border: 1px solid #eee;
+        
+        &:hover{
+            border-color: #ccc;
+        }
         
         &:focus{
-            background-color: #cceeff;
+            border-color: $link-color;
         }
     }
 }
@@ -151,6 +176,23 @@ h1{
             
             &.selected{
                 border-color: $dropdown-selection-color * 0.8;
+            }
+            
+            & > a{
+                & > b{
+                    color: #000;
+                    width: 60px;
+                    display: inline-block;
+                    text-align: right;
+                
+                    &:after{
+                        content: ':';
+                    }
+                }
+                
+                &:hover > b{
+                    text-decoration: underline;
+                }
             }
         }
     }

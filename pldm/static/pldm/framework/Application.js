@@ -45,6 +45,7 @@ class Application{
     }
     
     parsePath(url){
+        // FIXME: try https://developer.mozilla.org/en-US/docs/Web/API/Window.URL
         this.helperA.href = url;
         var path = this.helperA.pathname
         var querystring = this.helperA.search;

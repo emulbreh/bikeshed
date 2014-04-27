@@ -499,6 +499,7 @@ System.register("pldm/SearchForm", [], function() {
     options = _.defaults(options, {cssClass: 'pldm-searchform'});
     $traceurRuntime.superCall(this, $SearchForm.prototype, "constructor", [options]);
     this.$input = this.appendElement('<input type="text"/>');
+    this.appendElement('<span class="glyphicon glyphicon-search"/>');
     this.$input.on('keydown', this.onSearchInputChange.bind(this));
     this.typingTimeout = null;
     this.lastQuery = null;
@@ -521,7 +522,6 @@ System.register("pldm/SearchForm", [], function() {
         $__15.onQueryChange($__15.query);
         $__15.typingTimeout = null;
       }), 333);
-      return true;
     },
     get query() {
       return this.$input.val();
@@ -554,7 +554,7 @@ System.register("pldm/Picker", [], function() {
     this.searchForm.$input.on('keydown', this.onSearchInputKeyDown.bind(this));
     this.list = new List({render: function(item) {
         var doc = item.data;
-        return $(("<li><a href=\"/view/" + doc.uid + "/\">" + doc.label + ": " + doc.title + "</a></li>"));
+        return $(("<li><a href=\"/view/" + doc.uid + "/\"><b>" + doc.label + "</b> " + doc.title + "</a></li>"));
       }});
     this.$element.append(this.list.$element);
     this.list.on('select', this.select.bind(this));

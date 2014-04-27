@@ -4,26 +4,35 @@ html, body {
   height: 100%; }
 
 body, textarea, input {
-  font-family: "Monaco", monospace;
+  font-family: "Droid Sans Mono", monospace;
   line-height: 21px;
-  font-size: 14px; }
+  font-size: 16px; }
+
+textarea, input[type=text] {
+  background-color: transparent; }
 
 form {
   margin: 0px;
   padding: 0px; }
 
-ul, li, div, form, input[type=text] {
+ul, li, div, form, input[type=text], h1, h2, h3, h4, h5, h6 {
   margin: 0px;
   padding: 0px; }
 
 body > header {
-  background-color: #222628;
+  background-color: #fff;
   color: #fff;
-  padding: 20px; }
+  padding: 16px 20px 20px 20px;
+  border-bottom: 1px solid #eee; }
+  body > header b {
+    color: #000; }
+  body > header > a {
+    color: #777; }
   body > header .actions {
     float: right; }
     body > header .actions a {
-      color: #fff; }
+      color: #000;
+      margin-left: 20px; }
 
 a {
   color: #1099ee;
@@ -34,7 +43,8 @@ a {
 #page {
   padding-left: 20px;
   position: relative;
-  margin: 0px; }
+  margin: 0px;
+  height: 100%; }
 
 .pldm-autocomplete {
   background-color: #eeffff;
@@ -67,9 +77,9 @@ a {
     /* ace sets padding: 0px 4px for .ace_text-layer. */
     margin-left: -4px;
     width: 600px;
-    font-family: "Monaco", monospace;
+    font-family: "Droid Sans Mono", monospace;
     line-height: 21px;
-    font-size: 14px; }
+    font-size: 16px; }
 
 .pldm-overlay {
   position: fixed;
@@ -95,7 +105,7 @@ a {
   margin-top: 50px; }
   .pldm-popup > header {
     padding: 3px 10px;
-    height: 21px;
+    height: 30px;
     border-bottom: 1px solid #eee;
     overflow: hidden; }
     .pldm-popup > header > a[href="#close"] {
@@ -113,29 +123,30 @@ a {
 
 #viewport {
   position: relative;
-  background-color: #ffffff; }
+  background-color: #ffffff;
+  padding-top: 20px;
+  height: 100%; }
 
 .pldm-sidebar {
   position: absolute;
   right: 0px;
   top: 0px;
   width: 30em;
-  background-color: #eee;
-  padding: 10px 10px; }
+  height: 100%;
+  padding: 10px 10px;
+  border-left: 1px solid #eee; }
   .pldm-sidebar a {
     display: block;
     padding: 0px 10px;
     margin: 10px; }
-    .pldm-sidebar a:hover {
-      background-color: #fff; }
 
 h1 {
   margin: 0px;
-  padding-top: 1em;
   padding-bottom: 1em;
-  font-size: 150%;
+  font-size: 26px;
   margin-right: 30em;
-  line-height: 30px; }
+  line-height: 30px;
+  font-weight: normal; }
 
 .document-display {
   margin-right: 30em; }
@@ -161,14 +172,19 @@ h1 {
     white-space: nowrap;
     overflow: hidden; }
 
-.pldm-searchform input[type=text] {
+.pldm-searchform > .glyphicon-search {
+  margin-left: -26px; }
+.pldm-searchform > input[type=text] {
+  margin-left: -7px;
   width: 600px;
   padding: 6px;
   outline: none;
   border: none;
-  background-color: #effedd; }
-  .pldm-searchform input[type=text]:focus {
-    background-color: #cceeff; }
+  border: 1px solid #eee; }
+  .pldm-searchform > input[type=text]:hover {
+    border-color: #ccc; }
+  .pldm-searchform > input[type=text]:focus {
+    border-color: #1099ee; }
 
 .deadref {
   color: #ff6600; }
@@ -180,6 +196,15 @@ h1 {
   border-bottom: 1px solid transparent; }
   .pldm-list > ul > li.selected {
     border-color: #a3becc; }
+  .pldm-list > ul > li > a > b {
+    color: #000;
+    width: 60px;
+    display: inline-block;
+    text-align: right; }
+    .pldm-list > ul > li > a > b:after {
+      content: ':'; }
+  .pldm-list > ul > li > a:hover > b {
+    text-decoration: underline; }
 
 .loading {
   opacity: 0.5; }
