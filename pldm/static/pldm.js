@@ -554,7 +554,7 @@ System.register("pldm/Picker", [], function() {
     this.searchForm.$input.on('keydown', this.onSearchInputKeyDown.bind(this));
     this.list = new List({render: function(item) {
         var doc = item.data;
-        return $(("<li><b>" + doc.label + "</b> " + doc.title + "</li>"));
+        return $(("<li><b>" + doc.label + "</b> " + doc.title + "<span class=\"type\">" + doc.getHeader('Type') + "</span></li>"));
       }});
     this.$element.append(this.list.$element);
     this.list.on('select', this.onSelect.bind(this));
@@ -620,6 +620,9 @@ System.register("pldm/framework/Popup", [], function() {
     this.content = options.content;
     if (this.content) {
       this.append(this.content);
+    }
+    if (options.width) {
+      this.$element.css('width', options.width);
     }
     this.addActions({close: this.close.bind(this)});
     this.$overlay = $('<div class="pldm-overlay"></div>');
@@ -697,8 +700,11 @@ System.register("pldm/Completer", [], function() {
   };
   ($traceurRuntime.createClass)(Completer, {
     install: function() {
+      var $__23 = this;
       var session = this.editor.getSession();
-      session.selection.on('changeCursor', this.onCursorChange.bind(this));
+      session.selection.on('changeCursor', (function() {
+        setTimeout($__23.onCursorChange.bind($__23), 1);
+      }));
     },
     onCursorChange: function() {
       var session = this.editor.getSession();
@@ -771,6 +777,7 @@ System.register("pldm/Completer", [], function() {
             var picker = new Picker({});
             var popup = new Popup({
               title: 'Pick a document',
+              width: '600px',
               content: picker
             });
             popup.show();

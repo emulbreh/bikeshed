@@ -24,6 +24,10 @@ ul, li, div, form, input[type=text], h1, h2, h3, h4, h5, h6{
     padding: 0px;
 }
 
+b{
+    font-weight: normal;
+}
+
 body > header{
     background-color: #fff; //#222628;
     color: #fff;
@@ -68,13 +72,17 @@ a{
     background-color: #ffffff;
     padding-top: 20px;
     height: 100%;
+    
+    & > .pldm-component{
+        margin-right: $sidebar-width + 20px;
+    }
 }
 
 .pldm-sidebar {
     position: absolute;
     right: 0px;
     top: 0px;
-    width: 30em;
+    width: $sidebar-width;
     height: 100%;
     padding: 10px 10px;
     border-left: 1px solid #eee;
@@ -93,7 +101,6 @@ h1{
     margin: 0px;
     padding-bottom: 1em;
     font-size: 26px;
-    margin-right: 30em;
     line-height: 30px;
     font-weight: normal;
 }
@@ -188,6 +195,11 @@ h1{
                 &:after{
                     content: ':';
                 }
+            }
+            
+            .type{
+                float: right;
+                color: #999;
             }
         }
     }

@@ -125,6 +125,7 @@ class Completer{
                     var picker = new Picker({});
                     var popup = new Popup({
                         title: 'Pick a document',
+                        width: '600px',
                         content: picker
                     });
                     popup.show();

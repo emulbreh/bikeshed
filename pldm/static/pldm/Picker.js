@@ -16,7 +16,7 @@ class Picker extends Component{
         this.list = new List({
             render: function(item){
                 var doc = item.data;
-                return $(`<li><b>${doc.label}</b> ${doc.title}</li>`)
+                return $(`<li><b>${doc.label}</b> ${doc.title}<span class="type">${doc.getHeader('Type')}</span></li>`)
             }
         });
         this.$element.append(this.list.$element);

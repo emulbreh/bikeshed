@@ -15,6 +15,9 @@ class Popup extends Component{
         if(this.content){
             this.append(this.content);
         }
+        if(options.width){
+            this.$element.css('width', options.width);
+        }
 
         this.addActions({
             close: this.close.bind(this)
