@@ -21,7 +21,7 @@ class SearchForm extends Component{
         }
     }
 
-    onSearchInputChange(){
+    onSearchInputChange(e){
         if(this.typingTimeout){
             clearTimeout(this.typingTimeout);
             this.typingTimeout = null;

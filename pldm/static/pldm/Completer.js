@@ -129,8 +129,10 @@ class Completer{
                     this.editor.blur();
                     picker.focus();
                     picker.on('select', (doc) => {
-                        popup.dispose();
                         this.complete(doc);
+                        popup.dispose();
+                    });
+                    popup.on('dispose', () => {
                         this.editor.focus();
                     });
                 }

@@ -511,7 +511,7 @@ System.register("pldm/SearchForm", [], function() {
         this.lastQuery = query;
       }
     },
-    onSearchInputChange: function() {
+    onSearchInputChange: function(e) {
       var $__15 = this;
       if (this.typingTimeout) {
         clearTimeout(this.typingTimeout);
@@ -521,6 +521,7 @@ System.register("pldm/SearchForm", [], function() {
         $__15.onQueryChange($__15.query);
         $__15.typingTimeout = null;
       }), 333);
+      return true;
     },
     get query() {
       return this.$input.val();
@@ -610,20 +611,25 @@ System.register("pldm/framework/Popup", [], function() {
     var $__20 = this;
     _.defaults(options, {
       cssClass: 'pldm-popup',
-      title: ''
+      title: '',
+      autodispose: true
     });
     $traceurRuntime.superCall(this, $Popup.prototype, "constructor", [options]);
     this.appendElement(("<header><span>" + options.title + "</span><a href=\"#close\">⨯</a></header>"));
+    this.autodispose = options.autodispose;
     this.content = options.content;
     if (this.content) {
       this.append(this.content);
     }
-    this.addActions({close: (function() {
-        $__20.hide();
-      })});
+    this.addActions({close: this.close.bind(this)});
     this.$overlay = $('<div class="pldm-overlay"></div>');
     this.$overlay.append(this.$element);
     $('body').append(this.$overlay);
+    this.$element.on('keydown', (function(e) {
+      if (e.keyCode == 27) {
+        $__20.close();
+      }
+    }));
   };
   var $Popup = Popup;
   ($traceurRuntime.createClass)(Popup, {
@@ -635,8 +641,17 @@ System.register("pldm/framework/Popup", [], function() {
       this.$overlay.hide();
       $traceurRuntime.superCall(this, $Popup.prototype, "hide", []);
     },
+    close: function() {
+      if (this.autodispose) {
+        this.dispose();
+      } else {
+        this.hide();
+      }
+    },
     dispose: function() {
+      this.hide();
       this.$overlay.remove();
+      this.emit('dispose');
     }
   }, {}, Component);
   var Popup = Popup;
@@ -762,8 +777,10 @@ System.register("pldm/Completer", [], function() {
             this.editor.blur();
             picker.focus();
             picker.on('select', (function(doc) {
-              popup.dispose();
               $__23.complete(doc);
+              popup.dispose();
+            }));
+            popup.on('dispose', (function() {
               $__23.editor.focus();
             }));
           }
