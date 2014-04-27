@@ -1,0 +1,32 @@
+.pldm-list{
+    & > ul{
+        & > li{
+            list-style: none;
+            padding: 2px 0px;
+            border-top: 1px solid transparent;
+            border-bottom: 1px solid transparent;
+            
+            &:hover, &:hover > b{
+                //background-color: $dropdown-selection-color;
+                text-decoration: underline;
+            }
+            
+            &.selected{
+                border-color: $dropdown-selection-color * 0.8;
+            }
+            
+            & > b{
+                color: $textcolor;
+                width: 70px;
+                display: inline-block;
+                text-align: right;
+                white-space: pre;
+            }
+            
+            .type{
+                float: right;
+                color: $soft-textcolor;
+            }
+        }
+    }
+}

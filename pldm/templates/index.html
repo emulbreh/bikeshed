@@ -1,6 +1,9 @@
 {% extends 'base.html' %}
 
 {% block body %}
+<div id="splash">
+    <div>Loading<span> </span></div>
+</div>
 <div id="viewport"></div>
 {% endblock %}
 
@@ -10,6 +13,7 @@
     <script type="text/javascript">
         var app = new pldm.Application({
             element: '#viewport',
+            splash: '#splash',
             pages: {
                 '/': new pldm.IndexPage(),
                 '/search/': new pldm.ListPage(),

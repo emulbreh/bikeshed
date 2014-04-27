@@ -35,18 +35,22 @@ body > header{
     border-bottom: 1px solid #eee;
     
     b{
-        color: #000;
+        color: $textcolor;
     }
     
     & > a{
         color: #777;
+        opacity: 0.7;
+        &:hover{
+            text-decoration: none;
+        }
     }
     
     .actions{
         float: right;
 
         a{
-            color: #000;
+            color: $textcolor;
             margin-left: 20px;
         }
     }
@@ -66,6 +70,44 @@ a{
 @import 'autocomplete.scss';
 @import 'editor.scss';
 @import 'popup.scss';
+@import 'list.scss';
+
+#splash{
+    position: absolute;
+    top: -60px;
+    left: 0px;
+    z-index: 100;
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+    
+    & > div{
+        width: 100px;
+        text-align: center;
+        margin: auto;
+        margin-top: 100px;
+        
+        & > span{
+            white-space: pre;
+            border-left: 1px solid #000;
+            animation: blink .8s steps(1, start) infinite;
+            -webkit-animation: blink .8s steps(1, start) infinite;
+        }
+        
+    }
+}
+
+@keyframes blink {
+    0% {opacity: 0;}
+    50% {opacity: 1;}
+    100% {opacity: 0;}
+}
+
+@-webkit-keyframes blink {
+    0% {opacity: 0;}
+    50% {opacity: 1;}
+    100% {opacity: 0;}
+}
 
 #viewport{
     position: relative;
@@ -99,22 +141,22 @@ a{
 
 h1{
     margin: 0px;
-    padding-bottom: 1em;
+    padding-bottom: $lineheight;
     font-size: 26px;
     line-height: 30px;
     font-weight: normal;
 }
 
 .document-display{
-    margin-right: 30em;
-    
     & > .headers {
+        margin-bottom: $lineheight;
+
         b{
             font-weight: normal;
         }
 
         & > .extra{
-            color: #999;
+            color: $soft-textcolor;
         }
     }
     
@@ -142,14 +184,23 @@ h1{
     }
 }
 
-.crumbs{
-    padding-top: 1em;
-    a{
+.path{
+    padding-bottom: $lineheight;
+    white-space: pre;
+
+    & > a{
         display: inline-block;
-        max-width: 150px;
+        max-width: 175px;
         text-overflow: ellipsis;
-        white-space: nowrap;
         overflow: hidden;
+        color: $textcolor;
+    }
+    
+    & > b{
+        position: relative;
+        top: -4px;
+        display: inline-block;
+        color: $soft-textcolor;
     }
 }
 
@@ -180,38 +231,6 @@ h1{
     color: #ff6600;
 }
 
-
-.pldm-list{
-    & > ul{
-        & > li{
-            list-style: none;
-            padding: 2px 0px;
-            border-top: 1px solid transparent;
-            border-bottom: 1px solid transparent;
-            
-            &:hover, &:hover > b{
-                //background-color: $dropdown-selection-color;
-                text-decoration: underline;
-            }
-            
-            &.selected{
-                border-color: $dropdown-selection-color * 0.8;
-            }
-            
-            & > b{
-                color: #000;
-                width: 60px;
-                display: inline-block;
-                text-align: right;
-            }
-            
-            .type{
-                float: right;
-                color: #999;
-            }
-        }
-    }
-}
 
 .pldm-picker > .pldm-list{
     margin-top: 10px;

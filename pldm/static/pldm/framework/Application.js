@@ -3,6 +3,7 @@ class Application{
     constructor(options){
         this.$element = $(options.element);
         this.pages = {};
+        this.splash = options.splash;
         this.currentPage = null;
         this.helperA = document.createElement('a');
         $('body').on('click', 'a', this.onLinkClick.bind(this));
@@ -28,7 +29,11 @@ class Application{
     }
     
     start(){
-        this.visit(location.pathname + location.search);
+        this.visit(location.pathname + location.search).then(() => {
+            if(this.splash){
+                $(this.splash).remove();
+            }
+        });
     }
     
     get loading(){
@@ -85,7 +90,7 @@ class Application{
             this.currentPage = page;
         }
         this.loading = true;
-        page.open(params).then(() => {
+        return page.open(params).then(() => {
             this.loading = false;
         });
     }

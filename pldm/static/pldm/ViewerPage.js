@@ -7,9 +7,13 @@ class ViewerPage extends DocumentPage{
         super.constructor(options);
         this.$display = this.appendElement('<div class="document-display"/>');
         this.addToSidebar('<a href="#edit">Edit</a>');
+        this.addToSidebar('<a href="#children">Children</a>');
         this.addActions({
             edit: (e) => {
                 this.app.visit(`/edit/${this.doc.uid}/`);
+            },
+            children: (e) => {
+                this.app.visit(`/search/?q=Project:${this.doc.uid}%20OR%20Parent:${this.doc.uid}`);
             }
         });
     }

@@ -5,6 +5,7 @@ import {Document} from './Document'
 class DocumentPage extends PageWithSidebar{
     constructor(options){
         super.constructor(options);
+        this.$path = this.appendElement('<div class="path"/>');
         this.$header = this.appendElement('<h1/>');
     }
     
@@ -16,6 +17,11 @@ class DocumentPage extends PageWithSidebar{
         console.log("document loaded", doc);
         this.doc = doc;
         this.$header.html(`${doc.label}: ${doc.title}`);
+        this.$path.empty();
+        _.each(doc.path, (parent) => {
+            this.$path.append(parent.createViewLink());
+            this.$path.append($('<b> / </b>'));
+        });
     }
     
     open(params){

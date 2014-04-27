@@ -231,6 +231,7 @@ System.register("pldm/Document", [], function() {
     this.collection = options && options.collection;
     this.load(data);
   };
+  var $Document = Document;
   ($traceurRuntime.createClass)(Document, {
     load: function(data) {
       this.headers = {};
@@ -250,6 +251,9 @@ System.register("pldm/Document", [], function() {
       this.url = data.url;
       this.html = data.html;
       this.title = data.title;
+      this.path = _.map(data.path, (function(doc) {
+        return new $Document(doc);
+      }));
     },
     getHeader: function(key, defaultValue) {
       var header = this.headers[key.toLowerCase()];
@@ -260,6 +264,12 @@ System.register("pldm/Document", [], function() {
     },
     get label() {
       return this._label || ("#" + this.number + ": " + this.getHeader('summary'));
+    },
+    get displayTitle() {
+      if (this.label[0] == '#') {
+        return (this.label + ": " + this.title);
+      }
+      return this.label;
     },
     setText: function(text) {
       this.text = text;
@@ -290,6 +300,10 @@ System.register("pldm/Document", [], function() {
           error: reject
         });
       }));
+    },
+    createViewLink: function() {
+      var title = this.displayTitle;
+      return $(("<a href=\"/view/" + this.uid + "/\" title=\"" + title + "\">" + title + "</a>"));
     }
   }, {});
   var documentCollection = new Collection({
@@ -436,7 +450,7 @@ System.register("pldm/List", [], function() {
             resolve();
           }),
           error: (function(xhr, status, err) {
-            $__10.onLoadError(xhr, status, error);
+            $__10.onLoadError(xhr, status, err);
             reject(err);
           }),
           dataType: 'json'
@@ -557,7 +571,7 @@ System.register("pldm/Picker", [], function() {
         var type = doc.getHeader('Type', '');
         var label = doc.label[0] == '#' ? (doc.label + ":") : '';
         var title = label ? doc.title : doc.label;
-        return $(("<li><b>" + label + "</b> " + title + "<span class=\"type\">" + type + "</span></li>"));
+        return $(("<li><b>" + label + " </b>" + title + "<span class=\"type\">" + type + "</span></li>"));
       }});
     this.$element.append(this.list.$element);
     this.list.on('select', this.onSelect.bind(this));
@@ -925,6 +939,7 @@ System.register("pldm/DocumentPage", [], function() {
   var Document = $traceurRuntime.assertObject(System.get("pldm/Document")).Document;
   var DocumentPage = function DocumentPage(options) {
     $traceurRuntime.superCall(this, $DocumentPage.prototype, "constructor", [options]);
+    this.$path = this.appendElement('<div class="path"/>');
     this.$header = this.appendElement('<h1/>');
   };
   var $DocumentPage = DocumentPage;
@@ -933,9 +948,15 @@ System.register("pldm/DocumentPage", [], function() {
       console.log("error", arguments);
     },
     onDocumentLoaded: function(doc) {
+      var $__33 = this;
       console.log("document loaded", doc);
       this.doc = doc;
       this.$header.html((doc.label + ": " + doc.title));
+      this.$path.empty();
+      _.each(doc.path, (function(parent) {
+        $__33.$path.append(parent.createViewLink());
+        $__33.$path.append($('<b> / </b>'));
+      }));
     },
     open: function(params) {
       var $__33 = this;
@@ -1063,9 +1084,15 @@ System.register("pldm/ViewerPage", [], function() {
     $traceurRuntime.superCall(this, $ViewerPage.prototype, "constructor", [options]);
     this.$display = this.appendElement('<div class="document-display"/>');
     this.addToSidebar('<a href="#edit">Edit</a>');
-    this.addActions({edit: (function(e) {
+    this.addToSidebar('<a href="#children">Children</a>');
+    this.addActions({
+      edit: (function(e) {
         $__44.app.visit(("/edit/" + $__44.doc.uid + "/"));
-      })});
+      }),
+      children: (function(e) {
+        $__44.app.visit(("/search/?q=Project:" + $__44.doc.uid + "%20OR%20Parent:" + $__44.doc.uid));
+      })
+    });
   };
   var $ViewerPage = ViewerPage;
   ($traceurRuntime.createClass)(ViewerPage, {onDocumentLoaded: function(doc) {
@@ -1083,6 +1110,7 @@ System.register("pldm/framework/Application", [], function() {
   var Application = function Application(options) {
     this.$element = $(options.element);
     this.pages = {};
+    this.splash = options.splash;
     this.currentPage = null;
     this.helperA = document.createElement('a');
     $('body').on('click', 'a', this.onLinkClick.bind(this));
@@ -1112,7 +1140,12 @@ System.register("pldm/framework/Application", [], function() {
       this.$element.append(page.$element);
     },
     start: function() {
-      this.visit(location.pathname + location.search);
+      var $__47 = this;
+      this.visit(location.pathname + location.search).then((function() {
+        if ($__47.splash) {
+          $($__47.splash).remove();
+        }
+      }));
     },
     get loading() {
       return this._loading;
@@ -1174,7 +1207,7 @@ System.register("pldm/framework/Application", [], function() {
         this.currentPage = page;
       }
       this.loading = true;
-      page.open(params).then((function() {
+      return page.open(params).then((function() {
         $__47.loading = false;
       }));
     },

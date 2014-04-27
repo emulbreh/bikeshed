@@ -6,9 +6,14 @@ $link-color: #1099ee;
 
 $sidebar-width: 300px;
 
+$lineheight: 21px;
+
+$textcolor: #000;
+$soft-textcolor: #999;
+
 @mixin font{
     font-family: "Droid Sans Mono", monospace;
-    line-height: 21px;
+    line-height: $lineheight;
     font-size: 16px;
 }
 

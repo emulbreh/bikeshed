@@ -19,7 +19,7 @@ class Picker extends Component{
                 var type = doc.getHeader('Type', '');
                 var label = doc.label[0] == '#' ? `${doc.label}:` : '';
                 var title = label ? doc.title : doc.label;
-                return $(`<li><b>${label}</b> ${title}<span class="type">${type}</span></li>`)
+                return $(`<li><b>${label} </b>${title}<span class="type">${type}</span></li>`)
             }
         });
         this.$element.append(this.list.$element);

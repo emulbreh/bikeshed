@@ -28,13 +28,16 @@ body > header {
   padding: 16px 20px 20px 20px;
   border-bottom: 1px solid #eee; }
   body > header b {
-    color: #000; }
+    color: black; }
   body > header > a {
-    color: #777; }
+    color: #777;
+    opacity: 0.7; }
+    body > header > a:hover {
+      text-decoration: none; }
   body > header .actions {
     float: right; }
     body > header .actions a {
-      color: #000;
+      color: black;
       margin-left: 20px; }
 
 a {
@@ -123,6 +126,64 @@ a {
   .pldm-popup > .pldm-component {
     margin: 10px; }
 
+.pldm-list > ul > li {
+  list-style: none;
+  padding: 2px 0px;
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid transparent; }
+  .pldm-list > ul > li:hover, .pldm-list > ul > li:hover > b {
+    text-decoration: underline; }
+  .pldm-list > ul > li.selected {
+    border-color: #a3becc; }
+  .pldm-list > ul > li > b {
+    color: black;
+    width: 70px;
+    display: inline-block;
+    text-align: right;
+    white-space: pre; }
+  .pldm-list > ul > li .type {
+    float: right;
+    color: #999999; }
+
+#splash {
+  position: absolute;
+  top: -60px;
+  left: 0px;
+  z-index: 100;
+  width: 100%;
+  height: 100%;
+  background-color: #fff; }
+  #splash > div {
+    width: 100px;
+    text-align: center;
+    margin: auto;
+    margin-top: 100px; }
+    #splash > div > span {
+      white-space: pre;
+      border-left: 1px solid #000;
+      animation: blink 0.8s steps(1, start) infinite;
+      -webkit-animation: blink 0.8s steps(1, start) infinite; }
+
+@keyframes blink {
+  0% {
+    opacity: 0; }
+
+  50% {
+    opacity: 1; }
+
+  100% {
+    opacity: 0; } }
+
+@-webkit-keyframes blink {
+  0% {
+    opacity: 0; }
+
+  50% {
+    opacity: 1; }
+
+  100% {
+    opacity: 0; } }
+
 #viewport {
   position: relative;
   background-color: #ffffff;
@@ -146,24 +207,24 @@ a {
 
 h1 {
   margin: 0px;
-  padding-bottom: 1em;
+  padding-bottom: 21px;
   font-size: 26px;
   line-height: 30px;
   font-weight: normal; }
 
-.document-display {
-  margin-right: 30em; }
+.document-display > .headers {
+  margin-bottom: 21px; }
   .document-display > .headers b {
     font-weight: normal; }
   .document-display > .headers > .extra {
-    color: #999; }
-  .document-display ul {
-    padding-left: 20px; }
-  .document-display li, .document-display li li {
-    list-style: disc; }
-  .document-display h2 {
-    font-size: 24px;
-    line-height: 42px; }
+    color: #999999; }
+.document-display ul {
+  padding-left: 20px; }
+.document-display li, .document-display li li {
+  list-style: disc; }
+.document-display h2 {
+  font-size: 24px;
+  line-height: 42px; }
 
 .document {
   float: left;
@@ -173,14 +234,20 @@ h1 {
     padding: 0px;
     padding-bottom: 21px; }
 
-.crumbs {
-  padding-top: 1em; }
-  .crumbs a {
+.path {
+  padding-bottom: 21px;
+  white-space: pre; }
+  .path > a {
     display: inline-block;
-    max-width: 150px;
+    max-width: 175px;
     text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden; }
+    overflow: hidden;
+    color: black; }
+  .path > b {
+    position: relative;
+    top: -4px;
+    display: inline-block;
+    color: #999999; }
 
 .pldm-searchform > .glyphicon-search {
   margin-left: -26px; }
@@ -198,24 +265,6 @@ h1 {
 
 .deadref {
   color: #ff6600; }
-
-.pldm-list > ul > li {
-  list-style: none;
-  padding: 2px 0px;
-  border-top: 1px solid transparent;
-  border-bottom: 1px solid transparent; }
-  .pldm-list > ul > li:hover, .pldm-list > ul > li:hover > b {
-    text-decoration: underline; }
-  .pldm-list > ul > li.selected {
-    border-color: #a3becc; }
-  .pldm-list > ul > li > b {
-    color: #000;
-    width: 60px;
-    display: inline-block;
-    text-align: right; }
-  .pldm-list > ul > li .type {
-    float: right;
-    color: #999; }
 
 .pldm-picker > .pldm-list {
   margin-top: 10px; }

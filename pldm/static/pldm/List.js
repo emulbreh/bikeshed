@@ -67,7 +67,7 @@ class List extends Component{
                     resolve();
                 },
                 error: (xhr, status, err) => {
-                    this.onLoadError(xhr, status, error);
+                    this.onLoadError(xhr, status, err);
                     reject(err);
                 },
                 dataType: 'json'

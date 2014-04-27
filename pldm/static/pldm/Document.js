@@ -22,6 +22,7 @@ class Document{
         this.url = data.url;
         this.html = data.html;
         this.title = data.title;
+        this.path = _.map(data.path, (doc) => new Document(doc));
     }
     
     getHeader(key, defaultValue){
@@ -36,7 +37,14 @@ class Document{
     get label(){
         return this._label || `#${this.number}: ${this.getHeader('summary')}`
     }
-    
+
+    get displayTitle(){
+        if(this.label[0] == '#'){
+            return `${this.label}: ${this.title}`;
+        }
+        return this.label;
+    }
+
     setText(text){
         this.text = text;
     }
@@ -67,6 +75,11 @@ class Document{
                 error: reject
             });
         });
+    }
+    
+    createViewLink(){
+        var title = this.displayTitle;
+        return $(`<a href="/view/${this.uid}/" title="${title}">${title}</a>`);
     }
 }
 

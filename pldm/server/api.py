@@ -8,35 +8,41 @@ from pldm.server.base import BaseHandler
 
 
 class BaseDocumentHandler(BaseHandler):
-    def serialize_document(self, doc):
-        html_tpl = self.application.jinja_env.get_template('document.snippet.html')
-        headers = []
-        for header in doc:
-            if not header.value:
-                continue
-            headers.append({
-                'key': header.attribute.key,
-                'value': header.attribute.serialize(header.value),
-                'well_known': True,
-            })
-        for key, value in doc.extra_attributes.iteritems():
-            headers.append({
-                'key': key,
-                'value': value,
-                'well_known': False,
-            })
-        return {
+    def serialize_document(self, doc, compact=False):
+        data = {
             'type': doc.type_name,
-            'headers': headers,
             'uid': doc.uid,
             'url': '/api/document/%s/' % doc.uid,
-            'body': doc.body,
-            'html_body': doc.html_body(),
             'label': doc.get_label(),
             'title': doc.get_title(),
-            'text': doc.dumps(include_hidden=True),
-            'html': html_tpl.render({'document': doc}),
         }
+        if not compact:
+            html_tpl = self.application.jinja_env.get_template('document.snippet.html')
+            headers = []
+            for header in doc:
+                if not header.value:
+                    continue
+                headers.append({
+                    'key': header.attribute.key,
+                    'value': header.attribute.serialize(header.value),
+                    'well_known': True,
+                })
+            for key, value in doc.extra_attributes.iteritems():
+                headers.append({
+                    'key': key,
+                    'value': value,
+                    'well_known': False,
+                })
+            path = self.application.store.get_path(doc)
+            data.update({
+                'text': doc.dumps(include_hidden=True),
+                'html': html_tpl.render({'document': doc}),
+                'body': doc.body,
+                'html_body': doc.html_body(),
+                'headers': headers,
+                'path': [self.serialize_document(d, compact=True) for d in path]
+            })
+        return data
 
 
 class DocumentHandler(BaseDocumentHandler):
