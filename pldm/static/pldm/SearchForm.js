@@ -13,14 +13,14 @@ class SearchForm extends Component{
         this.typingTimeout = null;
         this.lastQuery = null;
     }
-    
+
     onQueryChange(query){
         if(query !== this.lastQuery){
             this.emit('change');
             this.lastQuery = query;
         }
     }
-    
+
     onSearchInputChange(){
         if(this.typingTimeout){
             clearTimeout(this.typingTimeout);
@@ -31,14 +31,18 @@ class SearchForm extends Component{
             this.typingTimeout = null;
         }, 333);
     }
-    
+
     get query(){
         return this.$input.val();
     }
-    
+
     set query(q){
         this.$input.val(q);
         this.onQueryChange(q);
+    }
+
+    focus(){
+        this.$input.focus();
     }
 
 }

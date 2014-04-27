@@ -17,7 +17,7 @@ form{
     padding: 0px;
 }
 
-ul, li, div, form{
+ul, li, div, form, input[type=text]{
     margin: 0px;
     padding: 0px;
 }
@@ -51,7 +51,6 @@ a{
 @import 'editor.scss';
 
 #viewport{
-    border-top: 3px solid #990000;
     position: relative;
     background-color: #ffffff;
 }

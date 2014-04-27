@@ -22,7 +22,7 @@ class ListPage extends PageWithSidebar{
         });
         this.$element.append(this.list.$element);
     }
-    
+
     onSearchInputKeyDown(e){
         switch(e.keyCode){
             case 13: // ENTER
@@ -43,12 +43,12 @@ class ListPage extends PageWithSidebar{
                 return false;
         }
     }
-    
+
     onSearchChange(){
         var query = this.searchForm.query;
         this.list.load(`/api/documents/?q=${query}`);
     }
-    
+
     open(params){
         if(params.q){
             this.searchForm.query = params.q;
@@ -56,7 +56,7 @@ class ListPage extends PageWithSidebar{
         else{
             this.onSearchChange();
         }
-        return super.open(params);
+        return super.open(params).then(() => this.searchForm.focus());
     }
 }
 

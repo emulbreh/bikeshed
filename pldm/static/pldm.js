@@ -860,6 +860,9 @@ System.register("pldm/SearchForm", [], function() {
     set query(q) {
       this.$input.val(q);
       this.onQueryChange(q);
+    },
+    focus: function() {
+      this.$input.focus();
     }
   }, {}, Component);
   var SearchForm = SearchForm;
@@ -914,12 +917,15 @@ System.register("pldm/ListPage", [], function() {
       this.list.load(("/api/documents/?q=" + query));
     },
     open: function(params) {
+      var $__35 = this;
       if (params.q) {
         this.searchForm.query = params.q;
       } else {
         this.onSearchChange();
       }
-      return $traceurRuntime.superCall(this, $ListPage.prototype, "open", [params]);
+      return $traceurRuntime.superCall(this, $ListPage.prototype, "open", [params]).then((function() {
+        return $__35.searchForm.focus();
+      }));
     }
   }, {}, PageWithSidebar);
   var ListPage = ListPage;
@@ -933,12 +939,12 @@ System.register("pldm/ViewerPage", [], function() {
   var DocumentPage = $traceurRuntime.assertObject(System.get("pldm/DocumentPage")).DocumentPage;
   var Document = $traceurRuntime.assertObject(System.get("pldm/Document")).Document;
   var ViewerPage = function ViewerPage(options) {
-    var $__37 = this;
+    var $__38 = this;
     $traceurRuntime.superCall(this, $ViewerPage.prototype, "constructor", [options]);
     this.$display = this.appendElement('<div class="document-display"/>');
     this.addToSidebar('<a href="#edit">Edit</a>');
     this.addActions({edit: (function(e) {
-        $__37.app.visit(("/edit/" + $__37.doc.uid + "/"));
+        $__38.app.visit(("/edit/" + $__38.doc.uid + "/"));
       })});
   };
   var $ViewerPage = ViewerPage;
@@ -1006,9 +1012,9 @@ System.register("pldm/framework/Application", [], function() {
       if (querystring) {
         querystring = querystring.substring(1);
         querystring.split('&').forEach((function(pair) {
-          var $__44 = $traceurRuntime.assertObject(pair.split('=')),
-              key = $__44[0],
-              value = $__44[1];
+          var $__45 = $traceurRuntime.assertObject(pair.split('=')),
+              key = $__45[0],
+              value = $__45[1];
           params[decodeURIComponent(key)] = decodeURIComponent(value);
         }));
       }
@@ -1018,7 +1024,7 @@ System.register("pldm/framework/Application", [], function() {
       };
     },
     visit: function(url, pushstate) {
-      var $__40 = this;
+      var $__41 = this;
       var pathInfo = this.parsePath(url);
       if (pushstate !== false) {
         history.pushState(pathInfo.params, null, url);
@@ -1026,9 +1032,9 @@ System.register("pldm/framework/Application", [], function() {
       var path = pathInfo.path;
       var page = null,
           params = pathInfo.params;
-      for (var $__42 = this.routes[Symbol.iterator](),
-          $__43; !($__43 = $__42.next()).done; ) {
-        var route = $__43.value;
+      for (var $__43 = this.routes[Symbol.iterator](),
+          $__44; !($__44 = $__43.next()).done; ) {
+        var route = $__44.value;
         {
           var match = route.re.exec(path);
           if (match) {
@@ -1049,7 +1055,7 @@ System.register("pldm/framework/Application", [], function() {
       }
       this.loading = true;
       page.open(params).then((function() {
-        $__40.loading = false;
+        $__41.loading = false;
       }));
     },
     onLinkClick: function(e) {

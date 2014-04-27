@@ -1,16 +1,7 @@
 {% extends 'base.html' %}
 
 {% block body %}
-<ul>
-    {% for project in projects %}
-        <li>
-            <a href="/view/{{ project.uid }}/">{{ project.get_label() }}</a>
-        </li>
-    {% endfor %}
-</ul>
-
 <div id="viewport"></div>
-
 {% endblock %}
 
 

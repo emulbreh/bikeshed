@@ -11,8 +11,6 @@ from tornado import web
 from tornado import template
 
 from pldm.server.chrome import IndexHandler
-from pldm.server.documents import (ViewDocumentHandler, EditDocumentHandler, 
-    CreateDocumentHandler, ListDocumentsHandler)
 from pldm.server.session import RedisSessionStore
 
 from pldm.server import api
