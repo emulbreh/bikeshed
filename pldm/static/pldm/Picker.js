@@ -16,14 +16,14 @@ class Picker extends Component{
         this.list = new List({
             render: function(item){
                 var doc = item.data;
-                return $(`<li><a href="/view/${doc.uid}/"><b>${doc.label}</b> ${doc.title}</a></li>`)
+                return $(`<li><b>${doc.label}</b> ${doc.title}</li>`)
             }
         });
         this.$element.append(this.list.$element);
-        this.list.on('select', this.select.bind(this));
+        this.list.on('select', this.onSelect.bind(this));
     }
     
-    select(doc){
+    onSelect(doc){
         this.emit('select', doc);
     }
 
@@ -32,7 +32,7 @@ class Picker extends Component{
             case 13: // ENTER
                 var doc = this.list.getSelection();
                 if(doc){
-                    this.select(doc);
+                    this.onSelect(doc);
                     e.preventDefault();
                     return false;
                 }

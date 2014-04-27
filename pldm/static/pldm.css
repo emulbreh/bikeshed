@@ -194,17 +194,17 @@ h1 {
   padding: 2px 0px;
   border-top: 1px solid transparent;
   border-bottom: 1px solid transparent; }
+  .pldm-list > ul > li:hover, .pldm-list > ul > li:hover > b {
+    text-decoration: underline; }
   .pldm-list > ul > li.selected {
     border-color: #a3becc; }
-  .pldm-list > ul > li > a > b {
+  .pldm-list > ul > li > b {
     color: #000;
     width: 60px;
     display: inline-block;
     text-align: right; }
-    .pldm-list > ul > li > a > b:after {
+    .pldm-list > ul > li > b:after {
       content: ':'; }
-  .pldm-list > ul > li > a:hover > b {
-    text-decoration: underline; }
 
 .loading {
   opacity: 0.5; }

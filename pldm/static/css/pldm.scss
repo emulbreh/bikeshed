@@ -170,28 +170,23 @@ h1{
             border-top: 1px solid transparent;
             border-bottom: 1px solid transparent;
             
-            &:hover{
+            &:hover, &:hover > b{
                 //background-color: $dropdown-selection-color;
+                text-decoration: underline;
             }
             
             &.selected{
                 border-color: $dropdown-selection-color * 0.8;
             }
             
-            & > a{
-                & > b{
-                    color: #000;
-                    width: 60px;
-                    display: inline-block;
-                    text-align: right;
-                
-                    &:after{
-                        content: ':';
-                    }
-                }
-                
-                &:hover > b{
-                    text-decoration: underline;
+            & > b{
+                color: #000;
+                width: 60px;
+                display: inline-block;
+                text-align: right;
+            
+                &:after{
+                    content: ':';
                 }
             }
         }

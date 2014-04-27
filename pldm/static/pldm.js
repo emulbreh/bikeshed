@@ -554,14 +554,14 @@ System.register("pldm/Picker", [], function() {
     this.searchForm.$input.on('keydown', this.onSearchInputKeyDown.bind(this));
     this.list = new List({render: function(item) {
         var doc = item.data;
-        return $(("<li><a href=\"/view/" + doc.uid + "/\"><b>" + doc.label + "</b> " + doc.title + "</a></li>"));
+        return $(("<li><b>" + doc.label + "</b> " + doc.title + "</li>"));
       }});
     this.$element.append(this.list.$element);
-    this.list.on('select', this.select.bind(this));
+    this.list.on('select', this.onSelect.bind(this));
   };
   var $Picker = Picker;
   ($traceurRuntime.createClass)(Picker, {
-    select: function(doc) {
+    onSelect: function(doc) {
       this.emit('select', doc);
     },
     onSearchInputKeyDown: function(e) {
@@ -569,7 +569,7 @@ System.register("pldm/Picker", [], function() {
         case 13:
           var doc = this.list.getSelection();
           if (doc) {
-            this.select(doc);
+            this.onSelect(doc);
             e.preventDefault();
             return false;
           }
