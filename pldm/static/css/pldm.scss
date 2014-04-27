@@ -1,8 +1,9 @@
 @import 'config.scss';
 
-body{
+html, body{
     margin: 0px;
     padding: 0px;
+    height: 100%;
 }
 
 body, textarea, input{
@@ -52,6 +53,7 @@ a{
 #viewport{
     border-top: 3px solid #990000;
     position: relative;
+    background-color: #ffffff;
 }
 
 .pldm-sidebar {
@@ -118,7 +120,7 @@ h1{
     }
 }
 
-form.search {
+.pldm-searchform {
     input[type=text]{
         width: 600px;
         padding: 6px;
@@ -144,4 +146,8 @@ form.search {
             padding: 2px 0px;
         }
     }
+}
+
+.loading{
+    opacity: 0.5;
 }

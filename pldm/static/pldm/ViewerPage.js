@@ -8,9 +8,9 @@ class ViewerPage extends DocumentPage{
         this.$display = this.appendElement('<div class="document-display"/>');
         this.addToSidebar('<a href="#edit">Edit</a>');
         this.addActions({
-                edit: function(){
-                    this.app.visit(`/edit/${this.doc.uid}/`);
-                }
+            edit: (e) => {
+                this.app.visit(`/edit/${this.doc.uid}/`);
+            }
         });
     }
     

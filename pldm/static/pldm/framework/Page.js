@@ -11,7 +11,10 @@ class Page extends Component{
     }
     
     open(params){
-        this.show();
+        return new Promise((resolve, reject) => {
+            this.show();
+            resolve();
+        });
     }
     
     close(){

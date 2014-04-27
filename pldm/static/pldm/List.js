@@ -28,14 +28,11 @@ class List extends Component{
     }
 
     onClick(e){
-        console.log(e.target);
         var $el = $(e.target);
-        console.log($el.data());
         if($el.length == 0){
             return;
         }
         var index = $el.data(ITEM_INDEX_DATA_KEY);
-        console.log(index);
         this.select(index);
         this.emit('select');
     }
@@ -63,11 +60,18 @@ class List extends Component{
     }
 
     load(url){
-        $.ajax(url, {
-            success: this.onLoadSuccess.bind(this),
-            error: this.onLoadError.bind(this),
-            //data: {q: this.lookup + ':' + query.substring(1)},
-            dataType: 'json'
+        return new Promise((resolve, reject) => {
+            $.ajax(url, {
+                success: (result) => {
+                    this.onLoadSuccess(result);
+                    resolve();
+                },
+                error: (xhr, status, err) => {
+                    this.onLoadError(xhr, status, error);
+                    reject(err);
+                },
+                dataType: 'json'
+            });
         });
     }
     

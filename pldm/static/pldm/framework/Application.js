@@ -7,6 +7,7 @@ class Application{
         $('body').on('click', 'a', this.onLinkClick.bind(this));
         $(window).on('popstate', this.onHistoryChange.bind(this));
         this.routes = [];
+        this._loading = false;
         _.each(options.pages, function(page, path){
             this.addPage(path, page);
         }, this);
@@ -29,6 +30,15 @@ class Application{
         this.visit(location.pathname);
     }
     
+    get loading(){
+        return this._loading;
+    }
+    
+    set loading(load){
+        this._loading = load;
+        this.$element[load ? 'addClass' : 'removeClass']('loading');
+    }
+    
     visit(path){
         var page = null, params = null;
         for(var route of this.routes){
@@ -49,7 +59,10 @@ class Application{
             }
             this.currentPage = page;
         }
-        page.open(params);
+        this.loading = true;
+        page.open(params).then(() => {
+            this.loading = false;
+        });
     }
     
     onLinkClick(e){

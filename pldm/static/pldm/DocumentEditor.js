@@ -39,7 +39,7 @@ class DocumentEditor extends Component{
     
     save(){
         this.doc.setText(this.editor.getValue());
-        this.doc.save();
+        return this.doc.save();
     }
     
     setDocument(doc){

@@ -11,18 +11,18 @@ import {ViewerPage} from './ViewerPage'
 import {IndexPage} from './IndexPage'
 import {PageWithSidebar} from './PageWithSidebar'
 import {ListPage} from './ListPage'
+import {SearchForm} from './SearchForm'
 
 
 export var pldm = { // FIXME
     Application, Component, List, Page,
-    Completer,
     Document,
-    DocumentEditor,
+    Completer, SearchForm, DocumentEditor,
     PageWithSidebar, ListPage, IndexPage, EditorPage, ViewerPage
 };
 
 window.pldm = pldm;
 
 $(function(){
-    window.AceRange = ace.require('ace/range').Range;
+    window.AceRange = ace.require('ace/range').Range; // FIXME
 });

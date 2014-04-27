@@ -12,7 +12,7 @@ class EditorPage extends DocumentPage{
         this.$element.append(this.editor.$element);
 
         this.addActions({
-            cancel: function(e){
+            cancel: (e) => {
                 if(this.doc.uid){
                     this.app.visit(`/view/${this.doc.uid}/`);
                 }
@@ -20,9 +20,10 @@ class EditorPage extends DocumentPage{
                     this.app.visit('/');
                 }
             },
-            save: function(e){
-                console.log("SAVE");
-                this.editor.save();
+            save: (e) => {
+                this.editor.save().then((doc) => {
+                    this.app.visit(`/view/${doc.uid}/`);
+                });
             }
         });
     }
@@ -30,7 +31,10 @@ class EditorPage extends DocumentPage{
     onDocumentLoaded(doc){
         super.onDocumentLoaded(doc);
         this.editor.setDocument(doc);
-        this.editor.focus();
+    }
+    
+    open(params){
+        return super.open(params).then((doc) => this.editor.focus());
     }
 }
 

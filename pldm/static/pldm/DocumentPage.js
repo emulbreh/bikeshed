@@ -19,15 +19,22 @@ class DocumentPage extends PageWithSidebar{
     }
     
     open(params){
-        $.ajax('/api/document/' + params.uid + '/', {
-            type: 'GET',
-            error: this.onLoadError.bind(this),
-            success: (function(data){
-                var doc = new Document(data);
-                this.onDocumentLoaded(doc);
-            }).bind(this)
+        var loaded = new Promise((resolve, reject) => {
+            if(!params.uid){
+                resolve();
+                return;
+            }
+            $.ajax('/api/document/' + params.uid + '/', {
+                type: 'GET',
+                error: this.onLoadError.bind(this),
+                success: (data) => {
+                    var doc = new Document(data);
+                    this.onDocumentLoaded(doc);
+                    resolve();
+                }
+            });
         });
-        super.open(params);
+        return Promise.all([super.open(params), loaded]);
     }
 }
 

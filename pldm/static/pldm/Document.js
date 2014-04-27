@@ -54,13 +54,18 @@ class Document{
         if(!url){
             throw new Error("cannot create object outside of collection");
         }
-        $.ajax(url, {
-            type: this.url ? 'PUT' : 'POST',
-            dataType: 'json',
-            contentType: 'text/plain',
-            data: this.text,
-            success: this.load.bind(this),
-            error: console.log
+        return new Promise((resolve, reject) => {
+            $.ajax(url, {
+                type: this.url ? 'PUT' : 'POST',
+                dataType: 'json',
+                contentType: 'text/plain',
+                data: this.text,
+                success: (data) => {
+                    this.load(data);
+                    resolve(this);
+                },
+                error: reject
+            });
         });
     }
 }
