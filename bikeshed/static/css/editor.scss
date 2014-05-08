@@ -1,0 +1,11 @@
+
+.bikeshed-editor{
+    
+    & > div.ace_editor{
+        width: 100%;
+        /* ace sets padding: 0px 4px for .ace_text-layer. */
+        margin-left: -4px; 
+        margin-right: 0px;
+        @include font;
+    }
+}

@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div id="splash">
+    <div>Loading<span> </span></div>
+</div>
+<div id="viewport"></div>
+{% endblock %}
+
+
+{% block javascript %}
+    {{ super() }}
+    <script type="text/javascript">
+        var app = new bikeshed.Application({
+            element: '#viewport',
+            splash: '#splash',
+            pages: {
+                '/': new bikeshed.IndexPage(),
+                '/search/': new bikeshed.ListPage(),
+                '/new/': new bikeshed.EditorPage(),
+                '/edit/:uid/': new bikeshed.EditorPage(),
+                '/view/:uid/': new bikeshed.ViewerPage()
+            }
+        });
+        app.start();
+    </script>
+{% endblock %}

@@ -6,9 +6,9 @@ with open('README.rst') as f:
 
 
 setup(
-    name='pldm',
+    name='bikeshed',
     version='0.1.0',
-    packages=['pldm'],
+    packages=['bikeshed'],
     license=u'BSD 3-Clause License',
     long_description=description,
     include_package_data=True,

@@ -1,7 +1,7 @@
 Copyright (c) 2014, Johannes Dollinger, and individual contributors. 
 All rights reserved.
 
-pldm is licensed under The BSD License (3 Clause, also known as
+bikeshed is licensed under The BSD License (3 Clause, also known as
 the new BSD license). The license is an OSI approved Open Source
 license and is GPL-compatible.
 
