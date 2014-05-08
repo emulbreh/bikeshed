@@ -53,13 +53,14 @@ a {
   height: 100%; }
 
 .pldm-autocomplete {
-  background-color: #eeffff;
+  background-color: white;
   position: absolute;
   display: none;
   z-index: 10000;
-  box-shadow: 9px 7px 20px #dddddd, -9px 7px 20px #dddddd;
+  box-shadow: 9px 7px 20px white, -9px 7px 20px white;
   max-width: 300px;
-  min-width: 100px; }
+  min-width: 100px;
+  border: 1px solid #eee; }
   .pldm-autocomplete > ul {
     margin: 0px;
     padding: 0px; }
@@ -203,7 +204,11 @@ a {
   .pldm-sidebar a {
     display: block;
     padding: 0px 10px;
-    margin: 10px; }
+    margin: 10px;
+    color: #000; }
+    .pldm-sidebar a > .fa {
+      width: 20px;
+      text-align: center; }
 
 h1 {
   margin: 0px;
@@ -249,7 +254,7 @@ h1 {
     display: inline-block;
     color: #999999; }
 
-.pldm-searchform > .glyphicon-search {
+.pldm-searchform > .fa-search {
   margin-left: -26px; }
 .pldm-searchform > input[type=text] {
   margin-left: -7px;

@@ -6,6 +6,7 @@
     box-shadow: 9px 7px 20px $dropdown-shadow-color, -9px 7px 20px $dropdown-shadow-color;
     max-width: 300px;
     min-width: 100px;
+    border: 1px solid #eee;
     
     & > ul{
         margin: 0px;

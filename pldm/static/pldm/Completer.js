@@ -33,8 +33,8 @@ class Completer{
                 label: `#${i}1 Ticket`
             });
         }
-        this.dropdownList.on('select', (function(){
-            this.complete();
+        this.dropdownList.on('select', (function(doc){
+            this.complete(doc);
             this.editor.focus();
         }).bind(this));
         editor.container.ownerDocument.body.appendChild(this.dropdownList.element);
@@ -88,7 +88,7 @@ class Completer{
         if(!positionEqual(this.activeStart, start)){
             var coords = this.editor.renderer.textToScreenCoordinates(start.row, start.column);
             this.dropdownList.$element.css({
-                left: coords.pageX - 3 + 'px', 
+                left: coords.pageX - 4 + 'px', 
                 top: coords.pageY + this.getLineHeight() + 'px'
             }).show();
             this.hijackCommandKeyEvents(true);

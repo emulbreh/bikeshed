@@ -133,8 +133,14 @@ a{
         display: block;
         padding: 0px 10px;
         margin: 10px;
+        color: #000;
     
         &:hover{
+        }
+        
+        & > .fa{
+            width: 20px;
+            text-align: center;
         }
     }
 }
@@ -205,7 +211,7 @@ h1{
 }
 
 .pldm-searchform {
-    & > .glyphicon-search{
+    & > .fa-search{
         margin-left: -26px;
     }
 

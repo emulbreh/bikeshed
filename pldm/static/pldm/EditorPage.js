@@ -6,8 +6,8 @@ import {DocumentEditor} from './DocumentEditor'
 class EditorPage extends DocumentPage{
     constructor(options){
         super.constructor(options);
-        this.addToSidebar($('<a href="#save">Save</a>'));
-        this.addToSidebar($('<a href="#cancel">Cancel</a>'));
+        this.addToSidebar($('<a href="#save"><i class="fa fa-check"/>Save</a>'));
+        this.addToSidebar($('<a href="#cancel"><i class="fa fa-times"/>Cancel</a>'));
         this.editor = new DocumentEditor({});
         this.$element.append(this.editor.$element);
 

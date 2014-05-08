@@ -9,7 +9,7 @@ class SearchForm extends Component{
         });
         super.constructor(options);
         this.$input = this.appendElement('<input type="text"/>');
-        this.appendElement('<span class="glyphicon glyphicon-search"/>');
+        this.appendElement('<i class="fa fa-search" />');
         this.$input.on('keydown', this.onSearchInputChange.bind(this));
         this.typingTimeout = null;
         this.lastQuery = null;

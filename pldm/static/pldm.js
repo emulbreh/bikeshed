@@ -513,7 +513,7 @@ System.register("pldm/SearchForm", [], function() {
     options = _.defaults(options, {cssClass: 'pldm-searchform'});
     $traceurRuntime.superCall(this, $SearchForm.prototype, "constructor", [options]);
     this.$input = this.appendElement('<input type="text"/>');
-    this.appendElement('<span class="glyphicon glyphicon-search"/>');
+    this.appendElement('<i class="fa fa-search" />');
     this.$input.on('keydown', this.onSearchInputChange.bind(this));
     this.typingTimeout = null;
     this.lastQuery = null;
@@ -708,8 +708,8 @@ System.register("pldm/Completer", [], function() {
     for (var i = 0; i < 5; i++) {
       this.dropdownList.appendItem({label: ("#" + i + "1 Ticket")});
     }
-    this.dropdownList.on('select', (function() {
-      this.complete();
+    this.dropdownList.on('select', (function(doc) {
+      this.complete(doc);
       this.editor.focus();
     }).bind(this));
     editor.container.ownerDocument.body.appendChild(this.dropdownList.element);
@@ -761,7 +761,7 @@ System.register("pldm/Completer", [], function() {
       if (!positionEqual(this.activeStart, start)) {
         var coords = this.editor.renderer.textToScreenCoordinates(start.row, start.column);
         this.dropdownList.$element.css({
-          left: coords.pageX - 3 + 'px',
+          left: coords.pageX - 4 + 'px',
           top: coords.pageY + this.getLineHeight() + 'px'
         }).show();
         this.hijackCommandKeyEvents(true);
@@ -992,8 +992,8 @@ System.register("pldm/EditorPage", [], function() {
   var EditorPage = function EditorPage(options) {
     var $__36 = this;
     $traceurRuntime.superCall(this, $EditorPage.prototype, "constructor", [options]);
-    this.addToSidebar($('<a href="#save">Save</a>'));
-    this.addToSidebar($('<a href="#cancel">Cancel</a>'));
+    this.addToSidebar($('<a href="#save"><i class="fa fa-check"/>Save</a>'));
+    this.addToSidebar($('<a href="#cancel"><i class="fa fa-times"/>Cancel</a>'));
     this.editor = new DocumentEditor({});
     this.$element.append(this.editor.$element);
     this.addActions({
@@ -1083,8 +1083,8 @@ System.register("pldm/ViewerPage", [], function() {
     var $__44 = this;
     $traceurRuntime.superCall(this, $ViewerPage.prototype, "constructor", [options]);
     this.$display = this.appendElement('<div class="document-display"/>');
-    this.addToSidebar('<a href="#edit">Edit</a>');
-    this.addToSidebar('<a href="#children">Children</a>');
+    this.addToSidebar('<a href="#edit"><i class="fa fa-edit"/> Edit</a>');
+    this.addToSidebar('<a href="#children"><i class="fa fa-level-down"/> Children</a>');
     this.addActions({
       edit: (function(e) {
         $__44.app.visit(("/edit/" + $__44.doc.uid + "/"));
