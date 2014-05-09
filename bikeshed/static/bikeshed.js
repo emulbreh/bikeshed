@@ -709,6 +709,7 @@ System.register("bikeshed/Completer", [], function() {
       this.editor.focus();
     }).bind(this));
     editor.container.ownerDocument.body.appendChild(this.dropdownList.element);
+    editor.on('blur', this.deactivate.bind(this));
     this.install();
   };
   ($traceurRuntime.createClass)(Completer, {
@@ -1218,7 +1219,6 @@ System.register("bikeshed/framework/Session", [], function() {
     options = _.defaults(options, {key: 'bikeshed.session'});
     this.key = options.key;
     this.data = JSON.parse(localStorage[this.key] || '{}');
-    console.log("SESSION", this.data);
   };
   var $Session = Session;
   ($traceurRuntime.createClass)(Session, {

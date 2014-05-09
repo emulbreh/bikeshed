@@ -40,6 +40,7 @@ class Completer{
             this.editor.focus();
         }).bind(this));
         editor.container.ownerDocument.body.appendChild(this.dropdownList.element);
+        editor.on('blur', this.deactivate.bind(this));
         this.install();
     }
 
