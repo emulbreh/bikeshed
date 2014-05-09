@@ -7,16 +7,7 @@ from bikeshed.exceptions import AttributeFormatError, FileFormatError, Reference
 from bikeshed.auth import hash_password
 
 
-class Value(object):
-    def __init__(self, attribute, value):
-        self.attribute = attribute
-        self.value = value
-
-    def __unicode__(self):
-        return u"%s: %s" % (self.attribute.key, unicode(self.value))
-
-    def html_value(self):
-        return self.attribute.to_html(self.value)
+_attribute_creation_counter = 0
 
 
 class Attribute(object):
@@ -27,26 +18,41 @@ class Attribute(object):
         self.aliases = aliases
         self.readonly = readonly
         self.hidden = hidden
+        global _attribute_creation_counter
+        _attribute_creation_counter += 1
+        self.creation_counter = _attribute_creation_counter
 
-    def parse(self, store, value):
+    def set(self, doc, value, force=False):
         if self.choices and value and value not in self.choices:
             choices = ', '.join(unicode(c) for c in self.choices)
             raise AttributeFormatError(u"value must be one of: %s; got %s" % (choices, value))
-        return Value(self, value)
+        doc.header_values[self.key] = value
 
-    def serialize(self, value):
-        return value
+    def get(self, doc):
+        return doc.header_values.get(self.key, self.default)
+
+    def delete(self, doc):
+        if self.key in doc.header_values:
+            del doc.header_values[self.key]
+
+    def serialize(self, doc):
+        return self.get(doc)
 
     def __get__(self, doc, doctype):
         if doc is None:
             return self
-        return doc[self.key]
+        return self.get(doc)
 
     def __set__(self, doc, value):
-        doc[self.key] = value
+        self.set(doc, value)
 
-    def to_html(self, value):
-        return value
+    def get_html(self, doc):
+        return self.get(doc)
+
+    def dump(self, doc):
+        value = self.get(doc)
+        if value is not None:
+            return unicode(value)
 
     def mapping_type(self):
         return {'type': 'string'}
@@ -62,24 +68,25 @@ class Password(Attribute):
         kwargs.setdefault('hidden', True)
         super(Password, self).__init__(*args, **kwargs)
 
-    def parse(self, store, value):
+    def set(self, doc, value, **kwargs):
         if not value:
             raise Readonly()
-        if value[0] == '$':
-            return super(Password, self).parse(store, value)
-        return super(Password, self).parse(store, hash_password(value.encode('utf-8')))
+        if value[0] != '$':
+            value = hash_password(value.encode('utf-8'))
+        return super(Password, self).set(doc, value, **kwargs)
 
 
 class DatetimeAttribute(Attribute):
-    def parse(self, store, value):
+    def set(self, doc, value, **kwargs):
         if value and not isinstance(value, datetime):
             try:
                 value = dateutil.parser.parse(value)
             except ValueError:
                 raise AttributeFormatError(u"invalid datetime value: %s" % value)
-        return super(DatetimeAttribute, self).parse(store, value)
+        return super(DatetimeAttribute, self).set(doc, value, **kwargs)
 
-    def serialize(self, value):
+    def serialize(self, doc):
+        value = self.get(doc)
         if value:
             return value.strftime('%Y-%m-%dT%H:%M')
 
@@ -88,11 +95,12 @@ class DatetimeAttribute(Attribute):
 
 
 class TicketRef(Identifier):
-    def parse(self, store, value):
-        value = store.resolve_reference(value)
-        return super(TicketRef, self).parse(store, value)
+    def set(self, doc, value, **kwargs):
+        value = doc.store.resolve_reference(value)
+        return super(TicketRef, self).set(doc, value, **kwargs)
 
-    def serialize(self, value):
+    def serialize(self, doc):
+        value = self.get(doc)
         if hasattr(value, 'uid'):
             return value.uid
         return value
@@ -107,10 +115,11 @@ class TicketRef(Identifier):
                 value = target_doc.get_label()
         return super(TicketRef, self).render(value, raw=raw)
 
-    def to_html(self, value):
+    def get_html(self, doc):
+        value = self.get(doc)
         if hasattr(value, 'get_label'):
             return '<a href="/view/%s/">%s</a>' % (value.uid, value.get_label())
-        return super(TicketRef, self).to_html(value)
+        return super(TicketRef, self).get_html(value)
 
 
 

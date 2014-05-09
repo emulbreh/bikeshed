@@ -1,9 +1,10 @@
 from collections import OrderedDict
 from StringIO import StringIO
+from operator import attrgetter
 
 import docutils
 
-from bikeshed.attributes import Attribute, Value
+from bikeshed.attributes import Attribute
 from bikeshed.exceptions import ReferenceLookupError, FileFormatError, Readonly
 from bikeshed.markup import markup
 
@@ -29,19 +30,18 @@ def parse_document(f):
 class DocumentType(type):
     def __new__(cls, name, bases, attrs):
         type_attr = Attribute('Type')
-        attributes = [type_attr]
         key_map = {'type': type_attr}
         for base in bases:
             if isinstance(base, DocumentType):
-                attributes.extend(base.attributes)
                 key_map.update(base.key_map)
         for attr_name, value in attrs.iteritems():
             if isinstance(value, Attribute):
-                attributes.append(value)
                 key_map[value.key.lower()] = value
 
+        headers = key_map.values()
+        headers.sort(key=attrgetter('creation_counter'))
         new_cls = super(DocumentType, cls).__new__(cls, name, bases, attrs)
-        new_cls.attributes = attributes
+        new_cls.headers = headers
         new_cls.key_map = key_map
         return new_cls
 
@@ -54,18 +54,11 @@ class Document(object):
     def __init__(self, store, values=None, body='', number=None, uid=None, ignore_reference_errors=False):
         self.store = store
         self.uid = uid
-        self.values = OrderedDict()
+        self.header_values = OrderedDict()
         self.body = body
-        self.extra_attributes = {}
-        for attribute in self.attributes:
-            self.set_header(attribute.key, attribute.default, force=True)
+        self.extra_header_values = {}
         if values:
-            for key, value in values.iteritems():
-                try:
-                    self.set_header(key, value, force=True)
-                except ReferenceLookupError:
-                    if not ignore_reference_errors:
-                        raise
+            self.update_headers(values, ignore_reference_errors=ignore_reference_errors)
 
     def get_number(self):
         return None
@@ -92,83 +85,74 @@ class Document(object):
         while parent and not parent.is_root():
             parent = parent.get_parent()
         return parent
-        
-    def get_attribute(self, key):
+
+    def get_header_spec(self, key):
+        if isinstance(key, Attribute):
+            return key
         return self.key_map[key.lower()]
-        
+
     def set_header(self, key, value, force=False):
         try:
-            attribute = self.get_attribute(key)
+            header = self.get_header_spec(key)
         except KeyError:
-            self.extra_attributes[key] = value
+            self.extra_header_values[key] = value
         else:
-            try:
-                self.values[attribute.key] = attribute.parse(self.store, value)
-            except Readonly:
-                if force:
-                    self.values[attribute.key] = Value(attribute, value)
-                else:
-                    raise
+            header.set(self, value, force=force)
 
     def __setitem__(self, key, value):
         self.set_header(key, value)
 
     def __getitem__(self, key):
         try:
-            attribute = self.get_attribute(key)
+            header = self.get_header_spec(key)
         except KeyError:
-            return self.extra_attributes[key]
-        value = self.values.get(attribute.key, attribute.default)
-        if isinstance(value, Value):
-            return value.value
-        return value
+            return self.extra_header_values[key]
+        return header.get(self)
 
     def __delitem__(self, key):
-        if key in self.values:
-            del self.values[key]
-        elif key in self.extra_attributes:
-            del self.extra_attributes[key]
+        try:
+            header = self.get_header_spec(key)
+        except KeyError:
+            del self.extra_header_values[key]
+        else:
+            header.delete(self)
 
     def __iter__(self):
-        return self.values.itervalues()
+        return self.header_values.itervalues()
 
     def clear(self):
-        self.extra_attributes.clear()
-        for key in self.values.keys():
-            if not self.key_map[key.lower()].readonly:
-                del self.values[key]
+        self.extra_header_values.clear()
+        for header in self.headers:
+            if not header.readonly:
+                header.delete(self)
 
-    def update(self, values):
+    def update_headers(self, values, ignore_reference_errors=False):
         for key, value in values.iteritems():
-            self[key] = value
+            try:
+                self.set_header(key, value, force=True)
+            except ReferenceLookupError:
+                if not ignore_reference_errors:
+                    raise
 
     def load(self, f, **kwargs):
-        old_values = self.values.copy()
-        self.clear()
         headers, body = parse_document(f)
-        for key, value in headers.iteritems():
-            try:
-                self.set_header(key, value)
-            except Readonly:
-                attr = self.get_attribute(key)
-                self.set_header(key, old_values[attr.key], force=True)
-                continue
+        self.update_headers(headers)
         self.body = body
 
     def loads(self, blob, **kwargs):
         self.load(StringIO(blob), **kwargs)
 
     def dump(self, f, include_readonly=False, include_hidden=False):
-        for value in self:
-            if not include_readonly and value.attribute.readonly:
+        for header in self.headers:
+            if not include_readonly and header.readonly:
                 continue
-            if not include_hidden and value.attribute.hidden:
+            if not include_hidden and header.hidden:
                 continue
-            if value.value is None:
+            value = header.dump(self)
+            if value is None:
                 continue
-            f.write(unicode(value))
-            f.write(u"\n")
-        for key, value in self.extra_attributes.iteritems():
+            f.write(u'{}: {}\n'.format(header.key, value))
+        for key, value in self.extra_header_values.iteritems():
             if value is None:
                 continue
             f.write(u'{}: {}\n'.format(key, value))
@@ -186,13 +170,11 @@ class Document(object):
         }
         if self.uid:
             data['_id'] = self.uid
-        for key in self.values:
-            attribute = self.key_map[key.lower()]
-            value = attribute.serialize(self[key])
+        for header in self.headers:
+            value = header.serialize(self)
             if value is not None:
-                data[key] = value
-        for key, value in self.extra_attributes.iteritems():
-            data[key] = value
+                data[header.key] = value
+        data.update(self.extra_header_values)
         return data
 
     @classmethod

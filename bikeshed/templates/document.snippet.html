@@ -1,11 +1,11 @@
 <div class="headers">
-    {% for value in document %}
-        {% if not value.attribute.hidden and value.value %}
-            <b>{{ value.attribute.key }}</b>: {{ value.html_value()|safe }}<br/>
+    {% for header in document.headers %}
+        {% if not header.hidden and document[header] %}
+            <b>{{ header.key }}</b>: {{ header.get_html(document)|safe }}<br/>
         {% endif %}
     {% endfor %}
     <div class="extra">
-    {% for key, value in document.extra_attributes.iteritems() %}
+    {% for key, value in document.extra_header_values.iteritems() %}
         {% if value %}
         <b>{{ key }}</b>: {{ value }}<br/>
         {% endif %}

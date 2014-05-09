@@ -80,15 +80,16 @@ class BaseDocumentHandler(BaseHandler):
         if not compact:
             html_tpl = self.application.jinja_env.get_template('document.snippet.html')
             headers = []
-            for header in doc:
-                if not header.value:
+            for header in doc.headers:
+                value = header.get(doc)
+                if not value:
                     continue
                 headers.append({
-                    'key': header.attribute.key,
-                    'value': header.attribute.serialize(header.value),
+                    'key': header.key,
+                    'value': header.serialize(doc),
                     'well_known': True,
                 })
-            for key, value in doc.extra_attributes.iteritems():
+            for key, value in doc.extra_header_values.iteritems():
                 headers.append({
                     'key': key,
                     'value': value,
@@ -115,8 +116,8 @@ class DocumentHandler(BaseDocumentHandler):
         return self._document
 
     def apply_update(self):
-        data = json.loads(self.request.body)
-        self.document.update(data)
+        headers = json.loads(self.request.body)
+        self.document.update_headers(headers)
 
     def return_document(self):
         self.write(self.serialize_document(self.document))
