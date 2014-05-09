@@ -3,15 +3,49 @@ from io import StringIO
 
 from patchit import PatchSet
 from tornado.web import HTTPError
+from tornado.websocket import WebSocketHandler
 
 from bikeshed.server.base import BaseHandler
 from bikeshed.exceptions import DocumentDoesNotExist
 from bikeshed.auth import hash_password, create_session_key
 
 
+listeners = []
+clients = {}
+
+
+class EventHandler(WebSocketHandler):
+    methods = ('identify',)
+
+    def open(self):
+        print self.request
+        listeners.append(self)
+
+    def on_close(self):
+        listeners.remove(self)
+
+    def on_message(self, message):
+        data = json.loads(message)
+        method = data.get('method')
+        if method in self.methods:
+            getattr(self, method)(data)
+
+    def identify(self, data):
+        session_key = data.get('session')
+        if session_key:
+            clients[session_key] = self
+            print "IDENTIFY", session_key
+
+
+
+def broadcast(msg):
+    for listener in listeners:
+        listener.write_message(msg)
+
+
 class AuthenticationHandler(BaseHandler):
     needs_authentication = False
-    
+
     def post(self):
         data = json.loads(self.request.body)
         username = data.get('username')
@@ -28,6 +62,7 @@ class AuthenticationHandler(BaseHandler):
         if False and user['Password'] != hash_password(password, hashed_password):
             self.set_status(401)
             return
+        broadcast("login successful!")
         self.write({
             'session_key': create_session_key(user.uid),
         })

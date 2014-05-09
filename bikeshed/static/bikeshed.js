@@ -1076,12 +1076,13 @@ System.register("bikeshed/LoginPage", [], function() {
     options = _.defaults(options, {cssClass: 'bikeshed-login'});
     $traceurRuntime.superCall(this, $LoginPage.prototype, "constructor", [options]);
     this.api = options.api;
-    var $loginForm = $('<div class="bikeshed-login"/>');
-    this.$usernameInput = $('<input type="text" placeholder="Username"/>');
-    this.$passwordInput = $('<input type="password" placeholder="Password"/>');
-    $loginForm.append(this.$usernameInput, this.$passwordInput);
-    this.$element.append($loginForm);
-    this.$passwordInput.on('keypress', (function(e) {
+    this.$loginForm = $('<form class="bikeshed-login" target="login_target" autocomplete="on" action="/void/" method="POST"/>');
+    this.$usernameInput = $('<input type="text" placeholder="Username" name="username"/>');
+    this.$passwordInput = $('<input type="password" placeholder="Password" name="password"/>');
+    this.$element.append($('<iframe id="login_target" name="login_target" src="javascript:false" style="display:none"/>'));
+    this.$loginForm.append(this.$usernameInput, this.$passwordInput);
+    this.$element.append(this.$loginForm);
+    this.$loginForm.on('keypress', (function(e) {
       if (e.keyCode == 13) {
         $__46.submit();
         return false;
@@ -1102,11 +1103,16 @@ System.register("bikeshed/LoginPage", [], function() {
         username: this.$usernameInput.val(),
         password: this.$passwordInput.val()
       };
+      this.$loginForm.submit();
       this.api.post('/authenticate/', {
         dataType: 'json',
         data: JSON.stringify(credentials)
       }).then((function(response) {
         $__46.api.setDefaultHeader('Authorization', 'session ' + response.session_key);
+        $__46.app.emit('login', {
+          session: response.session_key,
+          username: credentials.username
+        });
         $__46.app.visit('/');
       }));
     }
@@ -1204,7 +1210,9 @@ System.register("bikeshed/framework/API", [], function() {
 System.register("bikeshed/framework/Application", [], function() {
   "use strict";
   var __moduleName = "bikeshed/framework/Application";
+  var EventEmitter = $traceurRuntime.assertObject(System.get("EventEmitter")).EventEmitter;
   var Application = function Application(options) {
+    $traceurRuntime.superCall(this, $Application.prototype, "constructor", []);
     this.$element = $(options.element);
     this.pages = {};
     this.splash = options.splash;
@@ -1218,6 +1226,7 @@ System.register("bikeshed/framework/Application", [], function() {
       this.addPage(path, page);
     }, this);
   };
+  var $Application = Application;
   ($traceurRuntime.createClass)(Application, {
     addPage: function(path, page) {
       this.pages[path] = page;
@@ -1327,7 +1336,7 @@ System.register("bikeshed/framework/Application", [], function() {
       e.preventDefault();
       this.visit(url);
     }
-  }, {});
+  }, {}, EventEmitter);
   var Application = Application;
   return {get Application() {
       return Application;

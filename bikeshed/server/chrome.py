@@ -7,3 +7,10 @@ class IndexHandler(BaseHandler):
     def get(self):
         self.render_template('index.html')
 
+
+class VoidHandler(BaseHandler):
+    needs_authentication = False
+
+    def get(self): pass
+    def post(self): pass
+

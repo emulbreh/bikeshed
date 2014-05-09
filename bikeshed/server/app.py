@@ -10,7 +10,7 @@ from jinja2 import Environment, FileSystemLoader, TemplateNotFound
 from tornado import web
 from tornado import template
 
-from bikeshed.server.chrome import IndexHandler
+from bikeshed.server.chrome import IndexHandler, VoidHandler
 from bikeshed.server.session import RedisSessionStore
 
 from bikeshed.server import api
@@ -24,9 +24,11 @@ class Application(web.Application):
         kwargs.update({
             'handlers': [
                 web.URLSpec(r"/static/(.*)", web.StaticFileHandler, {'path': static_path}),
+                web.URLSpec(r"/events", api.EventHandler),
                 web.URLSpec(r"/api/authenticate/", api.AuthenticationHandler, name='api-auth'),
                 web.URLSpec(r"/api/documents/", api.DocumentsHandler, name='api-search'),
                 web.URLSpec(r"/api/documents/(?P<uid>[^/]+)/", api.DocumentHandler, name='api-details'),
+                web.URLSpec(r"/void/", VoidHandler),
                 web.URLSpec(r"/.*", IndexHandler),
             ],
         })

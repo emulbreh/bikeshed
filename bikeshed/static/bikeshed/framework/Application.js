@@ -1,6 +1,9 @@
+import {EventEmitter} from '../../EventEmitter'
 
-class Application{
+
+class Application extends EventEmitter{
     constructor(options){
+        super.constructor();
         this.$element = $(options.element);
         this.pages = {};
         this.splash = options.splash;

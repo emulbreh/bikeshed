@@ -17,6 +17,14 @@
 
         var documents = new bikeshed.framework.Resource(api, '/documents/', bikeshed.Document, {
         });
+        
+        var ws = new WebSocket('ws://127.0.0.1:7001/events');
+        ws.onmessage = function(msg){
+            console.log(msg.data);
+        };
+        ws.onopen = function(){
+            ws.send('{"foo":42}');
+        };
 
         var app = new bikeshed.Application({
             element: '#viewport',
@@ -44,6 +52,10 @@
         api.on('unauthorizedRequest', function(){
             console.log('UNAUTHORIZED');
             app.visit('/login/');
+        });
+        
+        app.on('login', function(info){
+            ws.send(JSON.stringify({'method': 'identify', 'session': info.session}));
         });
         
         app.start();
