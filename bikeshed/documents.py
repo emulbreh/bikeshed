@@ -150,7 +150,7 @@ class Document(object):
                 continue
             if not include_invisible and header.invisible:
                 continue
-            value = header.dump(self)
+            value = header.dump(self, header.get(self))
             if value is None:
                 continue
             f.write(u'{}: {}\n'.format(header.key, value))
@@ -173,7 +173,7 @@ class Document(object):
         if self.uid:
             data['_id'] = self.uid
         for header in self.headers:
-            value = header.serialize(self)
+            value = header.serialize(self, header.get(self))
             if value is not None:
                 data[header.key] = value
         data.update(self.extra_header_values)

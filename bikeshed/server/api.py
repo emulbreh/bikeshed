@@ -86,7 +86,7 @@ class BaseDocumentHandler(BaseHandler):
                     continue
                 headers.append({
                     'key': header.key,
-                    'value': header.serialize(doc),
+                    'value': header.serialize(doc, value),
                     'well_known': True,
                 })
             for key, value in doc.extra_header_values.iteritems():

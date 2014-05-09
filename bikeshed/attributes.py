@@ -11,7 +11,7 @@ _attribute_creation_counter = 0
 
 
 class Attribute(object):
-    def __init__(self, key, choices=None, default=None, aliases=(), readonly=False, hidden=False, invisible=False):
+    def __init__(self, key=None, choices=None, default=None, aliases=(), readonly=False, hidden=False, invisible=False):
         if invisible:
             hidden = True
         self.key = key
@@ -25,11 +25,14 @@ class Attribute(object):
         _attribute_creation_counter += 1
         self.creation_counter = _attribute_creation_counter
 
-    def set(self, doc, value, force=False):
+    def parse(self, doc, value):
         if self.choices and value and value not in self.choices:
             choices = ', '.join(unicode(c) for c in self.choices)
             raise AttributeFormatError(u"value must be one of: %s; got %s" % (choices, value))
-        doc.header_values[self.key] = value
+        return value
+
+    def set(self, doc, value, force=False):
+        doc.header_values[self.key] = self.parse(doc, value)
 
     def get(self, doc):
         return doc.header_values.get(self.key, self.default)
@@ -38,8 +41,8 @@ class Attribute(object):
         if self.key in doc.header_values:
             del doc.header_values[self.key]
 
-    def serialize(self, doc):
-        return self.get(doc)
+    def serialize(self, doc, value):
+        return value
 
     def __get__(self, doc, doctype):
         if doc is None:
@@ -49,11 +52,10 @@ class Attribute(object):
     def __set__(self, doc, value):
         self.set(doc, value)
 
-    def get_html(self, doc):
-        return self.get(doc)
+    def get_html(self, doc, value):
+        return unicode(value)
 
-    def dump(self, doc):
-        value = self.get(doc)
+    def dump(self, doc, value):
         if value is not None:
             return unicode(value)
 
@@ -71,25 +73,24 @@ class Password(Attribute):
         kwargs.setdefault('invisible', True)
         super(Password, self).__init__(*args, **kwargs)
 
-    def set(self, doc, value, **kwargs):
+    def parse(self, doc, value):
         if not value:
             raise Readonly()
         if value[0] != '$':
             value = hash_password(value.encode('utf-8'))
-        return super(Password, self).set(doc, value, **kwargs)
+        return super(Password, self).parse(doc, value)
 
 
 class DatetimeAttribute(Attribute):
-    def set(self, doc, value, **kwargs):
+    def parse(self, doc, value):
         if value and not isinstance(value, datetime):
             try:
                 value = dateutil.parser.parse(value)
             except ValueError:
                 raise AttributeFormatError(u"invalid datetime value: %s" % value)
-        return super(DatetimeAttribute, self).set(doc, value, **kwargs)
+        return super(DatetimeAttribute, self).parse(doc, value)
 
-    def serialize(self, doc):
-        value = self.get(doc)
+    def serialize(self, doc, value):
         if value:
             return value.strftime('%Y-%m-%dT%H:%M')
 
@@ -98,12 +99,11 @@ class DatetimeAttribute(Attribute):
 
 
 class TicketRef(Identifier):
-    def set(self, doc, value, **kwargs):
+    def parse(self, doc, value):
         value = doc.store.resolve_reference(value)
-        return super(TicketRef, self).set(doc, value, **kwargs)
+        return super(TicketRef, self).parse(doc, value)
 
-    def serialize(self, doc):
-        value = self.get(doc)
+    def serialize(self, doc, value):
         if hasattr(value, 'uid'):
             return value.uid
         return value
@@ -118,11 +118,36 @@ class TicketRef(Identifier):
                 value = target_doc.get_label()
         return super(TicketRef, self).render(value, raw=raw)
 
-    def get_html(self, doc):
-        value = self.get(doc)
+    def get_html(self, doc, value):
         if hasattr(value, 'get_label'):
             return '<a href="/view/%s/">%s</a>' % (value.uid, value.get_label())
-        return super(TicketRef, self).get_html(value)
+        return super(TicketRef, self).get_html(doc, value)
+
+
+class List(Attribute):
+    def __init__(self, key, attr, **kwargs):
+        self.attr = attr
+        kwargs['key'] = key
+        kwargs.setdefault('default', ())
+        super(List, self).__init__(**kwargs)
+
+    def dump(self, doc, value):
+        if value:
+            return ', '.join(self.attr.dump(doc, item) for item in value)
+
+    def serialize(self, doc, value):
+        return [self.attr.serialize(doc, item) for item in value]
+
+    def parse(self, doc, value):
+        if isinstance(value, basestring):
+            value = [item.strip() for item in value.split(',')]
+        return [self.attr.parse(doc, item) for item in value if item]
+
+    def mapping_type(self):
+        return self.attr.mapping_type()
+
+    def get_html(self, doc, value):
+        return ', '.join(self.attr.get_html(doc, item) for item in value)
 
 
 

@@ -1,5 +1,6 @@
 from bikeshed.documents import Document
-from bikeshed.attributes import Attribute, Identifier, DatetimeAttribute, TicketRef, Password
+from bikeshed.attributes import (Attribute, Identifier, DatetimeAttribute, 
+    TicketRef, Password, List)
 
 
 class Project(Document):
@@ -22,7 +23,7 @@ class Ticket(Document):
     parent = TicketRef('Parent')
     number = Attribute('Number', readonly=True, hidden=True)
     reporter = Attribute('Reporter')
-    assigned_to = Attribute('Assigned-To')
+    assigned_to = List('Assigned-To', TicketRef())
     due = DatetimeAttribute('Due')
     reported_at = DatetimeAttribute('Reported-At')
     remaining_time = Attribute('Remaining-Time')

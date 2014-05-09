@@ -1,7 +1,7 @@
 <div class="headers">
     {% for header in document.headers %}
         {% if not header.hidden and document[header] %}
-            <b>{{ header.key }}</b>: {{ header.get_html(document)|safe }}<br/>
+            <b>{{ header.key }}</b>: {{ header.get_html(document, document[header])|safe }}<br/>
         {% endif %}
     {% endfor %}
     <div class="extra">
