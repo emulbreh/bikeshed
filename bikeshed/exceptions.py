@@ -13,3 +13,7 @@ class AttributeFormatError(FileFormatError):
 
 class ReferenceLookupError(ValueError):
     pass
+
+
+class Readonly(Exception):
+    pass

@@ -1,6 +1,5 @@
 import {Component} from './framework/Component'
 import {Document} from './Document'
-import {Completer} from './Completer'
 
 
 class DocumentEditor extends Component{
@@ -27,11 +26,6 @@ class DocumentEditor extends Component{
 
         var text = options.text || this.doc.text;
         session.setValue(text);
-        
-        this.completer = new Completer({
-            editor: editor,
-            resource: options.resource
-        });
     }
     
     focus(){

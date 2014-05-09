@@ -3,7 +3,7 @@ from datetime import datetime
 import docutils.core
 import dateutil.parser
 
-from bikeshed.exceptions import AttributeFormatError, FileFormatError, ReferenceLookupError
+from bikeshed.exceptions import AttributeFormatError, FileFormatError, ReferenceLookupError, Readonly
 from bikeshed.auth import hash_password
 
 
@@ -62,9 +62,12 @@ class Password(Attribute):
         kwargs.setdefault('hidden', True)
         super(Password, self).__init__(*args, **kwargs)
 
-    def __set__(self, doc, value):
-        value = hash_password(value)
-        super(Password, self).__set__(doc, value)
+    def parse(self, store, value):
+        if not value:
+            raise Readonly()
+        if value[0] == '$':
+            return super(Password, self).parse(store, value)
+        return super(Password, self).parse(store, hash_password(value.encode('utf-8')))
 
 
 class DatetimeAttribute(Attribute):

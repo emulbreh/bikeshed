@@ -1,6 +1,7 @@
 import {DocumentPage} from './DocumentPage'
 import {Document} from './Document'
 import {DocumentEditor} from './DocumentEditor'
+import {Completer} from './Completer'
 
 
 class EditorPage extends DocumentPage{
@@ -26,20 +27,25 @@ class EditorPage extends DocumentPage{
                 this.editor.save();
             }
         });
-        
+
         this.editor.on('save', (doc) => {
             this.resource.save(doc).then((doc) => {
                 console.log("postsave", doc);
                 this.app.visit(`/view/${doc.uid}/`);
             });
         });
+
+        this.completer = new Completer({
+            editor: this.editor.editor,
+            resource: this.resource
+        });
     }
-    
+
     onDocumentLoaded(doc){
         super.onDocumentLoaded(doc);
         this.editor.setDocument(doc);
     }
-    
+
     open(params){
         return super.open(params).then((doc) => this.editor.focus());
     }

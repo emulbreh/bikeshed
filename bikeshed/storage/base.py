@@ -75,10 +75,10 @@ class BaseDocumentStore(object):
         doc = doctype.deserialize(self, data)
         return doc
     
-    def loads(self, text):
-        return self.load(StringIO(text))
+    def loads(self, text, **kwargs):
+        return self.load(StringIO(text), **kwargs)
 
-    def load(self, f, ignore_reference_errors=False):
+    def load(self, f, ignore_reference_errors=False, normalize=False):
         headers, body = parse_document(f)
         doctype = self._get_type(headers)
         doc = doctype(self, headers, body=body, ignore_reference_errors=ignore_reference_errors)

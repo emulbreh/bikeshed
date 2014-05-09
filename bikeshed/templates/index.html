@@ -11,53 +11,6 @@
 {% block javascript %}
     {{ super() }}
     <script type="text/javascript">
-        var api = new bikeshed.framework.API({
-            baseUrl: '/api'
-        });
-
-        var documents = new bikeshed.framework.Resource(api, '/documents/', bikeshed.Document, {
-        });
-        
-        var ws = new WebSocket('ws://127.0.0.1:7001/events');
-        ws.onmessage = function(msg){
-            console.log(msg.data);
-        };
-        ws.onopen = function(){
-            ws.send('{"foo":42}');
-        };
-
-        var app = new bikeshed.Application({
-            element: '#viewport',
-            splash: '#splash',
-            pages: {
-                '/': new bikeshed.IndexPage(),
-                '/login/': new bikeshed.LoginPage({
-                    api: api
-                }),
-                '/search/': new bikeshed.ListPage({
-                    resource: documents
-                }),
-                '/new/': new bikeshed.EditorPage({
-                    resource: documents
-                }),
-                '/edit/:uid/': new bikeshed.EditorPage({
-                    resource: documents
-                }),
-                '/view/:uid/': new bikeshed.ViewerPage({
-                    resource: documents
-                })
-            }
-        });
-        
-        api.on('unauthorizedRequest', function(){
-            console.log('UNAUTHORIZED');
-            app.visit('/login/');
-        });
-        
-        app.on('login', function(info){
-            ws.send(JSON.stringify({'method': 'identify', 'session': info.session}));
-        });
-        
-        app.start();
+        bikeshed.main();
     </script>
 {% endblock %}

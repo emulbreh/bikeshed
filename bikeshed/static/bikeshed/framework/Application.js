@@ -1,9 +1,15 @@
 import {EventEmitter} from '../../EventEmitter'
+import {Session} from './Session'
 
 
 class Application extends EventEmitter{
     constructor(options){
         super.constructor();
+        options = _.defaults(options, {
+            element: 'body'
+        });
+
+        this.session = options.session || new Session({});
         this.$element = $(options.element);
         this.pages = {};
         this.splash = options.splash;
@@ -17,7 +23,7 @@ class Application extends EventEmitter{
             this.addPage(path, page);
         }, this);
     }
-    
+
     addPage(path, page){
         this.pages[path] = page;
         page.app = this;
@@ -30,7 +36,7 @@ class Application extends EventEmitter{
         this.routes.push({re, params, page, path});
         this.$element.append(page.$element);
     }
-    
+
     start(){
         this.visit(location.pathname + location.search).then(() => {
             if(this.splash){
@@ -38,11 +44,11 @@ class Application extends EventEmitter{
             }
         });
     }
-    
+
     get loading(){
         return this._loading;
     }
-    
+
     set loading(load){
         this._loading = load;
         this.$element[load ? 'addClass' : 'removeClass']('loading');
@@ -51,7 +57,7 @@ class Application extends EventEmitter{
     onHistoryChange(){
         this.visit(location.pathname + location.search, false);
     }
-    
+
     parsePath(url){
         // FIXME: try https://developer.mozilla.org/en-US/docs/Web/API/Window.URL
         this.helperA.href = url;
@@ -101,7 +107,7 @@ class Application extends EventEmitter{
             page.close();
         });
     }
-    
+
     onLinkClick(e){
         var $link = $(e.target);
         if($link.prop('tagName') != 'A'){

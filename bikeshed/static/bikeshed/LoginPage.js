@@ -37,11 +37,13 @@ class LoginPage extends Page{
             dataType: 'json',
             data: JSON.stringify(credentials),
         }).then((response) => {
-            this.api.setDefaultHeader('Authorization', 'session ' + response.session_key);
+            var sessionKey = response.session_key;
             this.app.emit('login', {
-                session: response.session_key, 
+                session: sessionKey, 
                 username: credentials.username
             });
+            this.api.setSessionKey(sessionKey);
+            this.app.session.set('sessionKey', sessionKey);
             this.app.visit('/');
         });
     }

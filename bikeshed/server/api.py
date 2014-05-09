@@ -59,7 +59,7 @@ class AuthenticationHandler(BaseHandler):
             self.set_status(401)
             return
         hashed_password = user['Password']
-        if False and user['Password'] != hash_password(password, hashed_password):
+        if user['Password'] != hash_password(password.encode('utf-8'), hashed_password.encode('utf-8')):
             self.set_status(401)
             return
         broadcast("login successful!")

@@ -4,6 +4,7 @@ import {Application} from './framework/Application'
 import {API} from './framework/API'
 import {Resource} from './framework/Resource'
 import {Model} from './framework/Model'
+import {Session} from './framework/Session'
 import {Collection} from './Collection'
 
 import {List} from './List'
@@ -17,16 +18,18 @@ import {PageWithSidebar} from './PageWithSidebar'
 import {ListPage} from './ListPage'
 import {LoginPage} from './LoginPage'
 import {SearchForm} from './SearchForm'
+import {main} from './main'
 
 
 export var bikeshed = { // FIXME
+    main,
     Application, Component, List, Page, 
     Document,
     Completer, SearchForm, DocumentEditor,
     PageWithSidebar, ListPage, IndexPage, EditorPage, ViewerPage, LoginPage
 };
 
-bikeshed.framework = {API, Collection, Model, Resource};
+bikeshed.framework = {API, Collection, Model, Resource, Session};
 
 window.bikeshed = bikeshed;
 

@@ -4,7 +4,7 @@ from StringIO import StringIO
 import docutils
 
 from bikeshed.attributes import Attribute, Value
-from bikeshed.exceptions import ReferenceLookupError, FileFormatError
+from bikeshed.exceptions import ReferenceLookupError, FileFormatError, Readonly
 from bikeshed.markup import markup
 
 
@@ -58,11 +58,11 @@ class Document(object):
         self.body = body
         self.extra_attributes = {}
         for attribute in self.attributes:
-            self[attribute.key] = attribute.default
+            self.set_header(attribute.key, attribute.default, force=True)
         if values:
             for key, value in values.iteritems():
                 try:
-                    self[key] = value
+                    self.set_header(key, value, force=True)
                 except ReferenceLookupError:
                     if not ignore_reference_errors:
                         raise
@@ -92,18 +92,30 @@ class Document(object):
         while parent and not parent.is_root():
             parent = parent.get_parent()
         return parent
-
-    def __setitem__(self, key, value):
+        
+    def get_attribute(self, key):
+        return self.key_map[key.lower()]
+        
+    def set_header(self, key, value, force=False):
         try:
-            attribute = self.key_map[key.lower()]
+            attribute = self.get_attribute(key)
         except KeyError:
             self.extra_attributes[key] = value
         else:
-            self.values[attribute.key] = attribute.parse(self.store, value)
+            try:
+                self.values[attribute.key] = attribute.parse(self.store, value)
+            except Readonly:
+                if force:
+                    self.values[attribute.key] = Value(attribute, value)
+                else:
+                    raise
+
+    def __setitem__(self, key, value):
+        self.set_header(key, value)
 
     def __getitem__(self, key):
         try:
-            attribute = self.key_map[key.lower()]
+            attribute = self.get_attribute(key)
         except KeyError:
             return self.extra_attributes[key]
         value = self.values.get(attribute.key, attribute.default)
@@ -131,14 +143,19 @@ class Document(object):
             self[key] = value
 
     def load(self, f, **kwargs):
+        old_values = self.values.copy()
         self.clear()
         headers, body = parse_document(f)
         for key, value in headers.iteritems():
-            self[key] = value
+            try:
+                self.set_header(key, value)
+            except Readonly:
+                attr = self.get_attribute(key)
+                self.set_header(key, old_values[attr.key], force=True)
+                continue
         self.body = body
 
     def loads(self, blob, **kwargs):
-        self.clear()
         self.load(StringIO(blob), **kwargs)
 
     def dump(self, f, include_readonly=False, include_hidden=False):

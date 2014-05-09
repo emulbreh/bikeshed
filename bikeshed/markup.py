@@ -1,5 +1,6 @@
 import re
 import functools
+import logging
 
 import docutils
 from lxml import etree
@@ -9,6 +10,8 @@ from bikeshed.exceptions import ReferenceLookupError
 
 
 _ref_re = re.compile(r'(?<![\w])(?:@[a-z]+|#\d+)')
+
+logger = logging.getLogger(__name__)
 
 
 class ReferenceParser(etree.TreeBuilder):
@@ -69,7 +72,11 @@ def markup(store, text, initial_header_level=2):
     )
     html = parts['body']
     parser = HTMLParser(target=ReferenceParser(store))
-    tree = etree.fromstring(u'<html><body>%s</body></html>' % parts['body'], parser)
+    try:
+        tree = etree.fromstring(u'<html><body>%s</body></html>' % parts['body'], parser)
+    except:
+        logger.exception('failed to transform markup')
+        return ''
     return '\n'.join(etree.tostring(fragment) for fragment in tree[0])
 
 

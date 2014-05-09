@@ -838,7 +838,6 @@ System.register("bikeshed/DocumentEditor", [], function() {
   var __moduleName = "bikeshed/DocumentEditor";
   var Component = $traceurRuntime.assertObject(System.get("bikeshed/framework/Component")).Component;
   var Document = $traceurRuntime.assertObject(System.get("bikeshed/Document")).Document;
-  var Completer = $traceurRuntime.assertObject(System.get("bikeshed/Completer")).Completer;
   var DocumentEditor = function DocumentEditor(options) {
     options = _.defaults(options, {'cssClass': 'bikeshed-editor'});
     $traceurRuntime.superCall(this, $DocumentEditor.prototype, "constructor", [options]);
@@ -860,10 +859,6 @@ System.register("bikeshed/DocumentEditor", [], function() {
     session.setUseSoftTabs(true);
     var text = options.text || this.doc.text;
     session.setValue(text);
-    this.completer = new Completer({
-      editor: editor,
-      resource: options.resource
-    });
   };
   var $DocumentEditor = DocumentEditor;
   ($traceurRuntime.createClass)(DocumentEditor, {
@@ -977,6 +972,7 @@ System.register("bikeshed/EditorPage", [], function() {
   var DocumentPage = $traceurRuntime.assertObject(System.get("bikeshed/DocumentPage")).DocumentPage;
   var Document = $traceurRuntime.assertObject(System.get("bikeshed/Document")).Document;
   var DocumentEditor = $traceurRuntime.assertObject(System.get("bikeshed/DocumentEditor")).DocumentEditor;
+  var Completer = $traceurRuntime.assertObject(System.get("bikeshed/Completer")).Completer;
   var EditorPage = function EditorPage(options) {
     var $__38 = this;
     $traceurRuntime.superCall(this, $EditorPage.prototype, "constructor", [options]);
@@ -1002,6 +998,10 @@ System.register("bikeshed/EditorPage", [], function() {
         $__38.app.visit(("/view/" + doc.uid + "/"));
       }));
     }));
+    this.completer = new Completer({
+      editor: this.editor.editor,
+      resource: this.resource
+    });
   };
   var $EditorPage = EditorPage;
   ($traceurRuntime.createClass)(EditorPage, {
@@ -1108,11 +1108,13 @@ System.register("bikeshed/LoginPage", [], function() {
         dataType: 'json',
         data: JSON.stringify(credentials)
       }).then((function(response) {
-        $__46.api.setDefaultHeader('Authorization', 'session ' + response.session_key);
+        var sessionKey = response.session_key;
         $__46.app.emit('login', {
-          session: response.session_key,
+          session: sessionKey,
           username: credentials.username
         });
+        $__46.api.setSessionKey(sessionKey);
+        $__46.app.session.set('sessionKey', sessionKey);
         $__46.app.visit('/');
       }));
     }
@@ -1207,12 +1209,41 @@ System.register("bikeshed/framework/API", [], function() {
       return API;
     }};
 });
+System.register("bikeshed/framework/Session", [], function() {
+  "use strict";
+  var __moduleName = "bikeshed/framework/Session";
+  var EventEmitter = $traceurRuntime.assertObject(System.get("EventEmitter")).EventEmitter;
+  var Session = function Session(options) {
+    $traceurRuntime.superCall(this, $Session.prototype, "constructor", []);
+    options = _.defaults(options, {key: 'bikeshed.session'});
+    this.key = options.key;
+    this.data = JSON.parse(localStorage[this.key] || '{}');
+    console.log("SESSION", this.data);
+  };
+  var $Session = Session;
+  ($traceurRuntime.createClass)(Session, {
+    set: function(name, value) {
+      this.data[name] = value;
+      localStorage[this.key] = JSON.stringify(this.data);
+    },
+    get: function(name) {
+      return this.data[name];
+    }
+  }, {}, EventEmitter);
+  var Session = Session;
+  return {get Session() {
+      return Session;
+    }};
+});
 System.register("bikeshed/framework/Application", [], function() {
   "use strict";
   var __moduleName = "bikeshed/framework/Application";
   var EventEmitter = $traceurRuntime.assertObject(System.get("EventEmitter")).EventEmitter;
+  var Session = $traceurRuntime.assertObject(System.get("bikeshed/framework/Session")).Session;
   var Application = function Application(options) {
     $traceurRuntime.superCall(this, $Application.prototype, "constructor", []);
+    options = _.defaults(options, {element: 'body'});
+    this.session = options.session || new Session({});
     this.$element = $(options.element);
     this.pages = {};
     this.splash = options.splash;
@@ -1246,10 +1277,10 @@ System.register("bikeshed/framework/Application", [], function() {
       this.$element.append(page.$element);
     },
     start: function() {
-      var $__55 = this;
+      var $__57 = this;
       this.visit(location.pathname + location.search).then((function() {
-        if ($__55.splash) {
-          $($__55.splash).remove();
+        if ($__57.splash) {
+          $($__57.splash).remove();
         }
       }));
     },
@@ -1271,9 +1302,9 @@ System.register("bikeshed/framework/Application", [], function() {
       if (querystring) {
         querystring = querystring.substring(1);
         querystring.split('&').forEach((function(pair) {
-          var $__59 = $traceurRuntime.assertObject(pair.split('=')),
-              key = $__59[0],
-              value = $__59[1];
+          var $__61 = $traceurRuntime.assertObject(pair.split('=')),
+              key = $__61[0],
+              value = $__61[1];
           params[decodeURIComponent(key)] = decodeURIComponent(value);
         }));
       }
@@ -1283,7 +1314,7 @@ System.register("bikeshed/framework/Application", [], function() {
       };
     },
     visit: function(url, pushstate) {
-      var $__55 = this;
+      var $__57 = this;
       console.log("VISIT", url);
       var pathInfo = this.parsePath(url);
       if (pushstate !== false) {
@@ -1292,9 +1323,9 @@ System.register("bikeshed/framework/Application", [], function() {
       var path = pathInfo.path;
       var page = null,
           params = pathInfo.params;
-      for (var $__57 = this.routes[Symbol.iterator](),
-          $__58; !($__58 = $__57.next()).done; ) {
-        var route = $__58.value;
+      for (var $__59 = this.routes[Symbol.iterator](),
+          $__60; !($__60 = $__59.next()).done; ) {
+        var route = $__60.value;
         {
           var match = route.re.exec(path);
           if (match) {
@@ -1315,7 +1346,7 @@ System.register("bikeshed/framework/Application", [], function() {
       }
       this.loading = true;
       return page.open(params).then((function() {
-        $__55.loading = false;
+        $__57.loading = false;
       })).catch((function(error) {
         console.log("failed to open page", error);
         page.close();
@@ -1365,11 +1396,11 @@ System.register("bikeshed/framework/Resource", [], function() {
       return this.request(options);
     },
     fetch: function(id, options) {
-      var $__60 = this;
+      var $__62 = this;
       options = _.defaults(options || {}, {url: ("" + this.url + id + "/")});
       console.log('fetch', id, options);
       return this.get(options).then((function(data) {
-        return new $__60.model(data);
+        return new $__62.model(data);
       }));
     },
     save: function(model, options) {
@@ -1393,6 +1424,67 @@ System.register("bikeshed/framework/Resource", [], function() {
       return Resource;
     }};
 });
+System.register("bikeshed/main", [], function() {
+  "use strict";
+  var __moduleName = "bikeshed/main";
+  var Application = $traceurRuntime.assertObject(System.get("bikeshed/framework/Application")).Application;
+  var API = $traceurRuntime.assertObject(System.get("bikeshed/framework/API")).API;
+  var Resource = $traceurRuntime.assertObject(System.get("bikeshed/framework/Resource")).Resource;
+  var Model = $traceurRuntime.assertObject(System.get("bikeshed/framework/Model")).Model;
+  var Collection = $traceurRuntime.assertObject(System.get("bikeshed/Collection")).Collection;
+  var Document = $traceurRuntime.assertObject(System.get("bikeshed/Document")).Document;
+  var EditorPage = $traceurRuntime.assertObject(System.get("bikeshed/EditorPage")).EditorPage;
+  var ViewerPage = $traceurRuntime.assertObject(System.get("bikeshed/ViewerPage")).ViewerPage;
+  var IndexPage = $traceurRuntime.assertObject(System.get("bikeshed/IndexPage")).IndexPage;
+  var ListPage = $traceurRuntime.assertObject(System.get("bikeshed/ListPage")).ListPage;
+  var LoginPage = $traceurRuntime.assertObject(System.get("bikeshed/LoginPage")).LoginPage;
+  var BikeshedAPI = function BikeshedAPI() {
+    $traceurRuntime.defaultSuperCall(this, $BikeshedAPI.prototype, arguments);
+  };
+  var $BikeshedAPI = BikeshedAPI;
+  ($traceurRuntime.createClass)(BikeshedAPI, {setSessionKey: function(sessionKey) {
+      this.setDefaultHeader('Authorization', 'session ' + sessionKey);
+    }}, {}, API);
+  function main() {
+    var api = new BikeshedAPI({baseUrl: '/api'});
+    var documents = new Resource(api, '/documents/', bikeshed.Document, {});
+    var ws = new WebSocket('ws://127.0.0.1:7001/events');
+    ws.onmessage = function(msg) {
+      console.log(msg.data);
+    };
+    ws.onopen = function() {
+      ws.send('{"foo":42}');
+    };
+    var app = new Application({
+      element: '#viewport',
+      splash: '#splash',
+      pages: {
+        '/': new IndexPage(),
+        '/login/': new LoginPage({api: api}),
+        '/search/': new ListPage({resource: documents}),
+        '/new/': new EditorPage({resource: documents}),
+        '/edit/:uid/': new EditorPage({resource: documents}),
+        '/view/:uid/': new ViewerPage({resource: documents})
+      }
+    });
+    api.on('unauthorizedRequest', function() {
+      console.log('UNAUTHORIZED');
+      app.visit('/login/');
+    });
+    api.setSessionKey(app.session.get('sessionKey'));
+    app.on('login', function(info) {
+      ws.send(JSON.stringify({
+        'method': 'identify',
+        'session': info.session
+      }));
+    });
+    app.start();
+  }
+  var main = main;
+  return {get main() {
+      return main;
+    }};
+});
 System.register("bikeshed/init", [], function() {
   "use strict";
   var __moduleName = "bikeshed/init";
@@ -1402,6 +1494,7 @@ System.register("bikeshed/init", [], function() {
   var API = $traceurRuntime.assertObject(System.get("bikeshed/framework/API")).API;
   var Resource = $traceurRuntime.assertObject(System.get("bikeshed/framework/Resource")).Resource;
   var Model = $traceurRuntime.assertObject(System.get("bikeshed/framework/Model")).Model;
+  var Session = $traceurRuntime.assertObject(System.get("bikeshed/framework/Session")).Session;
   var Collection = $traceurRuntime.assertObject(System.get("bikeshed/Collection")).Collection;
   var List = $traceurRuntime.assertObject(System.get("bikeshed/List")).List;
   var Completer = $traceurRuntime.assertObject(System.get("bikeshed/Completer")).Completer;
@@ -1414,7 +1507,9 @@ System.register("bikeshed/init", [], function() {
   var ListPage = $traceurRuntime.assertObject(System.get("bikeshed/ListPage")).ListPage;
   var LoginPage = $traceurRuntime.assertObject(System.get("bikeshed/LoginPage")).LoginPage;
   var SearchForm = $traceurRuntime.assertObject(System.get("bikeshed/SearchForm")).SearchForm;
+  var main = $traceurRuntime.assertObject(System.get("bikeshed/main")).main;
   var bikeshed = {
+    main: main,
     Application: Application,
     Component: Component,
     List: List,
@@ -1434,7 +1529,8 @@ System.register("bikeshed/init", [], function() {
     API: API,
     Collection: Collection,
     Model: Model,
-    Resource: Resource
+    Resource: Resource,
+    Session: Session
   };
   window.bikeshed = bikeshed;
   $(function() {
