@@ -4,6 +4,7 @@ import docutils.core
 import dateutil.parser
 
 from bikeshed.exceptions import AttributeFormatError, FileFormatError, ReferenceLookupError
+from bikeshed.auth import hash_password
 
 
 class Value(object):
@@ -54,6 +55,16 @@ class Attribute(object):
 class Identifier(Attribute):
     def mapping_type(self):
         return {'type': 'string', 'index': 'not_analyzed'}
+
+
+class Password(Attribute):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault('hidden', True)
+        super(Password, self).__init__(*args, **kwargs)
+
+    def __set__(self, doc, value):
+        value = hash_password(value)
+        super(Password, self).__set__(doc, value)
 
 
 class DatetimeAttribute(Attribute):

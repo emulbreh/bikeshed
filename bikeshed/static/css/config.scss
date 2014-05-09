@@ -11,6 +11,9 @@ $lineheight: 21px;
 $textcolor: #000;
 $soft-textcolor: #999;
 
+$defaultpadding: 20px;
+
+
 @mixin font{
     font-family: "Droid Sans Mono", monospace;
     line-height: $lineheight;
@@ -34,3 +37,4 @@ $soft-textcolor: #999;
     -moz-box-orient: $orient;
     -webkit-box-orient: $orient;
 }
+

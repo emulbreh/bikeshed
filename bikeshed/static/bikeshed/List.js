@@ -10,6 +10,7 @@ class List extends Component{
             cssClass: 'bikeshed-list'
         });
         super.constructor(options);
+        this.resource = options.resource;
         this.$container = this.appendElement('<ul>');
         this.$container.on('click', this.onClick.bind(this));
         this.items = [];
@@ -59,19 +60,11 @@ class List extends Component{
         this.selectedItem = null;
     }
 
-    load(url){
-        return new Promise((resolve, reject) => {
-            $.ajax(url, {
-                success: (result) => {
-                    this.onLoadSuccess(result);
-                    resolve();
-                },
-                error: (xhr, status, err) => {
-                    this.onLoadError(xhr, status, err);
-                    reject(err);
-                },
-                dataType: 'json'
-            });
+    load(options){
+        return this.resource.get(options).then((result) => {
+            this.onLoadSuccess(result);
+        }).catch(() => {
+            this.onLoadError.apply(this, arguments);
         });
     }
     

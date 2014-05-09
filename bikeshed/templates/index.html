@@ -11,17 +11,41 @@
 {% block javascript %}
     {{ super() }}
     <script type="text/javascript">
+        var api = new bikeshed.framework.API({
+            baseUrl: '/api'
+        });
+
+        var documents = new bikeshed.framework.Resource(api, '/documents/', bikeshed.Document, {
+        });
+
         var app = new bikeshed.Application({
             element: '#viewport',
             splash: '#splash',
             pages: {
                 '/': new bikeshed.IndexPage(),
-                '/search/': new bikeshed.ListPage(),
-                '/new/': new bikeshed.EditorPage(),
-                '/edit/:uid/': new bikeshed.EditorPage(),
-                '/view/:uid/': new bikeshed.ViewerPage()
+                '/login/': new bikeshed.LoginPage({
+                    api: api
+                }),
+                '/search/': new bikeshed.ListPage({
+                    resource: documents
+                }),
+                '/new/': new bikeshed.EditorPage({
+                    resource: documents
+                }),
+                '/edit/:uid/': new bikeshed.EditorPage({
+                    resource: documents
+                }),
+                '/view/:uid/': new bikeshed.ViewerPage({
+                    resource: documents
+                })
             }
         });
+        
+        api.on('unauthorizedRequest', function(){
+            console.log('UNAUTHORIZED');
+            app.visit('/login/');
+        });
+        
         app.start();
     </script>
 {% endblock %}

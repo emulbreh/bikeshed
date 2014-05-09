@@ -2,10 +2,10 @@ import {EventEmitter} from '../EventEmitter'
 
 
 class Collection extends EventEmitter{
-    constructor(options){
-        this.factory = options.factory || _.identity;
-        this.url = options.url;
+    constructor(items){
+        this.items = items || [];
     }
+    
 }
 
 export var Collection = Collection;

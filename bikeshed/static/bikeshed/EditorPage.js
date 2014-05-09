@@ -8,7 +8,9 @@ class EditorPage extends DocumentPage{
         super.constructor(options);
         this.addToSidebar($('<a href="#save"><i class="fa fa-check"/>Save</a>'));
         this.addToSidebar($('<a href="#cancel"><i class="fa fa-times"/>Cancel</a>'));
-        this.editor = new DocumentEditor({});
+        this.editor = new DocumentEditor({
+            resource: this.resource
+        });
         this.$element.append(this.editor.$element);
 
         this.addActions({
@@ -21,10 +23,15 @@ class EditorPage extends DocumentPage{
                 }
             },
             save: (e) => {
-                this.editor.save().then((doc) => {
-                    this.app.visit(`/view/${doc.uid}/`);
-                });
+                this.editor.save();
             }
+        });
+        
+        this.editor.on('save', (doc) => {
+            this.resource.save(doc).then((doc) => {
+                console.log("postsave", doc);
+                this.app.visit(`/view/${doc.uid}/`);
+            });
         });
     }
     

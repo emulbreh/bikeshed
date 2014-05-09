@@ -33,7 +33,11 @@ class Component extends EventEmitter{
         if(!this.actions){
             this.actions = {};
             this.$element.on('click', 'a', (function(e){
-                var url = $(e.target).attr('href');
+                var $link = $(e.target);
+                if($link.prop('tagName') != 'A'){
+                    $link = $link.parents('a');
+                }
+                var url = $link.attr('href');
                 if(url && url[0] == '#'){
                     var action = url.substring(1);
                     this.onActionClick(action, e);

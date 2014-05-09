@@ -66,6 +66,7 @@ class Application{
     }
 
     visit(url, pushstate){
+        console.log("VISIT", url);
         var pathInfo = this.parsePath(url);
         if(pushstate !== false){
             history.pushState(pathInfo.params, null, url);
@@ -92,11 +93,18 @@ class Application{
         this.loading = true;
         return page.open(params).then(() => {
             this.loading = false;
+        }).catch((error) => {
+            console.log("failed to open page", error);
+            page.close();
         });
     }
     
     onLinkClick(e){
-        var url = $(e.target).attr('href');
+        var $link = $(e.target);
+        if($link.prop('tagName') != 'A'){
+            $link = $link.parents('a');
+        }
+        var url = $link.attr('href');
         if(url.match(/:\/\//)){
             return true;
         }

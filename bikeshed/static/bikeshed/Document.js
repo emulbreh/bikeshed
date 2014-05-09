@@ -1,13 +1,7 @@
-import {Collection} from './Collection'
+import {Model} from './framework/Model'
 
 
-class Document{
-
-    constructor(data, options) {
-        this.collection = options && options.collection;
-        this.load(data);
-    }
-    
+class Document extends Model{
     load(data){
         this.headers = {};
         if(data.headers){
@@ -49,47 +43,18 @@ class Document{
         this.text = text;
     }
     
-    get collectionUrl(){
-        var collection = this.collection || this.constructor.collection;
-        if(collection){
-            return collection.url;
-        }
-        return null;
-    }
-    
-    save(){
-        var url = this.url || this.collectionUrl;
-        if(!url){
-            throw new Error("cannot create object outside of collection");
-        }
-        return new Promise((resolve, reject) => {
-            $.ajax(url, {
-                type: this.url ? 'PUT' : 'POST',
-                dataType: 'json',
-                contentType: 'text/plain',
-                data: this.text,
-                success: (data) => {
-                    this.load(data);
-                    resolve(this);
-                },
-                error: reject
-            });
-        });
-    }
-    
     createViewLink(){
         var title = this.displayTitle;
         return $(`<a href="/view/${this.uid}/" title="${title}">${title}</a>`);
     }
+    
+    serialize(){
+        return {
+            data: this.text,
+            contentType: 'text/plain'
+        };
+    }
 }
 
 
-var documentCollection = new Collection({
-    factory: Document,
-    url: '/api/documents/'
-});
-
-Document.collection = documentCollection;
-
 export var Document = Document;
-export var documentCollection = documentCollection;

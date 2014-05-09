@@ -30,7 +30,7 @@ class DocumentEditor extends Component{
         
         this.completer = new Completer({
             editor: editor,
-            url: '/api/documents/'
+            resource: options.resource
         });
     }
     
@@ -40,7 +40,7 @@ class DocumentEditor extends Component{
     
     save(){
         this.doc.setText(this.editor.getValue());
-        return this.doc.save();
+        this.emit('save', this.doc);
     }
     
     setDocument(doc){

@@ -5,16 +5,12 @@ import {Document} from './Document'
 class DocumentPage extends PageWithSidebar{
     constructor(options){
         super.constructor(options);
+        this.resource = options.resource;
         this.$path = this.appendElement('<div class="path"/>');
         this.$header = this.appendElement('<h1/>');
     }
     
-    onLoadError(){
-        console.log("error", arguments);
-    }
-    
     onDocumentLoaded(doc){
-        console.log("document loaded", doc);
         this.doc = doc;
         this.$header.html(`${doc.label}: ${doc.title}`);
         this.$path.empty();
@@ -25,22 +21,14 @@ class DocumentPage extends PageWithSidebar{
     }
     
     open(params){
-        var loaded = new Promise((resolve, reject) => {
-            if(!params.uid){
-                resolve();
-                return;
-            }
-            $.ajax('/api/document/' + params.uid + '/', {
-                type: 'GET',
-                error: this.onLoadError.bind(this),
-                success: (data) => {
-                    var doc = new Document(data);
-                    this.onDocumentLoaded(doc);
-                    resolve();
-                }
+        var done = null;
+        if(params.uid){
+            done = this.resource.fetch(params.uid).then((doc) => {
+                this.onDocumentLoaded(doc);
             });
-        });
-        return Promise.all([super.open(params), loaded]);
+        }
+        done = done ? done.then(() => super.open(params)) : super.open(params);
+        return done;
     }
 }
 

@@ -9,11 +9,13 @@ class Picker extends Component{
             cssClass: 'bikeshed-picker'
         })
         super.constructor(options);
+        this.resource = options.resource;
         this.searchForm = new SearchForm({});
         this.$element.append(this.searchForm.$element);
         this.searchForm.on('change', this.onSearchChange.bind(this));
         this.searchForm.$input.on('keydown', this.onSearchInputKeyDown.bind(this));
         this.list = new List({
+            resource: this.resource,
             render: function(item){
                 var doc = item.data;
                 var type = doc.getHeader('Type', '');
@@ -52,8 +54,9 @@ class Picker extends Component{
     }
 
     onSearchChange(){
-        var query = this.searchForm.query;
-        this.list.load(`/api/documents/?q=${query}`);
+        this.list.load({
+            data: {q: this.searchForm.query}
+        });
     }
     
     set query(q){

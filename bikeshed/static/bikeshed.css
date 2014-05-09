@@ -8,9 +8,6 @@ body, textarea, input {
   line-height: 21px;
   font-size: 16px; }
 
-textarea, input[type=text] {
-  background-color: transparent; }
-
 form {
   margin: 0px;
   padding: 0px; }
@@ -20,6 +17,21 @@ ul, li, div, form, input[type=text], h1, h2, h3, h4, h5, h6 {
   padding: 0px; }
 
 b {
+  font-weight: normal; }
+
+textarea, input[type=text], input[type=password] {
+  background-color: transparent;
+  padding: 6px;
+  outline: none;
+  border: none;
+  border: 1px solid #eee; }
+  textarea:hover, input[type=text]:hover, input[type=password]:hover {
+    border-color: #ccc; }
+  textarea:focus, input[type=text]:focus, input[type=password]:focus {
+    border-color: #1099ee; }
+
+input:-moz-placeholder, ::-webkit-input-placeholder, ::-moz-placeholder, :-ms-input-placeholder {
+  color: #999999;
   font-weight: normal; }
 
 body > header {
@@ -146,6 +158,13 @@ a {
     float: right;
     color: #999999; }
 
+.bikeshed-login {
+  margin: auto;
+  width: 400px; }
+  .bikeshed-login input {
+    width: 300px;
+    margin-bottom: 10px; }
+
 #splash {
   position: absolute;
   top: -60px;
@@ -258,15 +277,7 @@ h1 {
   margin-left: -26px; }
 .bikeshed-searchform > input[type=text] {
   margin-left: -7px;
-  width: 600px;
-  padding: 6px;
-  outline: none;
-  border: none;
-  border: 1px solid #eee; }
-  .bikeshed-searchform > input[type=text]:hover {
-    border-color: #ccc; }
-  .bikeshed-searchform > input[type=text]:focus {
-    border-color: #1099ee; }
+  width: 600px; }
 
 .deadref {
   color: #ff6600; }

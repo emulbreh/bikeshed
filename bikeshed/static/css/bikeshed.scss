@@ -10,10 +10,6 @@ body, textarea, input{
     @include font;
 }
 
-textarea, input[type=text]{
-    background-color: transparent;
-}
-
 form{
     margin: 0px;
     padding: 0px;
@@ -25,6 +21,27 @@ ul, li, div, form, input[type=text], h1, h2, h3, h4, h5, h6{
 }
 
 b{
+    font-weight: normal;
+}
+
+textarea, input[type=text], input[type=password]{
+    background-color: transparent;
+    padding: 6px;
+    outline: none;
+    border: none;
+    border: 1px solid #eee;
+    
+    &:hover{
+        border-color: #ccc;
+    }
+    
+    &:focus{
+        border-color: $link-color;
+    }
+}
+
+input:-moz-placeholder, ::-webkit-input-placeholder, ::-moz-placeholder, :-ms-input-placeholder{
+    color: $soft-textcolor;
     font-weight: normal;
 }
 
@@ -71,6 +88,7 @@ a{
 @import 'editor.scss';
 @import 'popup.scss';
 @import 'list.scss';
+@import 'login.scss';
 
 #splash{
     position: absolute;
@@ -218,18 +236,6 @@ h1{
     & > input[type=text]{
         margin-left: -7px;
         width: 600px;
-        padding: 6px;
-        outline: none;
-        border: none;
-        border: 1px solid #eee;
-        
-        &:hover{
-            border-color: #ccc;
-        }
-        
-        &:focus{
-            border-color: $link-color;
-        }
     }
 }
 

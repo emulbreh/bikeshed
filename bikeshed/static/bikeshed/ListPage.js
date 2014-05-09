@@ -8,7 +8,8 @@ class ListPage extends PageWithSidebar{
             cssClass: 'bikeshed-search'
         });
         super.constructor(options);
-        this.picker = new Picker({});
+        this.resource = options.resource;
+        this.picker = new Picker({resource: this.resource});
         this.$element.append(this.picker.$element);
         this.picker.on('select', (doc) => {
             this.app.visit(`/view/${doc.uid}/`);

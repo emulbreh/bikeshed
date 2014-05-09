@@ -24,8 +24,9 @@ class Application(web.Application):
         kwargs.update({
             'handlers': [
                 web.URLSpec(r"/static/(.*)", web.StaticFileHandler, {'path': static_path}),
+                web.URLSpec(r"/api/authenticate/", api.AuthenticationHandler, name='api-auth'),
                 web.URLSpec(r"/api/documents/", api.DocumentsHandler, name='api-search'),
-                web.URLSpec(r"/api/document/(?P<uid>[^/]+)/", api.DocumentHandler, name='api-details'),
+                web.URLSpec(r"/api/documents/(?P<uid>[^/]+)/", api.DocumentHandler, name='api-details'),
                 web.URLSpec(r"/.*", IndexHandler),
             ],
         })

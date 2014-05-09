@@ -1,5 +1,5 @@
 from bikeshed.documents import Document
-from bikeshed.attributes import Attribute, Identifier, DatetimeAttribute, TicketRef
+from bikeshed.attributes import Attribute, Identifier, DatetimeAttribute, TicketRef, Password
 
 
 class Project(Document):
@@ -68,6 +68,7 @@ class Feature(Ticket):
 class User(Document):
     type_name = 'User'
     name = Attribute('Name')
+    password = Password('Password')
 
     def get_label(self):
         return '@%s' % self.name

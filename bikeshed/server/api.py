@@ -5,6 +5,32 @@ from patchit import PatchSet
 from tornado.web import HTTPError
 
 from bikeshed.server.base import BaseHandler
+from bikeshed.exceptions import DocumentDoesNotExist
+from bikeshed.auth import hash_password, create_session_key
+
+
+class AuthenticationHandler(BaseHandler):
+    needs_authentication = False
+    
+    def post(self):
+        data = json.loads(self.request.body)
+        username = data.get('username')
+        password = data.get('password')
+        if not username or not password:
+            self.set_status(400)
+            return
+        try:
+            user = self.application.store.lookup('Name', username, doctype='User')
+        except DocumentDoesNotExist:
+            self.set_status(401)
+            return
+        hashed_password = user['Password']
+        if False and user['Password'] != hash_password(password, hashed_password):
+            self.set_status(401)
+            return
+        self.write({
+            'session_key': create_session_key(user.uid),
+        })
 
 
 class BaseDocumentHandler(BaseHandler):
@@ -12,7 +38,7 @@ class BaseDocumentHandler(BaseHandler):
         data = {
             'type': doc.type_name,
             'uid': doc.uid,
-            'url': '/api/document/%s/' % doc.uid,
+            'url': '/api/documents/%s/' % doc.uid,
             'label': doc.get_label(),
             'title': doc.get_title(),
         }

@@ -10,8 +10,9 @@ function positionEqual(a, b){
 
 class Completer{
     constructor(options){
-        this.url = options.url;
         this.lookup = options.lookup || 'Number';
+        this.resource = options.resource;
+
         var editor = this.editor = options.editor;
         this.lookups = {
             '@': 'Name',
@@ -26,7 +27,8 @@ class Completer{
         this.active = false;
         this.activeStart = null;
         this.dropdownList = new List({
-            cssClass: 'bikeshed-autocomplete'
+            cssClass: 'bikeshed-autocomplete',
+            resource: this.resource
         });
         for(var i=0;i<5;i++){
             this.dropdownList.appendItem({
@@ -97,7 +99,7 @@ class Completer{
         var token = this.focusedToken.token;
         var lookup = this.lookups[token[0]];
         var q = token.length > 1 ? `${lookup}:${token.substring(1)}*` : '';
-        this.dropdownList.load(`${this.url}?q=${q}`);
+        this.dropdownList.load({data: {q}});
     }
 
     hijackCommandKeyEvents(hijack){
@@ -122,7 +124,7 @@ class Completer{
                     this.complete(s);
                 }
                 else{
-                    var picker = new Picker({});
+                    var picker = new Picker({resource: this.resource});
                     var popup = new Popup({
                         title: 'Pick a document',
                         width: '600px',
