@@ -11,13 +11,16 @@ _attribute_creation_counter = 0
 
 
 class Attribute(object):
-    def __init__(self, key, choices=None, default=None, aliases=(), readonly=False, hidden=False):
+    def __init__(self, key, choices=None, default=None, aliases=(), readonly=False, hidden=False, invisible=False):
+        if invisible:
+            hidden = True
         self.key = key
         self.choices = choices
         self.default = default
         self.aliases = aliases
         self.readonly = readonly
         self.hidden = hidden
+        self.invisible = invisible
         global _attribute_creation_counter
         _attribute_creation_counter += 1
         self.creation_counter = _attribute_creation_counter
@@ -65,7 +68,7 @@ class Identifier(Attribute):
 
 class Password(Attribute):
     def __init__(self, *args, **kwargs):
-        kwargs.setdefault('hidden', True)
+        kwargs.setdefault('invisible', True)
         super(Password, self).__init__(*args, **kwargs)
 
     def set(self, doc, value, **kwargs):

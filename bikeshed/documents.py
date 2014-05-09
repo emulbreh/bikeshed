@@ -142,11 +142,13 @@ class Document(object):
     def loads(self, blob, **kwargs):
         self.load(StringIO(blob), **kwargs)
 
-    def dump(self, f, include_readonly=False, include_hidden=False):
+    def dump(self, f, include_readonly=False, include_hidden=False, include_invisible=False):
         for header in self.headers:
             if not include_readonly and header.readonly:
                 continue
             if not include_hidden and header.hidden:
+                continue
+            if not include_invisible and header.invisible:
                 continue
             value = header.dump(self)
             if value is None:

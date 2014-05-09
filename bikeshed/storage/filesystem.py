@@ -29,7 +29,7 @@ class FileSystemDocumentStore(BaseDocumentStore):
         uid = doc.uid if doc.uid else uuid.uuid4().get_hex()
         path = self._get_document_path(uid)
         with io.open(path, 'w', encoding='utf-8') as f:
-            doc.dump(f, include_hidden=True, include_readonly=True)
+            doc.dump(f, include_hidden=True, include_readonly=True, include_invisible=True)
         doc.uid = uid
         doc.revision = 1
 
