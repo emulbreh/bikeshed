@@ -22,8 +22,9 @@ setup(
         'patchit>=1.1',
         'python-dateutil>=2.2',
         'redis>=2.9.1',
-        'tornado>=3.2',
         'Sphinx>=1.2.2',
         'itsdangerous>=0.24'
+        'Werkzeug==0.9.4',
+        'gunicorn==18.0',
     ],
 )

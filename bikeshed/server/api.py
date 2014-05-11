@@ -2,70 +2,29 @@ import json
 from io import StringIO
 
 from patchit import PatchSet
-from tornado.web import HTTPError
-from tornado.websocket import WebSocketHandler
 
 from bikeshed.server.base import BaseHandler
 from bikeshed.exceptions import DocumentDoesNotExist
 from bikeshed.auth import hash_password, create_session_key
 
 
-listeners = []
-clients = {}
-
-
-class EventHandler(WebSocketHandler):
-    methods = ('identify',)
-
-    def open(self):
-        print self.request
-        listeners.append(self)
-
-    def on_close(self):
-        listeners.remove(self)
-
-    def on_message(self, message):
-        data = json.loads(message)
-        method = data.get('method')
-        if method in self.methods:
-            getattr(self, method)(data)
-
-    def identify(self, data):
-        session_key = data.get('session')
-        if session_key:
-            clients[session_key] = self
-            print "IDENTIFY", session_key
-
-
-
-def broadcast(msg):
-    for listener in listeners:
-        listener.write_message(msg)
-
-
 class AuthenticationHandler(BaseHandler):
     needs_authentication = False
 
     def post(self):
-        data = json.loads(self.request.body)
+        data = json.loads(self.request.data)
         username = data.get('username')
         password = data.get('password')
         if not username or not password:
-            self.set_status(400)
-            return
+            return self.error_response(400)
         try:
-            user = self.application.store.lookup('Name', username, doctype='User')
+            user = self.app.store.lookup('Name', username, doctype='User')
         except DocumentDoesNotExist:
-            self.set_status(401)
-            return
+            return self.error_response(401)
         hashed_password = user['Password']
         if user['Password'] != hash_password(password.encode('utf-8'), hashed_password.encode('utf-8')):
-            self.set_status(401)
-            return
-        broadcast("login successful!")
-        self.write({
-            'session_key': create_session_key(user.uid),
-        })
+            return self.error_response(401)
+        return self.json_response({'session_key': create_session_key(user.uid)})
 
 
 class BaseDocumentHandler(BaseHandler):
@@ -78,7 +37,7 @@ class BaseDocumentHandler(BaseHandler):
             'title': doc.get_title(),
         }
         if not compact:
-            html_tpl = self.application.jinja_env.get_template('document.snippet.html')
+            html_tpl = self.app.jinja_env.get_template('document.snippet.html')
             headers = []
             for header in doc.headers:
                 value = header.get(doc)
@@ -95,7 +54,7 @@ class BaseDocumentHandler(BaseHandler):
                     'value': value,
                     'well_known': False,
                 })
-            path = self.application.store.get_path(doc)
+            path = self.app.store.get_path(doc)
             data.update({
                 'text': doc.dumps(include_hidden=True),
                 'html': html_tpl.render({'document': doc}),
@@ -111,84 +70,82 @@ class DocumentHandler(BaseDocumentHandler):
     @property
     def document(self):
         if not hasattr(self, '_document'):
-            uid = self.path_kwargs.get('uid')
-            self._document = self.application.store.get(uid)
+            uid = self.params.get('uid')
+            self._document = self.app.store.get(uid)
         return self._document
 
     def apply_update(self):
-        headers = json.loads(self.request.body)
+        headers = json.loads(self.request.data)
         self.document.update_headers(headers)
 
-    def return_document(self):
-        self.write(self.serialize_document(self.document))
+    def document_response(self):
+        return self.json_response(self.serialize_document(self.document))
 
-    def get(self, uid):
-        self.return_document()
+    def get(self):
+        return self.document_response()
 
-    def put(self, uid):
+    def put(self):
         content_type = self.request.headers['Content-Type']
         if content_type == 'application/json':
             self.document.clear()
             self.apply_update()
         elif content_type == 'text/plain':
             try:
-                body = self.request.body.decode('utf-8')
+                body = self.request.data.decode('utf-8')
             except UnicodeDecodeError:
-                self.set_status(400)
+                return self.error_response(400)
             self.document.loads(body)
         else:
-            self.set_status(400)
-            return
-        self.application.store.save(self.document)
-        self.return_document()
+            return self.error_response(400)
+        self.app.store.save(self.document)
+        return self.document_response()
 
     def patch(self, uid):
         content_type = self.request.headers['Content-Type']
         if content_type == 'application/json':
             self.apply_update()
         elif content_type == 'text/plain':
-            patches = PatchSet.from_stream(StringIO(self.request.body))
+            patches = PatchSet.from_stream(StringIO(self.request.data))
             lines = self.document.dumps().splitlines()
             for patch in patches:
                 # FIXME: does more than one patch make sense?
                 lines = patch.merge(lines)
             self.document.loads('\n'.join(lines))
         else:
-            self.set_status(400)
-        self.application.store.save(self.document)
-        self.return_document()
+            return self.error_response(400)
+        self.app.store.save(self.document)
+        return self.document_response()
 
 
 class DocumentsHandler(BaseDocumentHandler):
     def get(self):
-        q = self.get_argument('q', '')
-        t = self.get_argument('type', '')
-        limit = self.get_argument('limit', 20)
-        offset = self.get_argument('offset', 0)
-        result = self.application.store.search(
+        q = self.request.args.get('q', '')
+        t = self.request.args.get('type', '')
+        limit = self.request.args.get('limit', 20)
+        offset = self.request.args.get('offset', 0)
+        result = self.app.store.search(
             query=q,
             doctype=t,
             limit=limit,
             offset=offset,
         )
         self.content_type = 'application/json'
-        self.write({
+        return self.json_response({
             'documents': [self.serialize_document(doc) for doc in result],
         })
 
     def post(self):
         content_type = self.request.headers['Content-Type']
         if content_type == 'application/json':
-            data = json.loads(self.request.body)
-            doc = self.application.store.create(data)
+            data = json.loads(self.request.data)
+            doc = self.app.store.create(data)
         elif content_type == 'text/plain':
             try:
-                body = self.request.body.decode('utf-8')
+                body = self.request.data.decode('utf-8')
             except UnicodeDecodeError:
-                self.set_status(400)
-            doc = self.application.store.loads(body)
+                return self.error_response(400)
+            doc = self.app.store.loads(body)
         else:
-            self.set_status(400)
-            return
-        self.application.store.save(doc)
-        self.write(self.serialize_document(doc))
+            return self.error_response(400)
+        self.app.store.save(doc)
+        return self.json_response(self.serialize_document(doc))

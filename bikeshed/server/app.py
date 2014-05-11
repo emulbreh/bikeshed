@@ -1,45 +1,40 @@
-import os
 import hashlib
 import time
 from datetime import datetime, timedelta
 
-import redis
-
 from jinja2 import Environment, FileSystemLoader, TemplateNotFound
 
-from tornado import web
-from tornado import template
+from werkzeug.wrappers import Request, Response
+from werkzeug.routing import Map, Rule
+from werkzeug.exceptions import HTTPException, NotFound
 
 from bikeshed.server.chrome import IndexHandler, VoidHandler
-from bikeshed.server.session import RedisSessionStore
-
 from bikeshed.server import api
 
 
-class Application(web.Application):
-    def __init__(self, store, **kwargs):
-        base_dir = os.path.dirname(__file__)
-        static_path = os.path.join(base_dir, '..', 'static')
-        template_dir = os.path.join(base_dir, '..', 'templates')
-        kwargs.update({
-            'handlers': [
-                web.URLSpec(r"/static/(.*)", web.StaticFileHandler, {'path': static_path}),
-                web.URLSpec(r"/events", api.EventHandler),
-                web.URLSpec(r"/api/authenticate/", api.AuthenticationHandler, name='api-auth'),
-                web.URLSpec(r"/api/documents/", api.DocumentsHandler, name='api-search'),
-                web.URLSpec(r"/api/documents/(?P<uid>[^/]+)/", api.DocumentHandler, name='api-details'),
-                web.URLSpec(r"/void/", VoidHandler),
-                web.URLSpec(r"/.*", IndexHandler),
-            ],
-        })
-        super(Application, self).__init__(**kwargs)
-        
-        self.redis = redis.StrictRedis()
-        self.session_store = RedisSessionStore(self.redis)
+class WsgiApplication(object):
+    url_map = Map([
+        #Rule(r'/events', endpoint='events'),
+        Rule(r"/api/authenticate/", endpoint=api.AuthenticationHandler),
+        Rule(r"/api/documents/", endpoint=api.DocumentsHandler),
+        Rule(r"/api/documents/<uid>/", endpoint=api.DocumentHandler),
+        Rule(r"/void/", endpoint=VoidHandler),
+        Rule(r"/<path:path>", endpoint=IndexHandler),
+    ])
+
+    def __init__(self, store=None, redis=None, template_dir=None):
+        self.redis = redis
         self.jinja_env = Environment(loader=FileSystemLoader([template_dir]))
         self.store = store
 
-
-
-
+    def __call__(self, environ, start_response):
+        request = Request(environ)
+        adapter = self.url_map.bind_to_environ(environ)
+        try:
+            endpoint, values = adapter.match()
+            handler = endpoint(self, request, values)
+            response = handler()
+        except HTTPException as e:
+            return e
+        return response(environ, start_response)
 
