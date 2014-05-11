@@ -22,5 +22,5 @@ def create_app():
     })
 
 
-wsgi_app = create_app()
+app = create_app()
 

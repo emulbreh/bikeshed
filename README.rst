@@ -11,9 +11,9 @@ Install elasticsearch and redis, listening on default ports on localhost.
     $ python setup.py develop
     $ python -m bikeshed.commands.create_index
     $ python -m bikeshed.commands.reindex
-    $ python -m bikeshed.commands.server
+    $ gunicorn bikeshed.wsgi:app
 
-Go to http://127.0.0.1:7001
+Go to http://127.0.0.1:8000
 
 Development
 -----------
