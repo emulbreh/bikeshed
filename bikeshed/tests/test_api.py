@@ -10,6 +10,7 @@ from tornado import testing
 from bikeshed.server.app import Application
 from bikeshed.storage.filesystem import FileSystemDocumentStore
 from bikeshed import builtin_types
+from bikeshed.auth import create_session_key
 
 
 class ApiTestCase(testing.AsyncHTTPTestCase):
@@ -31,6 +32,7 @@ class ApiTestCase(testing.AsyncHTTPTestCase):
         store.register(builtin_types.User)
         self.store = store
         store.create_index()
+        store.es.cluster.health(wait_for_nodes=1)
         self._app = Application(store)
         super(ApiTestCase, self).setUp()
         
@@ -45,7 +47,9 @@ class ApiTestCase(testing.AsyncHTTPTestCase):
 
 class DocumentSearchTests(ApiTestCase):
     def test_empty_search(self):
-        self.http_client.fetch(self.get_url('/api/documents/'), self.stop)
+        self.http_client.fetch(self.get_url('/api/documents/'), self.stop, headers={
+            'Authorization': 'session %s' % create_session_key('0')
+        })
         response = self.wait()
         self.assertEqual(json.loads(response.body), {'documents': []})
 
