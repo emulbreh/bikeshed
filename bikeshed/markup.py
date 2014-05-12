@@ -48,7 +48,6 @@ class ReferenceParser(etree.TreeBuilder):
         super_data = super(ReferenceParser, self).data
         for match in _ref_re.finditer(text):
             ref = match.group(0)
-            print ref
             try:
                 target = self.store.resolve_reference(ref)
                 tag, attrs = 'a', {'href': '/view/%s/' % target.uid}
