@@ -2,18 +2,21 @@ import random
 import tempfile
 import shutil
 import json
+import unittest
 
 import elasticsearch
 import redis
-from tornado import testing
 
-from bikeshed.server.app import Application
+from werkzeug.test import Client
+from werkzeug.wrappers import BaseResponse
+
+from bikeshed.server.app import WsgiApplication
 from bikeshed.storage.filesystem import FileSystemDocumentStore
 from bikeshed import builtin_types
 from bikeshed.auth import create_session_key
 
 
-class ApiTestCase(testing.AsyncHTTPTestCase):
+class ApiTestCase(unittest.TestCase):
     def setUp(self):
         self.tmp_document_dir = tempfile.mkdtemp()
         store = FileSystemDocumentStore(
@@ -33,25 +36,21 @@ class ApiTestCase(testing.AsyncHTTPTestCase):
         self.store = store
         store.create_index()
         store.es.cluster.health(wait_for_nodes=1)
-        self._app = Application(store)
+        self.app = WsgiApplication(store=store)
+        self.client = Client(self.app, BaseResponse)
         super(ApiTestCase, self).setUp()
         
     def tearDown(self):
-        super(ApiTestCase, self).tearDown()
         self.store.delete_index()
         shutil.rmtree(self.tmp_document_dir)
-
-    def get_app(self):
-        return self._app
 
 
 class DocumentSearchTests(ApiTestCase):
     def test_empty_search(self):
-        self.http_client.fetch(self.get_url('/api/documents/'), self.stop, headers={
+        response = self.client.get('/api/documents/', headers={
             'Authorization': 'session %s' % create_session_key('0')
         })
-        response = self.wait()
-        self.assertEqual(json.loads(response.body), {'documents': []})
+        self.assertEqual(json.loads(response.data), {'documents': []})
 
 
 class DocumentDetailsTests(ApiTestCase):
