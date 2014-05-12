@@ -119,7 +119,7 @@ class BaseDocumentStore(object):
         mappings = {}
         for name, doctype in self.doctypes.iteritems():
             mappings[name] = {
-                'properties': {attr.key: attr.mapping_type() for attr in doctype.attributes}
+                'properties': {attr.key: attr.mapping_type() for attr in doctype.headers}
             }
         self.es.indices.create(
             index=self.index_name,

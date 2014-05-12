@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from setuptools import setup
+from setuptools import setup, find_packages
 
 with open('README.rst') as f:
     description = f.read()
@@ -8,7 +8,7 @@ with open('README.rst') as f:
 setup(
     name='bikeshed',
     version='0.1.0',
-    packages=['bikeshed'],
+    packages=find_packages(),
     license=u'BSD 3-Clause License',
     long_description=description,
     include_package_data=True,
@@ -22,8 +22,9 @@ setup(
         'patchit>=1.1',
         'python-dateutil>=2.2',
         'redis>=2.9.1',
-        'tornado>=3.2',
         'Sphinx>=1.2.2',
-        'itsdangerous>=0.24'
+        'itsdangerous>=0.24',
+        'Werkzeug==0.9.4',
+        'gunicorn==18.0',
     ],
 )
