@@ -18,6 +18,7 @@ class WsgiApplication(object):
         Rule(r"/api/authenticate/", endpoint=api.AuthenticationHandler),
         Rule(r"/api/documents/", endpoint=api.DocumentsHandler),
         Rule(r"/api/documents/<uid>/", endpoint=api.DocumentHandler),
+        Rule(r"/api/histogram/", endpoint=api.HistogramHandler),
         Rule(r"/void/", endpoint=VoidHandler),
         Rule(r"/<path:path>", endpoint=IndexHandler),
     ])

@@ -149,3 +149,14 @@ class DocumentsHandler(BaseDocumentHandler):
             return self.error_response(400)
         self.app.store.save(doc)
         return self.json_response(self.serialize_document(doc))
+
+
+class HistogramHandler(BaseHandler):
+    def get(self):
+        q = self.request.args.get('q', '')
+        field = self.request.args.get('field', '')
+        interval = self.request.args.get('interval')
+        if not field:
+            return self.error_response(400, "'field' parameter is required")
+        r = self.app.store.histogram(field, interval=interval)
+        return self.json_response({'histogram': r})

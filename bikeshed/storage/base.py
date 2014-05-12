@@ -151,6 +151,32 @@ class BaseDocumentStore(object):
         for hit in result['hits']['hits']:
             yield self.deserialize(hit['_source'])
 
+    def histogram(self, field, query='', doctype='', interval=None):
+        if interval is not None:
+            agg = {
+                'histogram': {
+                    'field': field, 
+                    'interval': interval,
+                }
+            }
+        else:
+            agg = {
+                'terms': {
+                    'field': field,
+                }
+            }
+        result = self.es.search(
+            index=self.index_name,
+            doc_type=doctype,
+            size=0,
+            body={
+                'aggregations': {
+                    'hist': agg,
+                }
+            }
+        )
+        return [{'key': b['key'], 'count': b['doc_count']} for b in result['aggregations']['hist']['buckets']]
+
     def lookup(self, key, value, doctype=''):
         es_filter = {
             'term': {
