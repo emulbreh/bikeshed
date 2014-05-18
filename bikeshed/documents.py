@@ -37,6 +37,8 @@ class DocumentType(type):
         for attr_name, value in attrs.iteritems():
             if isinstance(value, Attribute):
                 key_map[value.key.lower()] = value
+        if 'type_name' not in attrs:
+            attrs['type_name'] = name
 
         headers = key_map.values()
         headers.sort(key=attrgetter('creation_counter'))
