@@ -19,4 +19,5 @@ def get_store():
     store.register(builtin_types.Story)
     store.register(builtin_types.Project)
     store.register(builtin_types.User)
+    store.register(builtin_types.Iteration)
     return store

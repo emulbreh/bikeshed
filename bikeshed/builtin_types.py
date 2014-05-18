@@ -7,6 +7,7 @@ class Project(Document):
     type_name = 'Project'
 
     name = Attribute('Name', aliases=('Summary', 'Title'), hidden=True)
+    members = List('Members', TicketRef())
     
     def get_title(self):
         return self.name
@@ -35,7 +36,7 @@ class Ticket(Document):
     estimate = Attribute('Estimate'),
     status = Attribute('Status', choices=[
         'Open', 'Reopened', 'Blocked', 'InProgress',
-        'Fixed', 'Wontfix', 'Invalid'
+        'Fixed', 'Wontfix', 'Invalid', 'Done', 'Closed',
     ])
     
     def get_title(self):
@@ -48,7 +49,7 @@ class Ticket(Document):
         return self.parent or self.project
 
     def is_open(self):
-        return self.status not in ('Fixed', 'Wontfix', 'Invalid')
+        return self.status not in ('Fixed', 'Wontfix', 'Invalid', 'Done')
 
     def get_number(self):
         return self.number
@@ -80,4 +81,13 @@ class User(Document):
 
 class Iteration(Document):
     project = TicketRef('Project')
-    
+    name = Attribute('Name')
+    tickets = List('Tickets', TicketRef())
+
+    def get_label(self):
+        return self.name
+
+    def get_title(self):
+        return self.name
+
+
