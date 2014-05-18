@@ -23,7 +23,21 @@ To build the static resources, install `traceur`_ and `sass`_. Then run:
 .. code::
 
     $ ./make.sh
-    
+
+This can be run automatically whenever js or css files change:
+
+.. code::
+
+    $ pip install watchdog
+    $ ./watch-static.sh
+
+Finally, you can run werkzeug's development server that will restart when 
+bikeshed modules change:
+
+.. code::
+
+    $ python -m bikeshed.commands.devserver
+
 
 .. _traceur: https://github.com/google/traceur-compiler
 .. _sass: http://sass-lang.com/
