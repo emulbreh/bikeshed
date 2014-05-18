@@ -288,3 +288,32 @@ h1 {
 
 .loading {
   opacity: 0.5; }
+
+.bikeshed-card {
+  background-color: #fff;
+  border: 1px solid #eee; }
+  .bikeshed-card > .title {
+    border-left: 4px solid #f00;
+    padding-left: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block; }
+  .bikeshed-card.closed > .title {
+    text-decoration: line-through;
+    text-decoration-color: #000;
+    -moz-text-decoration-color: #000;
+    -webkit-text-decoration-color: #000; }
+
+.bikeshed-board .columns > div {
+  float: left;
+  width: 30%;
+  min-height: 100px;
+  padding: 0px 10px 0px 10px;
+  border: 1px solid transparent; }
+  .bikeshed-board .columns > div.drag-over {
+    border: 1px dashed #1099ee; }
+  .bikeshed-board .columns > div > .bikeshed-card {
+    margin-bottom: 10px; }
+.bikeshed-board .columns > div + div {
+  border-left: 1px solid #eee; }

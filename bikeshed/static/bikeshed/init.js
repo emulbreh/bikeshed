@@ -13,11 +13,13 @@ import {DocumentEditor} from './DocumentEditor'
 import {Document} from './Document'
 import {EditorPage} from './EditorPage'
 import {ViewerPage} from './ViewerPage'
+import {BoardPage} from './BoardPage'
 import {IndexPage} from './IndexPage'
 import {PageWithSidebar} from './PageWithSidebar'
 import {ListPage} from './ListPage'
 import {LoginPage} from './LoginPage'
 import {SearchForm} from './SearchForm'
+import {Card} from './Card'
 import {main} from './main'
 
 
@@ -25,7 +27,7 @@ export var bikeshed = { // FIXME
     main,
     Application, Component, List, Page, 
     Document,
-    Completer, SearchForm, DocumentEditor,
+    Completer, SearchForm, DocumentEditor, Card,
     PageWithSidebar, ListPage, IndexPage, EditorPage, ViewerPage, LoginPage
 };
 

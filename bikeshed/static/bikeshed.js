@@ -209,19 +209,6 @@ System.register("EventEmitter", [], function() {
       return EventEmitter;
     }};
 });
-System.register("bikeshed/Collection", [], function() {
-  "use strict";
-  var __moduleName = "bikeshed/Collection";
-  var EventEmitter = $traceurRuntime.assertObject(System.get("EventEmitter")).EventEmitter;
-  var Collection = function Collection(items) {
-    this.items = items || [];
-  };
-  ($traceurRuntime.createClass)(Collection, {}, {}, EventEmitter);
-  var Collection = Collection;
-  return {get Collection() {
-      return Collection;
-    }};
-});
 System.register("bikeshed/framework/Model", [], function() {
   "use strict";
   var __moduleName = "bikeshed/framework/Model";
@@ -260,9 +247,9 @@ System.register("bikeshed/Document", [], function() {
     load: function(data) {
       this.headers = {};
       if (data.headers) {
-        for (var $__5 = data.headers[Symbol.iterator](),
-            $__6; !($__6 = $__5.next()).done; ) {
-          var attr = $__6.value;
+        for (var $__3 = data.headers[Symbol.iterator](),
+            $__4; !($__4 = $__3.next()).done; ) {
+          var attr = $__4.value;
           {
             this.headers[attr.key.toLowerCase()] = attr;
           }
@@ -271,7 +258,7 @@ System.register("bikeshed/Document", [], function() {
       this.uid = data.uid;
       this.body = data.body || '';
       this._label = data.label;
-      this.text = data.text || '';
+      this._text = _.isUndefined(data.text) ? null : data.text;
       this.url = data.url;
       this.html = data.html;
       this.title = data.title;
@@ -282,6 +269,14 @@ System.register("bikeshed/Document", [], function() {
     getHeader: function(key, defaultValue) {
       var header = this.headers[key.toLowerCase()];
       return header ? header.value : defaultValue;
+    },
+    setHeader: function(key, value) {
+      var h = this.headers[key.toLowerCase()];
+      if (!h) {
+        h = this.headers[key.toLowerCase()] = {};
+      }
+      h.value = value;
+      this._text = null;
     },
     get number() {
       return this.getHeader('number');
@@ -295,8 +290,22 @@ System.register("bikeshed/Document", [], function() {
       }
       return this.label;
     },
+    generateText: function() {
+      var lines = [];
+      _.each(this.headers, (function(value, key) {
+        lines.push((key + ": " + value.value));
+      }));
+      lines.push('', this.body);
+      return lines.join('\n');
+    },
     setText: function(text) {
-      this.text = text;
+      this._text = text;
+    },
+    get text() {
+      if (this._text === null) {
+        this._text = this.generateText();
+      }
+      return this._text;
     },
     createViewLink: function() {
       var title = this.displayTitle;
@@ -361,9 +370,9 @@ System.register("bikeshed/framework/Component", [], function() {
       this.actions[name] = handler;
     },
     addActions: function(mapping) {
-      var $__8 = this;
+      var $__6 = this;
       _.each(mapping, (function(handler, name) {
-        return $__8.addAction(name, handler);
+        return $__6.addAction(name, handler);
       }));
     },
     get element() {
@@ -382,6 +391,268 @@ System.register("bikeshed/framework/Component", [], function() {
   var Component = Component;
   return {get Component() {
       return Component;
+    }};
+});
+System.register("bikeshed/BoardColumn", [], function() {
+  "use strict";
+  var __moduleName = "bikeshed/BoardColumn";
+  var Component = $traceurRuntime.assertObject(System.get("bikeshed/framework/Component")).Component;
+  var Document = $traceurRuntime.assertObject(System.get("bikeshed/Document")).Document;
+  var BoardColumn = function BoardColumn(options) {
+    options = _.defaults(options, {cssClass: 'column'});
+    $traceurRuntime.superCall(this, $BoardColumn.prototype, "constructor", [options]);
+    this.appendElement(("<div class=\"title\">" + options.title + "</div>"));
+    this.status = options.status;
+    this.board = options.board;
+    this.cards = [];
+    this.$element.on('dragenter', this.onDragEnter.bind(this));
+    this.$element.on('dragover', this.onDragOver.bind(this));
+    this.$element.on('dragleave', this.onDragLeave.bind(this));
+    this.$element.on('drop', this.onDrop.bind(this));
+  };
+  var $BoardColumn = BoardColumn;
+  ($traceurRuntime.createClass)(BoardColumn, {
+    addCard: function(card) {
+      this.cards.push(card);
+      this.append(card);
+    },
+    clear: function() {
+      _.each(this.cards, (function(card) {
+        card.dispose();
+      }));
+      this.cards = [];
+    },
+    onDragEnter: function(e) {
+      this.$element.addClass('drag-over');
+      return false;
+    },
+    onDragLeave: function(e) {
+      this.$element.removeClass('drag-over');
+      return false;
+    },
+    onDragOver: function(e) {
+      return false;
+    },
+    onDrop: function(e) {
+      this.$element.removeClass('drag-over');
+      var uid = e.originalEvent.dataTransfer.getData("application/x-bikeshed-document");
+      var card = this.board.getCard(uid);
+      card.document.setHeader('Status', this.status);
+      this.board.resource.save(card.document);
+      this.addCard(card);
+      return false;
+    }
+  }, {}, Component);
+  var BoardColumn = BoardColumn;
+  return {get BoardColumn() {
+      return BoardColumn;
+    }};
+});
+System.register("bikeshed/Card", [], function() {
+  "use strict";
+  var __moduleName = "bikeshed/Card";
+  var Component = $traceurRuntime.assertObject(System.get("bikeshed/framework/Component")).Component;
+  var Document = $traceurRuntime.assertObject(System.get("bikeshed/Document")).Document;
+  var Card = function Card(options) {
+    var $__11 = this;
+    options = _.defaults(options, {cssClass: 'bikeshed-card'});
+    $traceurRuntime.superCall(this, $Card.prototype, "constructor", [options]);
+    this.document = options.document;
+    this.$element.attr('draggable', 'true');
+    this.$element.on('dragstart', (function(e) {
+      e.originalEvent.dataTransfer.setData("application/x-bikeshed-document", $__11.document.uid);
+    }));
+    this.$title = this.appendElement(("<a class=\"title\" href=\"/view/" + this.document.uid + "/\"/>"));
+    this.setTitle(this.document.displayTitle);
+    if (this.document.getHeader('Status', 'Open') == 'Done') {
+      this.$element.addClass('closed');
+    }
+    this.document.on('change', this.onDocumentChange.bind(this));
+  };
+  var $Card = Card;
+  ($traceurRuntime.createClass)(Card, {
+    onDocumentChange: function(doc) {
+      this.setTitle(this.document.displayTitle);
+    },
+    setTitle: function(title) {
+      this.$title.html(title);
+    }
+  }, {}, Component);
+  var Card = Card;
+  return {get Card() {
+      return Card;
+    }};
+});
+System.register("bikeshed/framework/Page", [], function() {
+  "use strict";
+  var __moduleName = "bikeshed/framework/Page";
+  var Component = $traceurRuntime.assertObject(System.get("bikeshed/framework/Component")).Component;
+  var Page = function Page(options) {
+    options = _.defaults(options, {cssClass: 'bikeshed-page'});
+    $traceurRuntime.superCall(this, $Page.prototype, "constructor", [options]);
+    this.hide();
+  };
+  var $Page = Page;
+  ($traceurRuntime.createClass)(Page, {
+    open: function(params) {
+      var $__14 = this;
+      return new Promise((function(resolve, reject) {
+        $__14.show();
+        resolve();
+      }));
+    },
+    close: function() {
+      this.hide();
+    }
+  }, {}, Component);
+  var Page = Page;
+  return {get Page() {
+      return Page;
+    }};
+});
+System.register("bikeshed/PageWithSidebar", [], function() {
+  "use strict";
+  var __moduleName = "bikeshed/PageWithSidebar";
+  var Page = $traceurRuntime.assertObject(System.get("bikeshed/framework/Page")).Page;
+  var PageWithSidebar = function PageWithSidebar(options) {
+    $traceurRuntime.superCall(this, $PageWithSidebar.prototype, "constructor", [options]);
+    this.$sidebar = this.appendElement('<div class="bikeshed-sidebar"/>');
+  };
+  var $PageWithSidebar = PageWithSidebar;
+  ($traceurRuntime.createClass)(PageWithSidebar, {addToSidebar: function(el) {
+      this.$sidebar.append(el);
+    }}, {}, Page);
+  var PageWithSidebar = PageWithSidebar;
+  return {get PageWithSidebar() {
+      return PageWithSidebar;
+    }};
+});
+System.register("bikeshed/DocumentPage", [], function() {
+  "use strict";
+  var __moduleName = "bikeshed/DocumentPage";
+  var PageWithSidebar = $traceurRuntime.assertObject(System.get("bikeshed/PageWithSidebar")).PageWithSidebar;
+  var Document = $traceurRuntime.assertObject(System.get("bikeshed/Document")).Document;
+  var DocumentPage = function DocumentPage(options) {
+    $traceurRuntime.superCall(this, $DocumentPage.prototype, "constructor", [options]);
+    this.resource = options.resource;
+    this.$path = this.appendElement('<div class="path"/>');
+    this.$header = this.appendElement('<h1/>');
+  };
+  var $DocumentPage = DocumentPage;
+  ($traceurRuntime.createClass)(DocumentPage, {
+    onDocumentLoaded: function(doc) {
+      var $__19 = this;
+      this.doc = doc;
+      this.$header.html((doc.label + ": " + doc.title));
+      this.$path.empty();
+      _.each(doc.path, (function(parent) {
+        $__19.$path.append(parent.createViewLink());
+        $__19.$path.append($('<b> / </b>'));
+      }));
+    },
+    open: function(params) {
+      var $__20 = this;
+      var $__19 = this;
+      var done = null;
+      if (params.uid) {
+        done = this.resource.fetch(params.uid).then((function(doc) {
+          $__19.onDocumentLoaded(doc);
+        }));
+      }
+      done = done ? done.then((function() {
+        return $traceurRuntime.superCall($__20, $DocumentPage.prototype, "open", [params]);
+      })) : $traceurRuntime.superCall(this, $DocumentPage.prototype, "open", [params]);
+      return done;
+    }
+  }, {}, PageWithSidebar);
+  var DocumentPage = DocumentPage;
+  return {get DocumentPage() {
+      return DocumentPage;
+    }};
+});
+System.register("bikeshed/BoardPage", [], function() {
+  "use strict";
+  var __moduleName = "bikeshed/BoardPage";
+  var DocumentPage = $traceurRuntime.assertObject(System.get("bikeshed/DocumentPage")).DocumentPage;
+  var Document = $traceurRuntime.assertObject(System.get("bikeshed/Document")).Document;
+  var Card = $traceurRuntime.assertObject(System.get("bikeshed/Card")).Card;
+  var BoardColumn = $traceurRuntime.assertObject(System.get("bikeshed/BoardColumn")).BoardColumn;
+  var BoardPage = function BoardPage(options) {
+    var $__22 = this;
+    options = _.defaults(options, {cssClass: 'bikeshed-board bikeshed-page'});
+    $traceurRuntime.superCall(this, $BoardPage.prototype, "constructor", [options]);
+    this.$columns = this.appendElement('<div class="columns"/>');
+    var columns = [{
+      label: 'Todo',
+      status: 'Open'
+    }, {
+      label: 'In Progress',
+      status: 'InProgress'
+    }, {
+      label: 'Done',
+      status: 'Done'
+    }];
+    this.columns = [];
+    this.columnsByStatus = {};
+    _.each(columns, (function(col) {
+      var column = new BoardColumn({
+        board: $__22,
+        status: col.status,
+        title: col.label
+      });
+      $__22.columns.push(column);
+      $__22.columnsByStatus[col.status] = column;
+      $__22.$columns.append(column.$element);
+    }));
+    this.addActions({edit: (function(e) {
+        $__22.app.visit(("/edit/" + $__22.doc.uid + "/"));
+      })});
+    this.cardIndex = {};
+  };
+  var $BoardPage = BoardPage;
+  ($traceurRuntime.createClass)(BoardPage, {
+    getCard: function(uid) {
+      return this.cardIndex[uid];
+    },
+    onDocumentLoaded: function(doc) {
+      var $__22 = this;
+      $traceurRuntime.superCall(this, $BoardPage.prototype, "onDocumentLoaded", [doc]);
+      _.each(doc.getHeader('Tickets'), (function(uid) {
+        $__22.resource.fetch(uid).then((function(doc) {
+          $__22.addDocument(doc);
+        }));
+      }));
+    },
+    addDocument: function(doc) {
+      var card = new Card({document: doc});
+      var col = this.columnsByStatus[doc.getHeader('Status', 'Open')];
+      this.cardIndex[doc.uid] = card;
+      col.addCard(card);
+      return card;
+    },
+    open: function(params) {
+      _.each(this.columns, (function(col) {
+        col.clear();
+      }));
+      return $traceurRuntime.superCall(this, $BoardPage.prototype, "open", [params]);
+    }
+  }, {}, DocumentPage);
+  var BoardPage = BoardPage;
+  return {get BoardPage() {
+      return BoardPage;
+    }};
+});
+System.register("bikeshed/Collection", [], function() {
+  "use strict";
+  var __moduleName = "bikeshed/Collection";
+  var EventEmitter = $traceurRuntime.assertObject(System.get("EventEmitter")).EventEmitter;
+  var Collection = function Collection(items) {
+    this.items = items || [];
+  };
+  ($traceurRuntime.createClass)(Collection, {}, {}, EventEmitter);
+  var Collection = Collection;
+  return {get Collection() {
+      return Collection;
     }};
 });
 System.register("bikeshed/List", [], function() {
@@ -439,12 +710,12 @@ System.register("bikeshed/List", [], function() {
       this.selectedItem = null;
     },
     load: function(options) {
-      var $__11 = this,
-          $__12 = arguments;
+      var $__27 = this,
+          $__28 = arguments;
       return this.resource.get(options).then((function(result) {
-        $__11.onLoadSuccess(result);
+        $__27.onLoadSuccess(result);
       })).catch((function() {
-        $__11.onLoadError.apply($__11, $__12);
+        $__27.onLoadError.apply($__27, $__28);
       }));
     },
     onLoadError: function() {
@@ -452,9 +723,9 @@ System.register("bikeshed/List", [], function() {
     },
     onLoadSuccess: function(result) {
       this.clear();
-      for (var $__14 = result.documents[Symbol.iterator](),
-          $__15; !($__15 = $__14.next()).done; ) {
-        var data = $__15.value;
+      for (var $__30 = result.documents[Symbol.iterator](),
+          $__31; !($__31 = $__30.next()).done; ) {
+        var data = $__31.value;
         {
           this.appendItem(new Document(data));
         }
@@ -517,14 +788,14 @@ System.register("bikeshed/SearchForm", [], function() {
       }
     },
     onSearchInputChange: function(e) {
-      var $__17 = this;
+      var $__33 = this;
       if (this.typingTimeout) {
         clearTimeout(this.typingTimeout);
         this.typingTimeout = null;
       }
       this.typingTimeout = setTimeout((function() {
-        $__17.onQueryChange($__17.query);
-        $__17.typingTimeout = null;
+        $__33.onQueryChange($__33.query);
+        $__33.typingTimeout = null;
       }), 333);
     },
     get query() {
@@ -618,7 +889,7 @@ System.register("bikeshed/framework/Popup", [], function() {
   var __moduleName = "bikeshed/framework/Popup";
   var Component = $traceurRuntime.assertObject(System.get("bikeshed/framework/Component")).Component;
   var Popup = function Popup(options) {
-    var $__22 = this;
+    var $__38 = this;
     _.defaults(options, {
       cssClass: 'bikeshed-popup',
       title: '',
@@ -640,7 +911,7 @@ System.register("bikeshed/framework/Popup", [], function() {
     $('body').append(this.$overlay);
     this.$element.on('keydown', (function(e) {
       if (e.keyCode == 27) {
-        $__22.close();
+        $__38.close();
       }
     }));
   };
@@ -714,10 +985,10 @@ System.register("bikeshed/Completer", [], function() {
   };
   ($traceurRuntime.createClass)(Completer, {
     install: function() {
-      var $__25 = this;
+      var $__41 = this;
       var session = this.editor.getSession();
       session.selection.on('changeCursor', (function() {
-        setTimeout($__25.onCursorChange.bind($__25), 1);
+        setTimeout($__41.onCursorChange.bind($__41), 1);
       }));
     },
     onCursorChange: function() {
@@ -778,7 +1049,7 @@ System.register("bikeshed/Completer", [], function() {
       this.deactivate();
     },
     onCommandKey: function(e, hashId, keyCode) {
-      var $__25 = this;
+      var $__41 = this;
       if (!this.focusedToken) {
         return this.boundEditorOnCommandKey(e, hashId, keyCode);
       }
@@ -798,11 +1069,11 @@ System.register("bikeshed/Completer", [], function() {
             this.editor.blur();
             picker.focus();
             picker.on('select', (function(doc) {
-              $__25.complete(doc);
+              $__41.complete(doc);
               popup.dispose();
             }));
             popup.on('dispose', (function() {
-              $__25.editor.focus();
+              $__41.editor.focus();
             }));
           }
           break;
@@ -880,93 +1151,6 @@ System.register("bikeshed/DocumentEditor", [], function() {
       return DocumentEditor;
     }};
 });
-System.register("bikeshed/framework/Page", [], function() {
-  "use strict";
-  var __moduleName = "bikeshed/framework/Page";
-  var Component = $traceurRuntime.assertObject(System.get("bikeshed/framework/Component")).Component;
-  var Page = function Page(options) {
-    options = _.defaults(options, {cssClass: 'bikeshed-page'});
-    $traceurRuntime.superCall(this, $Page.prototype, "constructor", [options]);
-    this.hide();
-  };
-  var $Page = Page;
-  ($traceurRuntime.createClass)(Page, {
-    open: function(params) {
-      var $__30 = this;
-      return new Promise((function(resolve, reject) {
-        $__30.show();
-        resolve();
-      }));
-    },
-    close: function() {
-      this.hide();
-    }
-  }, {}, Component);
-  var Page = Page;
-  return {get Page() {
-      return Page;
-    }};
-});
-System.register("bikeshed/PageWithSidebar", [], function() {
-  "use strict";
-  var __moduleName = "bikeshed/PageWithSidebar";
-  var Page = $traceurRuntime.assertObject(System.get("bikeshed/framework/Page")).Page;
-  var PageWithSidebar = function PageWithSidebar(options) {
-    $traceurRuntime.superCall(this, $PageWithSidebar.prototype, "constructor", [options]);
-    this.$sidebar = this.appendElement('<div class="bikeshed-sidebar"/>');
-  };
-  var $PageWithSidebar = PageWithSidebar;
-  ($traceurRuntime.createClass)(PageWithSidebar, {addToSidebar: function(el) {
-      this.$sidebar.append(el);
-    }}, {}, Page);
-  var PageWithSidebar = PageWithSidebar;
-  return {get PageWithSidebar() {
-      return PageWithSidebar;
-    }};
-});
-System.register("bikeshed/DocumentPage", [], function() {
-  "use strict";
-  var __moduleName = "bikeshed/DocumentPage";
-  var PageWithSidebar = $traceurRuntime.assertObject(System.get("bikeshed/PageWithSidebar")).PageWithSidebar;
-  var Document = $traceurRuntime.assertObject(System.get("bikeshed/Document")).Document;
-  var DocumentPage = function DocumentPage(options) {
-    $traceurRuntime.superCall(this, $DocumentPage.prototype, "constructor", [options]);
-    this.resource = options.resource;
-    this.$path = this.appendElement('<div class="path"/>');
-    this.$header = this.appendElement('<h1/>');
-  };
-  var $DocumentPage = DocumentPage;
-  ($traceurRuntime.createClass)(DocumentPage, {
-    onDocumentLoaded: function(doc) {
-      var $__35 = this;
-      this.doc = doc;
-      this.$header.html((doc.label + ": " + doc.title));
-      this.$path.empty();
-      _.each(doc.path, (function(parent) {
-        $__35.$path.append(parent.createViewLink());
-        $__35.$path.append($('<b> / </b>'));
-      }));
-    },
-    open: function(params) {
-      var $__36 = this;
-      var $__35 = this;
-      var done = null;
-      if (params.uid) {
-        done = this.resource.fetch(params.uid).then((function(doc) {
-          $__35.onDocumentLoaded(doc);
-        }));
-      }
-      done = done ? done.then((function() {
-        return $traceurRuntime.superCall($__36, $DocumentPage.prototype, "open", [params]);
-      })) : $traceurRuntime.superCall(this, $DocumentPage.prototype, "open", [params]);
-      return done;
-    }
-  }, {}, PageWithSidebar);
-  var DocumentPage = DocumentPage;
-  return {get DocumentPage() {
-      return DocumentPage;
-    }};
-});
 System.register("bikeshed/EditorPage", [], function() {
   "use strict";
   var __moduleName = "bikeshed/EditorPage";
@@ -975,7 +1159,7 @@ System.register("bikeshed/EditorPage", [], function() {
   var DocumentEditor = $traceurRuntime.assertObject(System.get("bikeshed/DocumentEditor")).DocumentEditor;
   var Completer = $traceurRuntime.assertObject(System.get("bikeshed/Completer")).Completer;
   var EditorPage = function EditorPage(options) {
-    var $__38 = this;
+    var $__46 = this;
     $traceurRuntime.superCall(this, $EditorPage.prototype, "constructor", [options]);
     this.addToSidebar($('<a href="#save"><i class="fa fa-check"/>Save</a>'));
     this.addToSidebar($('<a href="#cancel"><i class="fa fa-times"/>Cancel</a>'));
@@ -983,20 +1167,20 @@ System.register("bikeshed/EditorPage", [], function() {
     this.$element.append(this.editor.$element);
     this.addActions({
       cancel: (function(e) {
-        if ($__38.doc.uid) {
-          $__38.app.visit(("/view/" + $__38.doc.uid + "/"));
+        if ($__46.doc.uid) {
+          $__46.app.visit(("/view/" + $__46.doc.uid + "/"));
         } else {
-          $__38.app.visit('/');
+          $__46.app.visit('/');
         }
       }),
       save: (function(e) {
-        $__38.editor.save();
+        $__46.editor.save();
       })
     });
     this.editor.on('save', (function(doc) {
-      $__38.resource.save(doc).then((function(doc) {
+      $__46.resource.save(doc).then((function(doc) {
         console.log("postsave", doc);
-        $__38.app.visit(("/view/" + doc.uid + "/"));
+        $__46.app.visit(("/view/" + doc.uid + "/"));
       }));
     }));
     this.completer = new Completer({
@@ -1011,9 +1195,9 @@ System.register("bikeshed/EditorPage", [], function() {
       this.editor.setDocument(doc);
     },
     open: function(params) {
-      var $__38 = this;
+      var $__46 = this;
       return $traceurRuntime.superCall(this, $EditorPage.prototype, "open", [params]).then((function(doc) {
-        return $__38.editor.focus();
+        return $__46.editor.focus();
       }));
     }
   }, {}, DocumentPage);
@@ -1045,22 +1229,22 @@ System.register("bikeshed/ListPage", [], function() {
   var PageWithSidebar = $traceurRuntime.assertObject(System.get("bikeshed/PageWithSidebar")).PageWithSidebar;
   var Picker = $traceurRuntime.assertObject(System.get("bikeshed/Picker")).Picker;
   var ListPage = function ListPage(options) {
-    var $__43 = this;
+    var $__51 = this;
     _.defaults(options, {cssClass: 'bikeshed-search'});
     $traceurRuntime.superCall(this, $ListPage.prototype, "constructor", [options]);
     this.resource = options.resource;
     this.picker = new Picker({resource: this.resource});
     this.$element.append(this.picker.$element);
     this.picker.on('select', (function(doc) {
-      $__43.app.visit(("/view/" + doc.uid + "/"));
+      $__51.app.visit(("/view/" + doc.uid + "/"));
     }));
   };
   var $ListPage = ListPage;
   ($traceurRuntime.createClass)(ListPage, {open: function(params) {
-      var $__43 = this;
+      var $__51 = this;
       this.picker.query = params.q || '';
       return $traceurRuntime.superCall(this, $ListPage.prototype, "open", [params]).then((function() {
-        return $__43.picker.focus();
+        return $__51.picker.focus();
       }));
     }}, {}, PageWithSidebar);
   var ListPage = ListPage;
@@ -1073,7 +1257,7 @@ System.register("bikeshed/LoginPage", [], function() {
   var __moduleName = "bikeshed/LoginPage";
   var Page = $traceurRuntime.assertObject(System.get("bikeshed/framework/Page")).Page;
   var LoginPage = function LoginPage(options) {
-    var $__46 = this;
+    var $__54 = this;
     options = _.defaults(options, {cssClass: 'bikeshed-login'});
     $traceurRuntime.superCall(this, $LoginPage.prototype, "constructor", [options]);
     this.api = options.api;
@@ -1085,7 +1269,7 @@ System.register("bikeshed/LoginPage", [], function() {
     this.$element.append(this.$loginForm);
     this.$loginForm.on('keypress', (function(e) {
       if (e.keyCode == 13) {
-        $__46.submit();
+        $__54.submit();
         return false;
       }
     }));
@@ -1093,13 +1277,13 @@ System.register("bikeshed/LoginPage", [], function() {
   var $LoginPage = LoginPage;
   ($traceurRuntime.createClass)(LoginPage, {
     open: function(params) {
-      var $__46 = this;
+      var $__54 = this;
       return $traceurRuntime.superCall(this, $LoginPage.prototype, "open", [params]).then((function() {
-        return $__46.$usernameInput.focus();
+        return $__54.$usernameInput.focus();
       }));
     },
     submit: function() {
-      var $__46 = this;
+      var $__54 = this;
       var credentials = {
         username: this.$usernameInput.val(),
         password: this.$passwordInput.val()
@@ -1110,13 +1294,13 @@ System.register("bikeshed/LoginPage", [], function() {
         data: JSON.stringify(credentials)
       }).then((function(response) {
         var sessionKey = response.session_key;
-        $__46.app.emit('login', {
+        $__54.app.emit('login', {
           session: sessionKey,
           username: credentials.username
         });
-        $__46.api.setSessionKey(sessionKey);
-        $__46.app.session.set('sessionKey', sessionKey);
-        $__46.app.visit('/');
+        $__54.api.setSessionKey(sessionKey);
+        $__54.app.session.set('sessionKey', sessionKey);
+        $__54.app.visit('/');
       }));
     }
   }, {}, Page);
@@ -1131,17 +1315,17 @@ System.register("bikeshed/ViewerPage", [], function() {
   var DocumentPage = $traceurRuntime.assertObject(System.get("bikeshed/DocumentPage")).DocumentPage;
   var Document = $traceurRuntime.assertObject(System.get("bikeshed/Document")).Document;
   var ViewerPage = function ViewerPage(options) {
-    var $__49 = this;
+    var $__57 = this;
     $traceurRuntime.superCall(this, $ViewerPage.prototype, "constructor", [options]);
     this.$display = this.appendElement('<div class="document-display"/>');
     this.addToSidebar('<a href="#edit"><i class="fa fa-edit"/> Edit</a>');
     this.addToSidebar('<a href="#children"><i class="fa fa-level-down"/> Children</a>');
     this.addActions({
       edit: (function(e) {
-        $__49.app.visit(("/edit/" + $__49.doc.uid + "/"));
+        $__57.app.visit(("/edit/" + $__57.doc.uid + "/"));
       }),
       children: (function(e) {
-        $__49.app.visit(("/search/?q=Project:" + $__49.doc.uid + "%20OR%20Parent:" + $__49.doc.uid));
+        $__57.app.visit(("/search/?q=Project:" + $__57.doc.uid + "%20OR%20Parent:" + $__57.doc.uid));
       })
     });
   };
@@ -1176,7 +1360,7 @@ System.register("bikeshed/framework/API", [], function() {
       this.defaultHeaders[name] = value;
     },
     request: function(url, options) {
-      var $__52 = this;
+      var $__60 = this;
       if (!options.absolute) {
         url = this.baseUrl + url;
       }
@@ -1191,7 +1375,7 @@ System.register("bikeshed/framework/API", [], function() {
         options.success = resolve;
         options.error = (function(xhr, status, error) {
           if (xhr.status == 401) {
-            $__52.emit('unauthorizedRequest', xhr);
+            $__60.emit('unauthorizedRequest', xhr);
           } else {
             console.log("ERROR", status, error, xhr);
           }
@@ -1277,10 +1461,10 @@ System.register("bikeshed/framework/Application", [], function() {
       this.$element.append(page.$element);
     },
     start: function() {
-      var $__57 = this;
+      var $__65 = this;
       this.visit(location.pathname + location.search).then((function() {
-        if ($__57.splash) {
-          $($__57.splash).remove();
+        if ($__65.splash) {
+          $($__65.splash).remove();
         }
       }));
     },
@@ -1302,9 +1486,9 @@ System.register("bikeshed/framework/Application", [], function() {
       if (querystring) {
         querystring = querystring.substring(1);
         querystring.split('&').forEach((function(pair) {
-          var $__61 = $traceurRuntime.assertObject(pair.split('=')),
-              key = $__61[0],
-              value = $__61[1];
+          var $__69 = $traceurRuntime.assertObject(pair.split('=')),
+              key = $__69[0],
+              value = $__69[1];
           params[decodeURIComponent(key)] = decodeURIComponent(value);
         }));
       }
@@ -1314,7 +1498,7 @@ System.register("bikeshed/framework/Application", [], function() {
       };
     },
     visit: function(url, pushstate) {
-      var $__57 = this;
+      var $__65 = this;
       console.log("VISIT", url);
       var pathInfo = this.parsePath(url);
       if (pushstate !== false) {
@@ -1323,9 +1507,9 @@ System.register("bikeshed/framework/Application", [], function() {
       var path = pathInfo.path;
       var page = null,
           params = pathInfo.params;
-      for (var $__59 = this.routes[Symbol.iterator](),
-          $__60; !($__60 = $__59.next()).done; ) {
-        var route = $__60.value;
+      for (var $__67 = this.routes[Symbol.iterator](),
+          $__68; !($__68 = $__67.next()).done; ) {
+        var route = $__68.value;
         {
           var match = route.re.exec(path);
           if (match) {
@@ -1346,7 +1530,7 @@ System.register("bikeshed/framework/Application", [], function() {
       }
       this.loading = true;
       return page.open(params).then((function() {
-        $__57.loading = false;
+        $__65.loading = false;
       })).catch((function(error) {
         console.log("failed to open page", error);
         page.close();
@@ -1396,11 +1580,11 @@ System.register("bikeshed/framework/Resource", [], function() {
       return this.request(options);
     },
     fetch: function(id, options) {
-      var $__62 = this;
+      var $__70 = this;
       options = _.defaults(options || {}, {url: ("" + this.url + id + "/")});
       console.log('fetch', id, options);
       return this.get(options).then((function(data) {
-        return new $__62.model(data);
+        return new $__70.model(data);
       }));
     },
     save: function(model, options) {
@@ -1435,6 +1619,7 @@ System.register("bikeshed/main", [], function() {
   var Document = $traceurRuntime.assertObject(System.get("bikeshed/Document")).Document;
   var EditorPage = $traceurRuntime.assertObject(System.get("bikeshed/EditorPage")).EditorPage;
   var ViewerPage = $traceurRuntime.assertObject(System.get("bikeshed/ViewerPage")).ViewerPage;
+  var BoardPage = $traceurRuntime.assertObject(System.get("bikeshed/BoardPage")).BoardPage;
   var IndexPage = $traceurRuntime.assertObject(System.get("bikeshed/IndexPage")).IndexPage;
   var ListPage = $traceurRuntime.assertObject(System.get("bikeshed/ListPage")).ListPage;
   var LoginPage = $traceurRuntime.assertObject(System.get("bikeshed/LoginPage")).LoginPage;
@@ -1464,7 +1649,8 @@ System.register("bikeshed/main", [], function() {
         '/search/': new ListPage({resource: documents}),
         '/new/': new EditorPage({resource: documents}),
         '/edit/:uid/': new EditorPage({resource: documents}),
-        '/view/:uid/': new ViewerPage({resource: documents})
+        '/view/:uid/': new ViewerPage({resource: documents}),
+        '/board/:uid/': new BoardPage({resource: documents})
       }
     });
     api.on('unauthorizedRequest', function() {
@@ -1502,11 +1688,13 @@ System.register("bikeshed/init", [], function() {
   var Document = $traceurRuntime.assertObject(System.get("bikeshed/Document")).Document;
   var EditorPage = $traceurRuntime.assertObject(System.get("bikeshed/EditorPage")).EditorPage;
   var ViewerPage = $traceurRuntime.assertObject(System.get("bikeshed/ViewerPage")).ViewerPage;
+  var BoardPage = $traceurRuntime.assertObject(System.get("bikeshed/BoardPage")).BoardPage;
   var IndexPage = $traceurRuntime.assertObject(System.get("bikeshed/IndexPage")).IndexPage;
   var PageWithSidebar = $traceurRuntime.assertObject(System.get("bikeshed/PageWithSidebar")).PageWithSidebar;
   var ListPage = $traceurRuntime.assertObject(System.get("bikeshed/ListPage")).ListPage;
   var LoginPage = $traceurRuntime.assertObject(System.get("bikeshed/LoginPage")).LoginPage;
   var SearchForm = $traceurRuntime.assertObject(System.get("bikeshed/SearchForm")).SearchForm;
+  var Card = $traceurRuntime.assertObject(System.get("bikeshed/Card")).Card;
   var main = $traceurRuntime.assertObject(System.get("bikeshed/main")).main;
   var bikeshed = {
     main: main,
@@ -1518,6 +1706,7 @@ System.register("bikeshed/init", [], function() {
     Completer: Completer,
     SearchForm: SearchForm,
     DocumentEditor: DocumentEditor,
+    Card: Card,
     PageWithSidebar: PageWithSidebar,
     ListPage: ListPage,
     IndexPage: IndexPage,

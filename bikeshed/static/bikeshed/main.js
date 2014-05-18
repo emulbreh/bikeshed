@@ -7,6 +7,7 @@ import {Collection} from './Collection'
 import {Document} from './Document'
 import {EditorPage} from './EditorPage'
 import {ViewerPage} from './ViewerPage'
+import {BoardPage} from './BoardPage'
 import {IndexPage} from './IndexPage'
 import {ListPage} from './ListPage'
 import {LoginPage} from './LoginPage'
@@ -53,6 +54,9 @@ function main(){
                 resource: documents
             }),
             '/view/:uid/': new ViewerPage({
+                resource: documents
+            }),
+            '/board/:uid/': new BoardPage({
                 resource: documents
             })
         }
