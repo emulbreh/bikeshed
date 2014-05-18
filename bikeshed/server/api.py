@@ -85,15 +85,15 @@ class DocumentHandler(BaseDocumentHandler):
         return self.document_response()
 
     def put(self):
-        content_type = self.request.headers['Content-Type']
-        if content_type == 'application/json':
+        mimetype = self.request.mimetype
+        if mimetype == 'application/json':
             self.document.clear()
             self.apply_update()
-        elif content_type == 'text/plain':
+        elif mimetype == 'text/plain':
             try:
                 body = self.request.data.decode('utf-8')
             except UnicodeDecodeError:
-                return self.error_response(400)
+                return self.error_response(400, 'unicode decode error')
             self.document.loads(body)
         else:
             return self.error_response(400)
@@ -101,10 +101,10 @@ class DocumentHandler(BaseDocumentHandler):
         return self.document_response()
 
     def patch(self, uid):
-        content_type = self.request.headers['Content-Type']
-        if content_type == 'application/json':
+        mimetype = self.request.mimetype
+        if mimetype == 'application/json':
             self.apply_update()
-        elif content_type == 'text/plain':
+        elif mimetype == 'text/plain':
             patches = PatchSet.from_stream(StringIO(self.request.data))
             lines = self.document.dumps().splitlines()
             for patch in patches:
@@ -135,18 +135,18 @@ class DocumentsHandler(BaseDocumentHandler):
         })
 
     def post(self):
-        content_type = self.request.headers['Content-Type']
-        if content_type == 'application/json':
+        mimetype = self.request.mimetype
+        if mimetype == 'application/json':
             data = json.loads(self.request.data)
             doc = self.app.store.create(data)
-        elif content_type == 'text/plain':
+        elif mimetype == 'text/plain':
             try:
                 body = self.request.data.decode('utf-8')
             except UnicodeDecodeError:
-                return self.error_response(400)
+                return self.error_response(400, 'unicode decode error')
             doc = self.app.store.loads(body)
         else:
-            return self.error_response(400)
+            return self.error_response(400, 'bad mimetype: %s' % mimetype)
         self.app.store.save(doc)
         return self.json_response(self.serialize_document(doc))
 

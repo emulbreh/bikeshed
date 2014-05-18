@@ -21,10 +21,18 @@ class BaseHandler(RequestHandler):
     def json_response(self, data, status=200):
         return Response(json.dumps(data), status=status, content_type='application/json')
 
-    def error_response(self, status=500, msg='something went wrong'):
-        return self.json_response({
-            'error': msg,
-        }, status=status)
+    def error_response(self, status=500, msg='something went wrong', extra=None):
+        data = {'error': msg}
+        if extra:
+            data.update(extra)
+        return self.json_response(data, status=status)
+
+    def bad_mimetype_response(self):
+        return self.error_response(
+            status=400,
+            msg='bad mimetype',
+            extra={'mimetype': self.request.mimetype}
+        )
 
     def __call__(self):
         self.user_uid = None
