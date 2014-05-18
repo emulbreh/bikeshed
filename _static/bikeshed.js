@@ -1320,7 +1320,11 @@ System.register("../bikeshed/static/bikeshed/ViewerPage", [], function() {
     this.$display = this.appendElement('<div class="document-display"/>');
     this.addToSidebar('<a href="#edit"><i class="fa fa-edit"/> Edit</a>');
     this.addToSidebar('<a href="#children"><i class="fa fa-level-down"/> Children</a>');
+    this.addToSidebar('<a href="#board"><i class="fa fa-th"/> Board</a>');
     this.addActions({
+      board: (function(e) {
+        $__57.app.visit(("/board/" + $__57.doc.uid + "/"));
+      }),
       edit: (function(e) {
         $__57.app.visit(("/edit/" + $__57.doc.uid + "/"));
       }),
