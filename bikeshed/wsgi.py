@@ -11,7 +11,7 @@ def create_app():
     store = get_store()
 
     base_dir = os.path.dirname(__file__)
-    static_path = os.path.join(base_dir, 'static')
+    static_path = os.path.join(base_dir, '..', '_static')
     template_dir = os.path.join(base_dir, 'templates')
     redis = StrictRedis()
 

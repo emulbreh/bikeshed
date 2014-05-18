@@ -1,6 +1,6 @@
-System.register("EventEmitter", [], function() {
+System.register("../bikeshed/static/EventEmitter", [], function() {
   "use strict";
-  var __moduleName = "EventEmitter";
+  var __moduleName = "../bikeshed/static/EventEmitter";
   (function() {
     'use strict';
     function EventEmitter() {}
@@ -209,10 +209,10 @@ System.register("EventEmitter", [], function() {
       return EventEmitter;
     }};
 });
-System.register("bikeshed/framework/Model", [], function() {
+System.register("../bikeshed/static/bikeshed/framework/Model", [], function() {
   "use strict";
-  var __moduleName = "bikeshed/framework/Model";
-  var EventEmitter = $traceurRuntime.assertObject(System.get("EventEmitter")).EventEmitter;
+  var __moduleName = "../bikeshed/static/bikeshed/framework/Model";
+  var EventEmitter = $traceurRuntime.assertObject(System.get("../bikeshed/static/EventEmitter")).EventEmitter;
   var Model = function Model(data, options) {
     $traceurRuntime.superCall(this, $Model.prototype, "constructor", []);
     this.load(data);
@@ -235,10 +235,10 @@ System.register("bikeshed/framework/Model", [], function() {
       return Model;
     }};
 });
-System.register("bikeshed/Document", [], function() {
+System.register("../bikeshed/static/bikeshed/Document", [], function() {
   "use strict";
-  var __moduleName = "bikeshed/Document";
-  var Model = $traceurRuntime.assertObject(System.get("bikeshed/framework/Model")).Model;
+  var __moduleName = "../bikeshed/static/bikeshed/Document";
+  var Model = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Model")).Model;
   var Document = function Document() {
     $traceurRuntime.defaultSuperCall(this, $Document.prototype, arguments);
   };
@@ -323,10 +323,10 @@ System.register("bikeshed/Document", [], function() {
       return Document;
     }};
 });
-System.register("bikeshed/framework/Component", [], function() {
+System.register("../bikeshed/static/bikeshed/framework/Component", [], function() {
   "use strict";
-  var __moduleName = "bikeshed/framework/Component";
-  var EventEmitter = $traceurRuntime.assertObject(System.get("EventEmitter")).EventEmitter;
+  var __moduleName = "../bikeshed/static/bikeshed/framework/Component";
+  var EventEmitter = $traceurRuntime.assertObject(System.get("../bikeshed/static/EventEmitter")).EventEmitter;
   var ACTIONS_DATA_KEY = 'bikeshed-component-actions';
   var Component = function Component(options) {
     options = options || {};
@@ -393,11 +393,11 @@ System.register("bikeshed/framework/Component", [], function() {
       return Component;
     }};
 });
-System.register("bikeshed/BoardColumn", [], function() {
+System.register("../bikeshed/static/bikeshed/BoardColumn", [], function() {
   "use strict";
-  var __moduleName = "bikeshed/BoardColumn";
-  var Component = $traceurRuntime.assertObject(System.get("bikeshed/framework/Component")).Component;
-  var Document = $traceurRuntime.assertObject(System.get("bikeshed/Document")).Document;
+  var __moduleName = "../bikeshed/static/bikeshed/BoardColumn";
+  var Component = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Component")).Component;
+  var Document = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Document")).Document;
   var BoardColumn = function BoardColumn(options) {
     options = _.defaults(options, {cssClass: 'column'});
     $traceurRuntime.superCall(this, $BoardColumn.prototype, "constructor", [options]);
@@ -448,11 +448,11 @@ System.register("bikeshed/BoardColumn", [], function() {
       return BoardColumn;
     }};
 });
-System.register("bikeshed/Card", [], function() {
+System.register("../bikeshed/static/bikeshed/Card", [], function() {
   "use strict";
-  var __moduleName = "bikeshed/Card";
-  var Component = $traceurRuntime.assertObject(System.get("bikeshed/framework/Component")).Component;
-  var Document = $traceurRuntime.assertObject(System.get("bikeshed/Document")).Document;
+  var __moduleName = "../bikeshed/static/bikeshed/Card";
+  var Component = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Component")).Component;
+  var Document = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Document")).Document;
   var Card = function Card(options) {
     var $__11 = this;
     options = _.defaults(options, {cssClass: 'bikeshed-card'});
@@ -483,10 +483,10 @@ System.register("bikeshed/Card", [], function() {
       return Card;
     }};
 });
-System.register("bikeshed/framework/Page", [], function() {
+System.register("../bikeshed/static/bikeshed/framework/Page", [], function() {
   "use strict";
-  var __moduleName = "bikeshed/framework/Page";
-  var Component = $traceurRuntime.assertObject(System.get("bikeshed/framework/Component")).Component;
+  var __moduleName = "../bikeshed/static/bikeshed/framework/Page";
+  var Component = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Component")).Component;
   var Page = function Page(options) {
     options = _.defaults(options, {cssClass: 'bikeshed-page'});
     $traceurRuntime.superCall(this, $Page.prototype, "constructor", [options]);
@@ -510,10 +510,10 @@ System.register("bikeshed/framework/Page", [], function() {
       return Page;
     }};
 });
-System.register("bikeshed/PageWithSidebar", [], function() {
+System.register("../bikeshed/static/bikeshed/PageWithSidebar", [], function() {
   "use strict";
-  var __moduleName = "bikeshed/PageWithSidebar";
-  var Page = $traceurRuntime.assertObject(System.get("bikeshed/framework/Page")).Page;
+  var __moduleName = "../bikeshed/static/bikeshed/PageWithSidebar";
+  var Page = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Page")).Page;
   var PageWithSidebar = function PageWithSidebar(options) {
     $traceurRuntime.superCall(this, $PageWithSidebar.prototype, "constructor", [options]);
     this.$sidebar = this.appendElement('<div class="bikeshed-sidebar"/>');
@@ -527,11 +527,11 @@ System.register("bikeshed/PageWithSidebar", [], function() {
       return PageWithSidebar;
     }};
 });
-System.register("bikeshed/DocumentPage", [], function() {
+System.register("../bikeshed/static/bikeshed/DocumentPage", [], function() {
   "use strict";
-  var __moduleName = "bikeshed/DocumentPage";
-  var PageWithSidebar = $traceurRuntime.assertObject(System.get("bikeshed/PageWithSidebar")).PageWithSidebar;
-  var Document = $traceurRuntime.assertObject(System.get("bikeshed/Document")).Document;
+  var __moduleName = "../bikeshed/static/bikeshed/DocumentPage";
+  var PageWithSidebar = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/PageWithSidebar")).PageWithSidebar;
+  var Document = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Document")).Document;
   var DocumentPage = function DocumentPage(options) {
     $traceurRuntime.superCall(this, $DocumentPage.prototype, "constructor", [options]);
     this.resource = options.resource;
@@ -570,13 +570,13 @@ System.register("bikeshed/DocumentPage", [], function() {
       return DocumentPage;
     }};
 });
-System.register("bikeshed/BoardPage", [], function() {
+System.register("../bikeshed/static/bikeshed/BoardPage", [], function() {
   "use strict";
-  var __moduleName = "bikeshed/BoardPage";
-  var DocumentPage = $traceurRuntime.assertObject(System.get("bikeshed/DocumentPage")).DocumentPage;
-  var Document = $traceurRuntime.assertObject(System.get("bikeshed/Document")).Document;
-  var Card = $traceurRuntime.assertObject(System.get("bikeshed/Card")).Card;
-  var BoardColumn = $traceurRuntime.assertObject(System.get("bikeshed/BoardColumn")).BoardColumn;
+  var __moduleName = "../bikeshed/static/bikeshed/BoardPage";
+  var DocumentPage = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/DocumentPage")).DocumentPage;
+  var Document = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Document")).Document;
+  var Card = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Card")).Card;
+  var BoardColumn = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/BoardColumn")).BoardColumn;
   var BoardPage = function BoardPage(options) {
     var $__22 = this;
     options = _.defaults(options, {cssClass: 'bikeshed-board bikeshed-page'});
@@ -642,10 +642,10 @@ System.register("bikeshed/BoardPage", [], function() {
       return BoardPage;
     }};
 });
-System.register("bikeshed/Collection", [], function() {
+System.register("../bikeshed/static/bikeshed/Collection", [], function() {
   "use strict";
-  var __moduleName = "bikeshed/Collection";
-  var EventEmitter = $traceurRuntime.assertObject(System.get("EventEmitter")).EventEmitter;
+  var __moduleName = "../bikeshed/static/bikeshed/Collection";
+  var EventEmitter = $traceurRuntime.assertObject(System.get("../bikeshed/static/EventEmitter")).EventEmitter;
   var Collection = function Collection(items) {
     this.items = items || [];
   };
@@ -655,11 +655,11 @@ System.register("bikeshed/Collection", [], function() {
       return Collection;
     }};
 });
-System.register("bikeshed/List", [], function() {
+System.register("../bikeshed/static/bikeshed/List", [], function() {
   "use strict";
-  var __moduleName = "bikeshed/List";
-  var Component = $traceurRuntime.assertObject(System.get("bikeshed/framework/Component")).Component;
-  var Document = $traceurRuntime.assertObject(System.get("bikeshed/Document")).Document;
+  var __moduleName = "../bikeshed/static/bikeshed/List";
+  var Component = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Component")).Component;
+  var Document = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Document")).Document;
   var ITEM_INDEX_DATA_KEY = 'bikeshed-list-item-index';
   var List = function List(options) {
     options = _.defaults(options, {cssClass: 'bikeshed-list'});
@@ -765,11 +765,11 @@ System.register("bikeshed/List", [], function() {
       return List;
     }};
 });
-System.register("bikeshed/SearchForm", [], function() {
+System.register("../bikeshed/static/bikeshed/SearchForm", [], function() {
   "use strict";
-  var __moduleName = "bikeshed/SearchForm";
-  var Component = $traceurRuntime.assertObject(System.get("bikeshed/framework/Component")).Component;
-  var Document = $traceurRuntime.assertObject(System.get("bikeshed/Document")).Document;
+  var __moduleName = "../bikeshed/static/bikeshed/SearchForm";
+  var Component = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Component")).Component;
+  var Document = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Document")).Document;
   var SearchForm = function SearchForm(options) {
     options = _.defaults(options, {cssClass: 'bikeshed-searchform'});
     $traceurRuntime.superCall(this, $SearchForm.prototype, "constructor", [options]);
@@ -814,12 +814,12 @@ System.register("bikeshed/SearchForm", [], function() {
       return SearchForm;
     }};
 });
-System.register("bikeshed/Picker", [], function() {
+System.register("../bikeshed/static/bikeshed/Picker", [], function() {
   "use strict";
-  var __moduleName = "bikeshed/Picker";
-  var Component = $traceurRuntime.assertObject(System.get("bikeshed/framework/Component")).Component;
-  var List = $traceurRuntime.assertObject(System.get("bikeshed/List")).List;
-  var SearchForm = $traceurRuntime.assertObject(System.get("bikeshed/SearchForm")).SearchForm;
+  var __moduleName = "../bikeshed/static/bikeshed/Picker";
+  var Component = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Component")).Component;
+  var List = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/List")).List;
+  var SearchForm = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/SearchForm")).SearchForm;
   var Picker = function Picker(options) {
     _.defaults(options, {cssClass: 'bikeshed-picker'});
     $traceurRuntime.superCall(this, $Picker.prototype, "constructor", [options]);
@@ -884,10 +884,10 @@ System.register("bikeshed/Picker", [], function() {
       return Picker;
     }};
 });
-System.register("bikeshed/framework/Popup", [], function() {
+System.register("../bikeshed/static/bikeshed/framework/Popup", [], function() {
   "use strict";
-  var __moduleName = "bikeshed/framework/Popup";
-  var Component = $traceurRuntime.assertObject(System.get("bikeshed/framework/Component")).Component;
+  var __moduleName = "../bikeshed/static/bikeshed/framework/Popup";
+  var Component = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Component")).Component;
   var Popup = function Popup(options) {
     var $__38 = this;
     _.defaults(options, {
@@ -943,12 +943,12 @@ System.register("bikeshed/framework/Popup", [], function() {
       return Popup;
     }};
 });
-System.register("bikeshed/Completer", [], function() {
+System.register("../bikeshed/static/bikeshed/Completer", [], function() {
   "use strict";
-  var __moduleName = "bikeshed/Completer";
-  var List = $traceurRuntime.assertObject(System.get("bikeshed/List")).List;
-  var Popup = $traceurRuntime.assertObject(System.get("bikeshed/framework/Popup")).Popup;
-  var Picker = $traceurRuntime.assertObject(System.get("bikeshed/Picker")).Picker;
+  var __moduleName = "../bikeshed/static/bikeshed/Completer";
+  var List = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/List")).List;
+  var Popup = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Popup")).Popup;
+  var Picker = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Picker")).Picker;
   function positionEqual(a, b) {
     return a && b && a.row == b.row & a.column == b.column;
   }
@@ -1105,11 +1105,11 @@ System.register("bikeshed/Completer", [], function() {
       return Completer;
     }};
 });
-System.register("bikeshed/DocumentEditor", [], function() {
+System.register("../bikeshed/static/bikeshed/DocumentEditor", [], function() {
   "use strict";
-  var __moduleName = "bikeshed/DocumentEditor";
-  var Component = $traceurRuntime.assertObject(System.get("bikeshed/framework/Component")).Component;
-  var Document = $traceurRuntime.assertObject(System.get("bikeshed/Document")).Document;
+  var __moduleName = "../bikeshed/static/bikeshed/DocumentEditor";
+  var Component = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Component")).Component;
+  var Document = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Document")).Document;
   var DocumentEditor = function DocumentEditor(options) {
     options = _.defaults(options, {'cssClass': 'bikeshed-editor'});
     $traceurRuntime.superCall(this, $DocumentEditor.prototype, "constructor", [options]);
@@ -1151,13 +1151,13 @@ System.register("bikeshed/DocumentEditor", [], function() {
       return DocumentEditor;
     }};
 });
-System.register("bikeshed/EditorPage", [], function() {
+System.register("../bikeshed/static/bikeshed/EditorPage", [], function() {
   "use strict";
-  var __moduleName = "bikeshed/EditorPage";
-  var DocumentPage = $traceurRuntime.assertObject(System.get("bikeshed/DocumentPage")).DocumentPage;
-  var Document = $traceurRuntime.assertObject(System.get("bikeshed/Document")).Document;
-  var DocumentEditor = $traceurRuntime.assertObject(System.get("bikeshed/DocumentEditor")).DocumentEditor;
-  var Completer = $traceurRuntime.assertObject(System.get("bikeshed/Completer")).Completer;
+  var __moduleName = "../bikeshed/static/bikeshed/EditorPage";
+  var DocumentPage = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/DocumentPage")).DocumentPage;
+  var Document = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Document")).Document;
+  var DocumentEditor = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/DocumentEditor")).DocumentEditor;
+  var Completer = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Completer")).Completer;
   var EditorPage = function EditorPage(options) {
     var $__46 = this;
     $traceurRuntime.superCall(this, $EditorPage.prototype, "constructor", [options]);
@@ -1206,10 +1206,10 @@ System.register("bikeshed/EditorPage", [], function() {
       return EditorPage;
     }};
 });
-System.register("bikeshed/IndexPage", [], function() {
+System.register("../bikeshed/static/bikeshed/IndexPage", [], function() {
   "use strict";
-  var __moduleName = "bikeshed/IndexPage";
-  var PageWithSidebar = $traceurRuntime.assertObject(System.get("bikeshed/PageWithSidebar")).PageWithSidebar;
+  var __moduleName = "../bikeshed/static/bikeshed/IndexPage";
+  var PageWithSidebar = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/PageWithSidebar")).PageWithSidebar;
   var IndexPage = function IndexPage(options) {
     $traceurRuntime.superCall(this, $IndexPage.prototype, "constructor", [options]);
     this.addToSidebar($('<a href="/new/">New</a>'));
@@ -1223,11 +1223,11 @@ System.register("bikeshed/IndexPage", [], function() {
       return IndexPage;
     }};
 });
-System.register("bikeshed/ListPage", [], function() {
+System.register("../bikeshed/static/bikeshed/ListPage", [], function() {
   "use strict";
-  var __moduleName = "bikeshed/ListPage";
-  var PageWithSidebar = $traceurRuntime.assertObject(System.get("bikeshed/PageWithSidebar")).PageWithSidebar;
-  var Picker = $traceurRuntime.assertObject(System.get("bikeshed/Picker")).Picker;
+  var __moduleName = "../bikeshed/static/bikeshed/ListPage";
+  var PageWithSidebar = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/PageWithSidebar")).PageWithSidebar;
+  var Picker = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Picker")).Picker;
   var ListPage = function ListPage(options) {
     var $__51 = this;
     _.defaults(options, {cssClass: 'bikeshed-search'});
@@ -1252,10 +1252,10 @@ System.register("bikeshed/ListPage", [], function() {
       return ListPage;
     }};
 });
-System.register("bikeshed/LoginPage", [], function() {
+System.register("../bikeshed/static/bikeshed/LoginPage", [], function() {
   "use strict";
-  var __moduleName = "bikeshed/LoginPage";
-  var Page = $traceurRuntime.assertObject(System.get("bikeshed/framework/Page")).Page;
+  var __moduleName = "../bikeshed/static/bikeshed/LoginPage";
+  var Page = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Page")).Page;
   var LoginPage = function LoginPage(options) {
     var $__54 = this;
     options = _.defaults(options, {cssClass: 'bikeshed-login'});
@@ -1309,11 +1309,11 @@ System.register("bikeshed/LoginPage", [], function() {
       return LoginPage;
     }};
 });
-System.register("bikeshed/ViewerPage", [], function() {
+System.register("../bikeshed/static/bikeshed/ViewerPage", [], function() {
   "use strict";
-  var __moduleName = "bikeshed/ViewerPage";
-  var DocumentPage = $traceurRuntime.assertObject(System.get("bikeshed/DocumentPage")).DocumentPage;
-  var Document = $traceurRuntime.assertObject(System.get("bikeshed/Document")).Document;
+  var __moduleName = "../bikeshed/static/bikeshed/ViewerPage";
+  var DocumentPage = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/DocumentPage")).DocumentPage;
+  var Document = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Document")).Document;
   var ViewerPage = function ViewerPage(options) {
     var $__57 = this;
     $traceurRuntime.superCall(this, $ViewerPage.prototype, "constructor", [options]);
@@ -1339,10 +1339,10 @@ System.register("bikeshed/ViewerPage", [], function() {
       return ViewerPage;
     }};
 });
-System.register("bikeshed/framework/API", [], function() {
+System.register("../bikeshed/static/bikeshed/framework/API", [], function() {
   "use strict";
-  var __moduleName = "bikeshed/framework/API";
-  var EventEmitter = $traceurRuntime.assertObject(System.get("EventEmitter")).EventEmitter;
+  var __moduleName = "../bikeshed/static/bikeshed/framework/API";
+  var EventEmitter = $traceurRuntime.assertObject(System.get("../bikeshed/static/EventEmitter")).EventEmitter;
   var API = function API(options) {
     $traceurRuntime.superCall(this, $API.prototype, "constructor", []);
     options = _.defaults(options, {
@@ -1394,10 +1394,10 @@ System.register("bikeshed/framework/API", [], function() {
       return API;
     }};
 });
-System.register("bikeshed/framework/Session", [], function() {
+System.register("../bikeshed/static/bikeshed/framework/Session", [], function() {
   "use strict";
-  var __moduleName = "bikeshed/framework/Session";
-  var EventEmitter = $traceurRuntime.assertObject(System.get("EventEmitter")).EventEmitter;
+  var __moduleName = "../bikeshed/static/bikeshed/framework/Session";
+  var EventEmitter = $traceurRuntime.assertObject(System.get("../bikeshed/static/EventEmitter")).EventEmitter;
   var Session = function Session(options) {
     $traceurRuntime.superCall(this, $Session.prototype, "constructor", []);
     options = _.defaults(options, {key: 'bikeshed.session'});
@@ -1419,11 +1419,11 @@ System.register("bikeshed/framework/Session", [], function() {
       return Session;
     }};
 });
-System.register("bikeshed/framework/Application", [], function() {
+System.register("../bikeshed/static/bikeshed/framework/Application", [], function() {
   "use strict";
-  var __moduleName = "bikeshed/framework/Application";
-  var EventEmitter = $traceurRuntime.assertObject(System.get("EventEmitter")).EventEmitter;
-  var Session = $traceurRuntime.assertObject(System.get("bikeshed/framework/Session")).Session;
+  var __moduleName = "../bikeshed/static/bikeshed/framework/Application";
+  var EventEmitter = $traceurRuntime.assertObject(System.get("../bikeshed/static/EventEmitter")).EventEmitter;
+  var Session = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Session")).Session;
   var Application = function Application(options) {
     $traceurRuntime.superCall(this, $Application.prototype, "constructor", []);
     options = _.defaults(options, {element: 'body'});
@@ -1557,10 +1557,10 @@ System.register("bikeshed/framework/Application", [], function() {
       return Application;
     }};
 });
-System.register("bikeshed/framework/Resource", [], function() {
+System.register("../bikeshed/static/bikeshed/framework/Resource", [], function() {
   "use strict";
-  var __moduleName = "bikeshed/framework/Resource";
-  var EventEmitter = $traceurRuntime.assertObject(System.get("EventEmitter")).EventEmitter;
+  var __moduleName = "../bikeshed/static/bikeshed/framework/Resource";
+  var EventEmitter = $traceurRuntime.assertObject(System.get("../bikeshed/static/EventEmitter")).EventEmitter;
   var Resource = function Resource(api, url, model, options) {
     this.api = api;
     this.url = url;
@@ -1608,21 +1608,21 @@ System.register("bikeshed/framework/Resource", [], function() {
       return Resource;
     }};
 });
-System.register("bikeshed/main", [], function() {
+System.register("../bikeshed/static/bikeshed/main", [], function() {
   "use strict";
-  var __moduleName = "bikeshed/main";
-  var Application = $traceurRuntime.assertObject(System.get("bikeshed/framework/Application")).Application;
-  var API = $traceurRuntime.assertObject(System.get("bikeshed/framework/API")).API;
-  var Resource = $traceurRuntime.assertObject(System.get("bikeshed/framework/Resource")).Resource;
-  var Model = $traceurRuntime.assertObject(System.get("bikeshed/framework/Model")).Model;
-  var Collection = $traceurRuntime.assertObject(System.get("bikeshed/Collection")).Collection;
-  var Document = $traceurRuntime.assertObject(System.get("bikeshed/Document")).Document;
-  var EditorPage = $traceurRuntime.assertObject(System.get("bikeshed/EditorPage")).EditorPage;
-  var ViewerPage = $traceurRuntime.assertObject(System.get("bikeshed/ViewerPage")).ViewerPage;
-  var BoardPage = $traceurRuntime.assertObject(System.get("bikeshed/BoardPage")).BoardPage;
-  var IndexPage = $traceurRuntime.assertObject(System.get("bikeshed/IndexPage")).IndexPage;
-  var ListPage = $traceurRuntime.assertObject(System.get("bikeshed/ListPage")).ListPage;
-  var LoginPage = $traceurRuntime.assertObject(System.get("bikeshed/LoginPage")).LoginPage;
+  var __moduleName = "../bikeshed/static/bikeshed/main";
+  var Application = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Application")).Application;
+  var API = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/API")).API;
+  var Resource = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Resource")).Resource;
+  var Model = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Model")).Model;
+  var Collection = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Collection")).Collection;
+  var Document = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Document")).Document;
+  var EditorPage = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/EditorPage")).EditorPage;
+  var ViewerPage = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/ViewerPage")).ViewerPage;
+  var BoardPage = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/BoardPage")).BoardPage;
+  var IndexPage = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/IndexPage")).IndexPage;
+  var ListPage = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/ListPage")).ListPage;
+  var LoginPage = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/LoginPage")).LoginPage;
   var BikeshedAPI = function BikeshedAPI() {
     $traceurRuntime.defaultSuperCall(this, $BikeshedAPI.prototype, arguments);
   };
@@ -1671,31 +1671,31 @@ System.register("bikeshed/main", [], function() {
       return main;
     }};
 });
-System.register("bikeshed/init", [], function() {
+System.register("../bikeshed/static/bikeshed/init", [], function() {
   "use strict";
-  var __moduleName = "bikeshed/init";
-  var Component = $traceurRuntime.assertObject(System.get("bikeshed/framework/Component")).Component;
-  var Page = $traceurRuntime.assertObject(System.get("bikeshed/framework/Page")).Page;
-  var Application = $traceurRuntime.assertObject(System.get("bikeshed/framework/Application")).Application;
-  var API = $traceurRuntime.assertObject(System.get("bikeshed/framework/API")).API;
-  var Resource = $traceurRuntime.assertObject(System.get("bikeshed/framework/Resource")).Resource;
-  var Model = $traceurRuntime.assertObject(System.get("bikeshed/framework/Model")).Model;
-  var Session = $traceurRuntime.assertObject(System.get("bikeshed/framework/Session")).Session;
-  var Collection = $traceurRuntime.assertObject(System.get("bikeshed/Collection")).Collection;
-  var List = $traceurRuntime.assertObject(System.get("bikeshed/List")).List;
-  var Completer = $traceurRuntime.assertObject(System.get("bikeshed/Completer")).Completer;
-  var DocumentEditor = $traceurRuntime.assertObject(System.get("bikeshed/DocumentEditor")).DocumentEditor;
-  var Document = $traceurRuntime.assertObject(System.get("bikeshed/Document")).Document;
-  var EditorPage = $traceurRuntime.assertObject(System.get("bikeshed/EditorPage")).EditorPage;
-  var ViewerPage = $traceurRuntime.assertObject(System.get("bikeshed/ViewerPage")).ViewerPage;
-  var BoardPage = $traceurRuntime.assertObject(System.get("bikeshed/BoardPage")).BoardPage;
-  var IndexPage = $traceurRuntime.assertObject(System.get("bikeshed/IndexPage")).IndexPage;
-  var PageWithSidebar = $traceurRuntime.assertObject(System.get("bikeshed/PageWithSidebar")).PageWithSidebar;
-  var ListPage = $traceurRuntime.assertObject(System.get("bikeshed/ListPage")).ListPage;
-  var LoginPage = $traceurRuntime.assertObject(System.get("bikeshed/LoginPage")).LoginPage;
-  var SearchForm = $traceurRuntime.assertObject(System.get("bikeshed/SearchForm")).SearchForm;
-  var Card = $traceurRuntime.assertObject(System.get("bikeshed/Card")).Card;
-  var main = $traceurRuntime.assertObject(System.get("bikeshed/main")).main;
+  var __moduleName = "../bikeshed/static/bikeshed/init";
+  var Component = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Component")).Component;
+  var Page = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Page")).Page;
+  var Application = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Application")).Application;
+  var API = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/API")).API;
+  var Resource = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Resource")).Resource;
+  var Model = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Model")).Model;
+  var Session = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Session")).Session;
+  var Collection = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Collection")).Collection;
+  var List = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/List")).List;
+  var Completer = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Completer")).Completer;
+  var DocumentEditor = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/DocumentEditor")).DocumentEditor;
+  var Document = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Document")).Document;
+  var EditorPage = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/EditorPage")).EditorPage;
+  var ViewerPage = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/ViewerPage")).ViewerPage;
+  var BoardPage = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/BoardPage")).BoardPage;
+  var IndexPage = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/IndexPage")).IndexPage;
+  var PageWithSidebar = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/PageWithSidebar")).PageWithSidebar;
+  var ListPage = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/ListPage")).ListPage;
+  var LoginPage = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/LoginPage")).LoginPage;
+  var SearchForm = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/SearchForm")).SearchForm;
+  var Card = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Card")).Card;
+  var main = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/main")).main;
   var bikeshed = {
     main: main,
     Application: Application,
@@ -1729,4 +1729,4 @@ System.register("bikeshed/init", [], function() {
       return bikeshed;
     }};
 });
-System.get("bikeshed/init" + '');
+System.get("../bikeshed/static/bikeshed/init" + '');

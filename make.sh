@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
-traceur --out bikeshed/static/bikeshed.js bikeshed/static/bikeshed/init.js
-sass --scss bikeshed/static/css/bikeshed.scss > bikeshed/static/bikeshed.css
+cp bikeshed/static/traceur-runtime.js _static
+traceur --out _static/bikeshed.js bikeshed/static/bikeshed/init.js
+sass --scss bikeshed/static/css/bikeshed.scss > _static/bikeshed.css
