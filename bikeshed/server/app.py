@@ -20,6 +20,7 @@ class WsgiApplication(object):
         Rule(r"/api/documents/<uid>/", endpoint=api.DocumentHandler),
         Rule(r"/api/histogram/", endpoint=api.HistogramHandler),
         Rule(r"/void/", endpoint=VoidHandler),
+        Rule(r"/", endpoint=IndexHandler),
         Rule(r"/<path:path>", endpoint=IndexHandler),
     ])
 
