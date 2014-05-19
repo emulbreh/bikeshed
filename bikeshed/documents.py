@@ -7,6 +7,7 @@ import docutils
 from bikeshed.attributes import Attribute
 from bikeshed.exceptions import ReferenceLookupError, FileFormatError, Readonly
 from bikeshed.markup import markup
+from bikeshed.utils import cached_property
 
 
 def parse_document(f):
@@ -57,10 +58,19 @@ class Document(object):
         self.store = store
         self.uid = uid
         self.header_values = OrderedDict()
-        self.body = body
+        self._body = body
         self.extra_header_values = {}
         if values:
             self.update_headers(values, ignore_reference_errors=ignore_reference_errors)
+
+    @property
+    def body(self):
+        return self._body
+
+    @body.setter
+    def body(self, value):
+        del self.markup
+        self._body = value
 
     def get_number(self):
         return None
@@ -168,6 +178,20 @@ class Document(object):
         self.dump(f, **kwargs)
         return f.getvalue()
 
+    def get_body_refs(self):
+        return self.markup.get_refs()
+
+    def get_refs(self):
+        ref_uids = set()
+        for header in self.headers:
+            for ref in header.get_refs(self, header.get(self)):
+                if ref.uid not in ref_uids:
+                    ref_uids.add(ref.uid)
+                    yield ref
+        for ref in self.get_body_refs():
+            if ref.uid not in ref_uids:
+                yield ref
+
     def serialize(self):
         data = {
             'body': self.body,
@@ -179,11 +203,16 @@ class Document(object):
             if value is not None:
                 data[header.key] = value
         data.update(self.extra_header_values)
+        data['_references'] = [
+            {'label': ref.get_label(), 'uid': ref.uid} for ref in self.get_refs()
+        ]
+        print data
         return data
 
     @classmethod
     def deserialize(cls, store, data):
         values = dict(data)
+        refs = values.pop('_references', ())
         return cls(
             store,
             uid=values.pop('_id'),
@@ -191,5 +220,10 @@ class Document(object):
             values=values,
         )
 
-    def html_body(self):
+    @cached_property
+    def markup(self):
         return markup(self.store, self.body)
+
+    def html_body(self):
+        return self.markup.html
+

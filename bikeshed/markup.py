@@ -20,6 +20,7 @@ class ReferenceParser(etree.TreeBuilder):
         self.store = store
         self._path = []
         self._text_buffer = []
+        self.references = set()
 
     def _flush_text_buffer(self):
         text = ''.join(self._text_buffer)
@@ -50,6 +51,7 @@ class ReferenceParser(etree.TreeBuilder):
             ref = match.group(0)
             try:
                 target = self.store.resolve_reference(ref)
+                self.references.add(target)
                 tag, attrs = 'a', {'href': '/view/%s/' % target.uid}
             except ReferenceLookupError:
                 tag, attrs = 'span', {'class': 'deadref'}
@@ -61,6 +63,18 @@ class ReferenceParser(etree.TreeBuilder):
         super_data(text[offset:])
 
 
+class Markup(object):
+    def __init__(self, html, refs):
+        self.html = html
+        self.refs = refs
+
+    def get_refs(self):
+        return iter(self.refs)
+
+    def __unicode__(self):
+        return self.html
+
+
 def markup(store, text, initial_header_level=2):
     parts = docutils.core.publish_parts(
         source=text,
@@ -70,12 +84,14 @@ def markup(store, text, initial_header_level=2):
         }
     )
     html = parts['body']
-    parser = HTMLParser(target=ReferenceParser(store))
+    builder = ReferenceParser(store)
+    parser = HTMLParser(target=builder)
     try:
         tree = etree.fromstring(u'<html><body>%s</body></html>' % parts['body'], parser)
     except:
         logger.exception('failed to transform markup')
         return ''
-    return '\n'.join(etree.tostring(fragment) for fragment in tree[0])
+    html = '\n'.join(etree.tostring(fragment) for fragment in tree[0])
+    return Markup(html, builder.references)
 
 

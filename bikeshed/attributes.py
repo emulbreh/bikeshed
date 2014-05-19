@@ -62,6 +62,9 @@ class Attribute(object):
     def mapping_type(self):
         return {'type': 'string'}
 
+    def get_refs(self, doc, value):
+        return iter(())
+
 
 class Identifier(Attribute):
     def mapping_type(self):
@@ -123,6 +126,10 @@ class TicketRef(Identifier):
             return '<a href="/view/%s/">%s</a>' % (value.uid, value.get_label())
         return super(TicketRef, self).get_html(doc, value)
 
+    def get_refs(self, doc, value):
+        if value:
+            yield value
+
 
 class List(Attribute):
     def __init__(self, key, attr, **kwargs):
@@ -149,5 +156,8 @@ class List(Attribute):
     def get_html(self, doc, value):
         return ', '.join(self.attr.get_html(doc, item) for item in value)
 
-
+    def get_refs(self, doc, value):
+        for item in value:
+            for ref in self.attr.get_refs(doc, item):
+                yield ref
 
