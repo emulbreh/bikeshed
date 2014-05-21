@@ -18,6 +18,10 @@ class API extends EventEmitter{
         this.defaultHeaders[name] = value;
     }
     
+    removeDefaultHeader(name){
+        delete this.defaultHeaders[name];
+    }
+    
     request(url, options){
         if(!options.absolute){
             url = this.baseUrl + url;

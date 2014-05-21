@@ -1,7 +1,48 @@
-#page{
-    padding-left: 20px;
+#body{
     position: relative;
     margin: 0px;
     height: 100%;
-}
+    
+    & > .pages{
+        position: relative;
+        background-color: #ffffff;
+        padding-top: $defaultpadding;
+        height: 100%;
 
+        & > .bikeshed-component{
+            margin-right: $sidebar-width + $defaultpadding;
+            padding-left: $defaultpadding;
+        }
+    }
+
+    & > header{
+        background-color: #fff; //#222628;
+        padding: 16px 20px 20px 20px;
+        border-bottom: 1px solid #eee;
+    
+        b{
+            color: $textcolor;
+        }
+    
+        & > a{
+            color: #777;
+            opacity: 0.7;
+            &:hover{
+                text-decoration: none;
+            }
+        }
+    
+        .actions{
+            float: right;
+
+            a{
+                color: $textcolor;
+                margin-left: 20px;
+            }
+        }
+        
+        & > .user{
+            float: right;
+        }
+    }
+}

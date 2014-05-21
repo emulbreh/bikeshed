@@ -34,35 +34,42 @@ input:-moz-placeholder, ::-webkit-input-placeholder, ::-moz-placeholder, :-ms-in
   color: #999999;
   font-weight: normal; }
 
-body > header {
-  background-color: #fff;
-  color: #fff;
-  padding: 16px 20px 20px 20px;
-  border-bottom: 1px solid #eee; }
-  body > header b {
-    color: black; }
-  body > header > a {
-    color: #777;
-    opacity: 0.7; }
-    body > header > a:hover {
-      text-decoration: none; }
-  body > header .actions {
-    float: right; }
-    body > header .actions a {
-      color: black;
-      margin-left: 20px; }
-
 a {
   color: #1099ee;
   text-decoration: none; }
   a:hover {
     text-decoration: underline; }
 
-#page {
-  padding-left: 20px;
+#body {
   position: relative;
   margin: 0px;
   height: 100%; }
+  #body > .pages {
+    position: relative;
+    background-color: #ffffff;
+    padding-top: 20px;
+    height: 100%; }
+    #body > .pages > .bikeshed-component {
+      margin-right: 320px;
+      padding-left: 20px; }
+  #body > header {
+    background-color: #fff;
+    padding: 16px 20px 20px 20px;
+    border-bottom: 1px solid #eee; }
+    #body > header b {
+      color: black; }
+    #body > header > a {
+      color: #777;
+      opacity: 0.7; }
+      #body > header > a:hover {
+        text-decoration: none; }
+    #body > header .actions {
+      float: right; }
+      #body > header .actions a {
+        color: black;
+        margin-left: 20px; }
+    #body > header > .user {
+      float: right; }
 
 .bikeshed-autocomplete {
   background-color: white;
@@ -204,14 +211,6 @@ a {
 
   100% {
     opacity: 0; } }
-
-#viewport {
-  position: relative;
-  background-color: #ffffff;
-  padding-top: 20px;
-  height: 100%; }
-  #viewport > .bikeshed-component {
-    margin-right: 320px; }
 
 .bikeshed-sidebar {
   position: absolute;

@@ -27,6 +27,7 @@ class BoardPage extends DocumentPage{
             this.columns.push(column);
             this.columnsByStatus[col.status] = column;
             this.$columns.append(column.$element);
+            this.addComponent(column);
         });
 
         this.addActions({

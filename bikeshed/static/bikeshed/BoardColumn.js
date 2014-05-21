@@ -27,7 +27,7 @@ class BoardColumn extends Component{
     clear(){
         _.each(this.cards, (card) => {
             card.dispose();
-        })
+        });
         this.cards = [];
     }
 

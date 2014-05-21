@@ -1,4 +1,5 @@
 import {Page} from './framework/Page'
+import {Document} from './Document'
 
 
 class LoginPage extends Page{
@@ -37,14 +38,7 @@ class LoginPage extends Page{
             dataType: 'json',
             data: JSON.stringify(credentials),
         }).then((response) => {
-            var sessionKey = response.session_key;
-            this.app.emit('login', {
-                session: sessionKey, 
-                username: credentials.username
-            });
-            this.api.setSessionKey(sessionKey);
-            this.app.session.set('sessionKey', sessionKey);
-            this.app.visit('/');
+            this.app.login(response.session_key, new Document(response.user));
         });
     }
 

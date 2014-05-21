@@ -329,9 +329,9 @@ System.register("../bikeshed/static/bikeshed/framework/Component", [], function(
   var EventEmitter = $traceurRuntime.assertObject(System.get("../bikeshed/static/EventEmitter")).EventEmitter;
   var ACTIONS_DATA_KEY = 'bikeshed-component-actions';
   var Component = function Component(options) {
-    options = options || {};
+    options = _.defaults(options || {}, {element: '<div class="bikeshed-component"/>'});
     $traceurRuntime.superCall(this, $Component.prototype, "constructor", []);
-    this.$element = $('<div class="bikeshed-component"></div>');
+    this.$element = $(options.element);
     if (options.cssClass) {
       this.$element.addClass(options.cssClass);
     }
@@ -339,13 +339,32 @@ System.register("../bikeshed/static/bikeshed/framework/Component", [], function(
   };
   var $Component = Component;
   ($traceurRuntime.createClass)(Component, {
+    get app() {
+      if (this.parent) {
+        return this.parent.app;
+      }
+      throw new Error("component isn't linked to any app");
+    },
     appendElement: function(el) {
       var $el = $(el);
       this.$element.append($el);
       return $el;
     },
+    addComponent: function(component) {
+      if (_.isUndefined(this.children)) {
+        this.children = [];
+      }
+      component.parent = this;
+      this.children.push(component);
+    },
+    removeComponent: function(component) {
+      _.remove(this.children, (function(child) {
+        return child === component;
+      }));
+    },
     append: function(component) {
       this.$element.append(component.$element);
+      this.addComponent(component);
       return component;
     },
     onActionClick: function(name, e) {
@@ -386,6 +405,9 @@ System.register("../bikeshed/static/bikeshed/framework/Component", [], function(
     },
     dispose: function() {
       this.$element.remove();
+      if (this.parent) {
+        this.parent.removeComponent(this);
+      }
     }
   }, {}, EventEmitter);
   var Component = Component;
@@ -494,6 +516,12 @@ System.register("../bikeshed/static/bikeshed/framework/Page", [], function() {
   };
   var $Page = Page;
   ($traceurRuntime.createClass)(Page, {
+    set app(a) {
+      this._app = a;
+    },
+    get app() {
+      return this._app;
+    },
     open: function(params) {
       var $__14 = this;
       return new Promise((function(resolve, reject) {
@@ -603,6 +631,7 @@ System.register("../bikeshed/static/bikeshed/BoardPage", [], function() {
       $__22.columns.push(column);
       $__22.columnsByStatus[col.status] = column;
       $__22.$columns.append(column.$element);
+      $__22.addComponent(column);
     }));
     this.addActions({edit: (function(e) {
         $__22.app.visit(("/edit/" + $__22.doc.uid + "/"));
@@ -824,11 +853,10 @@ System.register("../bikeshed/static/bikeshed/Picker", [], function() {
     _.defaults(options, {cssClass: 'bikeshed-picker'});
     $traceurRuntime.superCall(this, $Picker.prototype, "constructor", [options]);
     this.resource = options.resource;
-    this.searchForm = new SearchForm({});
-    this.$element.append(this.searchForm.$element);
+    this.searchForm = this.append(new SearchForm({}));
     this.searchForm.on('change', this.onSearchChange.bind(this));
     this.searchForm.$input.on('keydown', this.onSearchInputKeyDown.bind(this));
-    this.list = new List({
+    this.list = this.append(new List({
       resource: this.resource,
       render: function(item) {
         var doc = item.data;
@@ -837,8 +865,7 @@ System.register("../bikeshed/static/bikeshed/Picker", [], function() {
         var title = label ? doc.title : doc.label;
         return $(("<li><b>" + label + " </b>" + title + "<span class=\"type\">" + type + "</span></li>"));
       }
-    });
-    this.$element.append(this.list.$element);
+    }));
     this.list.on('select', this.onSelect.bind(this));
   };
   var $Picker = Picker;
@@ -1233,8 +1260,7 @@ System.register("../bikeshed/static/bikeshed/ListPage", [], function() {
     _.defaults(options, {cssClass: 'bikeshed-search'});
     $traceurRuntime.superCall(this, $ListPage.prototype, "constructor", [options]);
     this.resource = options.resource;
-    this.picker = new Picker({resource: this.resource});
-    this.$element.append(this.picker.$element);
+    this.picker = this.append(new Picker({resource: this.resource}));
     this.picker.on('select', (function(doc) {
       $__51.app.visit(("/view/" + doc.uid + "/"));
     }));
@@ -1256,6 +1282,7 @@ System.register("../bikeshed/static/bikeshed/LoginPage", [], function() {
   "use strict";
   var __moduleName = "../bikeshed/static/bikeshed/LoginPage";
   var Page = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Page")).Page;
+  var Document = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Document")).Document;
   var LoginPage = function LoginPage(options) {
     var $__54 = this;
     options = _.defaults(options, {cssClass: 'bikeshed-login'});
@@ -1293,14 +1320,7 @@ System.register("../bikeshed/static/bikeshed/LoginPage", [], function() {
         dataType: 'json',
         data: JSON.stringify(credentials)
       }).then((function(response) {
-        var sessionKey = response.session_key;
-        $__54.app.emit('login', {
-          session: sessionKey,
-          username: credentials.username
-        });
-        $__54.api.setSessionKey(sessionKey);
-        $__54.app.session.set('sessionKey', sessionKey);
-        $__54.app.visit('/');
+        $__54.app.login(response.session_key, new Document(response.user));
       }));
     }
   }, {}, Page);
@@ -1363,6 +1383,9 @@ System.register("../bikeshed/static/bikeshed/framework/API", [], function() {
     setDefaultHeader: function(name, value) {
       this.defaultHeaders[name] = value;
     },
+    removeDefaultHeader: function(name) {
+      delete this.defaultHeaders[name];
+    },
     request: function(url, options) {
       var $__60 = this;
       if (!options.absolute) {
@@ -1423,16 +1446,51 @@ System.register("../bikeshed/static/bikeshed/framework/Session", [], function() 
       return Session;
     }};
 });
+System.register("../bikeshed/static/bikeshed/framework/Window", [], function() {
+  "use strict";
+  var __moduleName = "../bikeshed/static/bikeshed/framework/Window";
+  var Component = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Component")).Component;
+  var Window = function Window(options) {
+    var $__65 = this;
+    options = options || {};
+    $traceurRuntime.superCall(this, $Window.prototype, "constructor", [options]);
+    this.$header = this.appendElement('<header><a href="/">promise less <b>|</b> do more</a><a href="#logout">Logout</a></header>');
+    this.$pages = this.appendElement('<div class="pages"/>');
+    this.$userInfo = $('<span class="user"/>');
+    this.$header.append(this.$userInfo);
+    var app = options.app;
+    app.on('login', (function(user) {
+      $__65.$userInfo.show();
+      $__65.$userInfo.text(user.label);
+    }));
+    app.on('logout', (function() {
+      $__65.$userInfo.hide();
+      $__65.$userInfo.text('');
+    }));
+  };
+  var $Window = Window;
+  ($traceurRuntime.createClass)(Window, {addPage: function(page) {
+      this.$pages.append(page.$element);
+    }}, {}, Component);
+  var Window = Window;
+  return {get Window() {
+      return Window;
+    }};
+});
 System.register("../bikeshed/static/bikeshed/framework/Application", [], function() {
   "use strict";
   var __moduleName = "../bikeshed/static/bikeshed/framework/Application";
   var EventEmitter = $traceurRuntime.assertObject(System.get("../bikeshed/static/EventEmitter")).EventEmitter;
   var Session = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Session")).Session;
+  var Window = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Window")).Window;
   var Application = function Application(options) {
-    $traceurRuntime.superCall(this, $Application.prototype, "constructor", []);
     options = _.defaults(options, {element: 'body'});
+    $traceurRuntime.superCall(this, $Application.prototype, "constructor", [options]);
     this.session = options.session || new Session({});
-    this.$element = $(options.element);
+    this.root = new Window({
+      element: options.element,
+      app: this
+    });
     this.pages = {};
     this.splash = options.splash;
     this.currentPage = null;
@@ -1462,13 +1520,13 @@ System.register("../bikeshed/static/bikeshed/framework/Application", [], functio
         page: page,
         path: path
       });
-      this.$element.append(page.$element);
+      this.root.addPage(page);
     },
     start: function() {
-      var $__65 = this;
+      var $__68 = this;
       this.visit(location.pathname + location.search).then((function() {
-        if ($__65.splash) {
-          $($__65.splash).remove();
+        if ($__68.splash) {
+          $($__68.splash).remove();
         }
       }));
     },
@@ -1477,7 +1535,7 @@ System.register("../bikeshed/static/bikeshed/framework/Application", [], functio
     },
     set loading(load) {
       this._loading = load;
-      this.$element[load ? 'addClass' : 'removeClass']('loading');
+      this.root.$element[load ? 'addClass' : 'removeClass']('loading');
     },
     onHistoryChange: function() {
       this.visit(location.pathname + location.search, false);
@@ -1490,9 +1548,9 @@ System.register("../bikeshed/static/bikeshed/framework/Application", [], functio
       if (querystring) {
         querystring = querystring.substring(1);
         querystring.split('&').forEach((function(pair) {
-          var $__69 = $traceurRuntime.assertObject(pair.split('=')),
-              key = $__69[0],
-              value = $__69[1];
+          var $__72 = $traceurRuntime.assertObject(pair.split('=')),
+              key = $__72[0],
+              value = $__72[1];
           params[decodeURIComponent(key)] = decodeURIComponent(value);
         }));
       }
@@ -1502,7 +1560,7 @@ System.register("../bikeshed/static/bikeshed/framework/Application", [], functio
       };
     },
     visit: function(url, pushstate) {
-      var $__65 = this;
+      var $__68 = this;
       console.log("VISIT", url);
       var pathInfo = this.parsePath(url);
       if (pushstate !== false) {
@@ -1511,9 +1569,9 @@ System.register("../bikeshed/static/bikeshed/framework/Application", [], functio
       var path = pathInfo.path;
       var page = null,
           params = pathInfo.params;
-      for (var $__67 = this.routes[Symbol.iterator](),
-          $__68; !($__68 = $__67.next()).done; ) {
-        var route = $__68.value;
+      for (var $__70 = this.routes[Symbol.iterator](),
+          $__71; !($__71 = $__70.next()).done; ) {
+        var route = $__71.value;
         {
           var match = route.re.exec(path);
           if (match) {
@@ -1534,7 +1592,7 @@ System.register("../bikeshed/static/bikeshed/framework/Application", [], functio
       }
       this.loading = true;
       return page.open(params).then((function() {
-        $__65.loading = false;
+        $__68.loading = false;
       })).catch((function(error) {
         console.log("failed to open page", error);
         page.close();
@@ -1584,11 +1642,11 @@ System.register("../bikeshed/static/bikeshed/framework/Resource", [], function()
       return this.request(options);
     },
     fetch: function(id, options) {
-      var $__70 = this;
+      var $__73 = this;
       options = _.defaults(options || {}, {url: ("" + this.url + id + "/")});
       console.log('fetch', id, options);
       return this.get(options).then((function(data) {
-        return new $__70.model(data);
+        return new $__73.model(data);
       }));
     },
     save: function(model, options) {
@@ -1631,21 +1689,52 @@ System.register("../bikeshed/static/bikeshed/main", [], function() {
     $traceurRuntime.defaultSuperCall(this, $BikeshedAPI.prototype, arguments);
   };
   var $BikeshedAPI = BikeshedAPI;
-  ($traceurRuntime.createClass)(BikeshedAPI, {setSessionKey: function(sessionKey) {
+  ($traceurRuntime.createClass)(BikeshedAPI, {
+    setSessionKey: function(sessionKey) {
       this.setDefaultHeader('Authorization', 'session ' + sessionKey);
-    }}, {}, API);
+    },
+    removeSessionKey: function() {
+      this.removeDefaultHeader('Authorization');
+    }
+  }, {}, API);
+  var BikeshedApp = function BikeshedApp(options) {
+    $traceurRuntime.superCall(this, $BikeshedApp.prototype, "constructor", [options]);
+    this.api = options.api;
+    this.user = null;
+    this.api.on('unauthorizedRequest', this.logout.bind(this));
+    this.root.addAction('logout', this.logout.bind(this));
+    this.initializeSession();
+  };
+  var $BikeshedApp = BikeshedApp;
+  ($traceurRuntime.createClass)(BikeshedApp, {
+    initializeSession: function() {
+      var userId = this.session.get('userId');
+      if (userId) {
+        this.user = new Document({uid: userId});
+      }
+      this.api.setSessionKey(this.session.get('sessionKey'));
+    },
+    login: function(sessionKey, user) {
+      this.user = user;
+      this.api.setSessionKey(sessionKey);
+      this.session.set('sessionKey', sessionKey);
+      this.session.set('userId', user.uid);
+      this.emit('login', user);
+      this.visit('/');
+    },
+    logout: function() {
+      this.api.removeSessionKey();
+      this.user = null;
+      this.emit('logout');
+      this.visit('/login/');
+    }
+  }, {}, Application);
   function main() {
     var api = new BikeshedAPI({baseUrl: '/api'});
     var documents = new Resource(api, '/documents/', bikeshed.Document, {});
-    var ws = new WebSocket('ws://127.0.0.1:7001/events');
-    ws.onmessage = function(msg) {
-      console.log(msg.data);
-    };
-    ws.onopen = function() {
-      ws.send('{"foo":42}');
-    };
-    var app = new Application({
-      element: '#viewport',
+    var app = new BikeshedApp({
+      api: api,
+      element: '#body',
       splash: '#splash',
       pages: {
         '/': new IndexPage(),
@@ -1656,17 +1745,6 @@ System.register("../bikeshed/static/bikeshed/main", [], function() {
         '/view/:uid/': new ViewerPage({resource: documents}),
         '/board/:uid/': new BoardPage({resource: documents})
       }
-    });
-    api.on('unauthorizedRequest', function() {
-      console.log('UNAUTHORIZED');
-      app.visit('/login/');
-    });
-    api.setSessionKey(app.session.get('sessionKey'));
-    app.on('login', function(info) {
-      ws.send(JSON.stringify({
-        'method': 'identify',
-        'session': info.session
-      }));
     });
     app.start();
   }

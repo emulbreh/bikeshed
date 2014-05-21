@@ -9,8 +9,7 @@ class ListPage extends PageWithSidebar{
         });
         super.constructor(options);
         this.resource = options.resource;
-        this.picker = new Picker({resource: this.resource});
-        this.$element.append(this.picker.$element);
+        this.picker = this.append(new Picker({resource: this.resource}));
         this.picker.on('select', (doc) => {
             this.app.visit(`/view/${doc.uid}/`);
         });

@@ -1,16 +1,17 @@
 import {EventEmitter} from '../../EventEmitter'
 import {Session} from './Session'
+import {Window} from './Window'
 
 
 class Application extends EventEmitter{
     constructor(options){
-        super.constructor();
         options = _.defaults(options, {
             element: 'body'
         });
+        super.constructor(options);
 
         this.session = options.session || new Session({});
-        this.$element = $(options.element);
+        this.root = new Window({element: options.element, app: this});
         this.pages = {};
         this.splash = options.splash;
         this.currentPage = null;
@@ -34,7 +35,7 @@ class Application extends EventEmitter{
         });
         var re = new RegExp(`^${pattern}$`);
         this.routes.push({re, params, page, path});
-        this.$element.append(page.$element);
+        this.root.addPage(page);
     }
 
     start(){
@@ -51,7 +52,7 @@ class Application extends EventEmitter{
 
     set loading(load){
         this._loading = load;
-        this.$element[load ? 'addClass' : 'removeClass']('loading');
+        this.root.$element[load ? 'addClass' : 'removeClass']('loading');
     }
 
     onHistoryChange(){

@@ -5,13 +5,22 @@ var ACTIONS_DATA_KEY = 'bikeshed-component-actions';
 
 class Component extends EventEmitter{
     constructor(options) {
-        options = options || {};
+        options = _.defaults(options || {}, {
+            element: '<div class="bikeshed-component"/>'
+        });
         super.constructor();
-        this.$element = $('<div class="bikeshed-component"></div>');
+        this.$element = $(options.element);
         if(options.cssClass){
             this.$element.addClass(options.cssClass);
         }
         this.actions = null;
+    }
+    
+    get app(){
+        if(this.parent){
+            return this.parent.app;
+        }
+        throw new Error("component isn't linked to any app");
     }
     
     appendElement(el){
@@ -20,8 +29,23 @@ class Component extends EventEmitter{
         return $el;
     }
     
+    addComponent(component){
+        if(_.isUndefined(this.children)){
+            this.children = [];
+        }
+        component.parent = this;
+        this.children.push(component);
+    }
+    
+    removeComponent(component){
+        _.remove(this.children, (child) => {
+            return child === component;
+        });
+    }
+    
     append(component){
         this.$element.append(component.$element);
+        this.addComponent(component);
         return component;
     }
     
@@ -66,6 +90,9 @@ class Component extends EventEmitter{
     
     dispose(){
         this.$element.remove();
+        if(this.parent){
+            this.parent.removeComponent(this);
+        }
     }
 }
 

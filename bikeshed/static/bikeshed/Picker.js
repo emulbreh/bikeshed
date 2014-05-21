@@ -10,11 +10,10 @@ class Picker extends Component{
         })
         super.constructor(options);
         this.resource = options.resource;
-        this.searchForm = new SearchForm({});
-        this.$element.append(this.searchForm.$element);
+        this.searchForm = this.append(new SearchForm({}));
         this.searchForm.on('change', this.onSearchChange.bind(this));
         this.searchForm.$input.on('keydown', this.onSearchInputKeyDown.bind(this));
-        this.list = new List({
+        this.list = this.append(new List({
             resource: this.resource,
             render: function(item){
                 var doc = item.data;
@@ -23,8 +22,7 @@ class Picker extends Component{
                 var title = label ? doc.title : doc.label;
                 return $(`<li><b>${label} </b>${title}<span class="type">${type}</span></li>`)
             }
-        });
-        this.$element.append(this.list.$element);
+        }));
         this.list.on('select', this.onSelect.bind(this));
     }
     

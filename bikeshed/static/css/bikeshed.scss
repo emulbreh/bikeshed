@@ -45,34 +45,6 @@ input:-moz-placeholder, ::-webkit-input-placeholder, ::-moz-placeholder, :-ms-in
     font-weight: normal;
 }
 
-body > header{
-    background-color: #fff; //#222628;
-    color: #fff;
-    padding: 16px 20px 20px 20px;
-    border-bottom: 1px solid #eee;
-    
-    b{
-        color: $textcolor;
-    }
-    
-    & > a{
-        color: #777;
-        opacity: 0.7;
-        &:hover{
-            text-decoration: none;
-        }
-    }
-    
-    .actions{
-        float: right;
-
-        a{
-            color: $textcolor;
-            margin-left: 20px;
-        }
-    }
-}
-
 a{
     color: $link-color;
     text-decoration: none;
@@ -127,16 +99,6 @@ a{
     100% {opacity: 0;}
 }
 
-#viewport{
-    position: relative;
-    background-color: #ffffff;
-    padding-top: 20px;
-    height: 100%;
-    
-    & > .bikeshed-component{
-        margin-right: $sidebar-width + 20px;
-    }
-}
 
 .bikeshed-sidebar {
     position: absolute;
