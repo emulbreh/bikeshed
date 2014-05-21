@@ -8,25 +8,6 @@ from bikeshed.exceptions import DocumentDoesNotExist
 from bikeshed.auth import hash_password, create_session_key
 
 
-class AuthenticationHandler(BaseHandler):
-    needs_authentication = False
-
-    def post(self):
-        data = json.loads(self.request.data)
-        username = data.get('username')
-        password = data.get('password')
-        if not username or not password:
-            return self.error_response(400)
-        try:
-            user = self.app.store.lookup('Name', username, doctype='User')
-        except DocumentDoesNotExist:
-            return self.error_response(401)
-        hashed_password = user['Password']
-        if user['Password'] != hash_password(password.encode('utf-8'), hashed_password.encode('utf-8')):
-            return self.error_response(401)
-        return self.json_response({'session_key': create_session_key(user.uid)})
-
-
 class BaseDocumentHandler(BaseHandler):
     def serialize_document(self, doc, compact=False):
         data = {
@@ -64,6 +45,28 @@ class BaseDocumentHandler(BaseHandler):
                 'path': [self.serialize_document(d, compact=True) for d in path]
             })
         return data
+
+
+class AuthenticationHandler(BaseDocumentHandler):
+    needs_authentication = False
+
+    def post(self):
+        data = json.loads(self.request.data)
+        username = data.get('username')
+        password = data.get('password')
+        if not username or not password:
+            return self.error_response(400)
+        try:
+            user = self.app.store.lookup('Name', username, doctype='User')
+        except DocumentDoesNotExist:
+            return self.error_response(401)
+        hashed_password = user['Password']
+        if user['Password'] != hash_password(password.encode('utf-8'), hashed_password.encode('utf-8')):
+            return self.error_response(401)
+        return self.json_response({
+            'session_key': create_session_key(user.uid),
+            'user': self.serialize_document(user, compact=True)
+        })
 
 
 class DocumentHandler(BaseDocumentHandler):
