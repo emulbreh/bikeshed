@@ -3,8 +3,8 @@ import {Document} from './Document'
 
 
 class SearchForm extends Component{
-    constructor(options) {
-        options = _.defaults(options, {
+    constructor(options={}) {
+        _.defaults(options, {
             cssClass: 'bikeshed-searchform'
         });
         super.constructor(options);

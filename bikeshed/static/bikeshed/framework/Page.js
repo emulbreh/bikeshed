@@ -2,8 +2,8 @@ import {Component} from './Component'
 
 
 class Page extends Component{
-    constructor(options){
-        options = _.defaults(options, {
+    constructor(options={}){
+        _.defaults(options, {
             cssClass: 'bikeshed-page'
         });
         super.constructor(options);

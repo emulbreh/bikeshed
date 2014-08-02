@@ -5,8 +5,8 @@ import {BoardColumn} from './BoardColumn'
 
 
 class BoardPage extends DocumentPage{
-    constructor(options){
-        options = _.defaults(options, {
+    constructor(options={}){
+        _.defaults(options, {
             cssClass: 'bikeshed-board bikeshed-page'
         });
         super.constructor(options);

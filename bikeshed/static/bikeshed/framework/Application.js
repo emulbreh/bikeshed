@@ -4,8 +4,8 @@ import {Window} from './Window'
 
 
 class Application extends EventEmitter{
-    constructor(options){
-        options = _.defaults(options, {
+    constructor(options={}){
+        _.defaults(options, {
             element: 'body'
         });
         super.constructor(options);

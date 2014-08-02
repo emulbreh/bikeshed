@@ -3,10 +3,10 @@ import {Document} from './Document'
 
 
 class Card extends Component{
-    constructor(options) {
-        options = _.defaults(options, {
+    constructor(options={}) {
+        _.defaults(options, {
             cssClass: 'bikeshed-card'
-        });
+        })
         super.constructor(options);
         this.document = options.document;
 

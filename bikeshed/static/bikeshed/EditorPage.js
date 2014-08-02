@@ -5,7 +5,7 @@ import {Completer} from './Completer'
 
 
 class EditorPage extends DocumentPage{
-    constructor(options){
+    constructor(options={}){
         super.constructor(options);
         this.addToSidebar($('<a href="#save"><i class="fa fa-check"/>Save</a>'));
         this.addToSidebar($('<a href="#cancel"><i class="fa fa-times"/>Cancel</a>'));

@@ -2,9 +2,9 @@ import {EventEmitter} from '../../EventEmitter'
 
 
 class API extends EventEmitter{
-    constructor(options) {
+    constructor(options={}) {
         super.constructor();
-        options = _.defaults(options, {
+        _.defaults(options, {
             baseUrl: '',
             defaultContentType: 'application/json',
             defaultHeaders: {}
@@ -22,11 +22,11 @@ class API extends EventEmitter{
         delete this.defaultHeaders[name];
     }
     
-    request(url, options){
+    request(url, options={}){
         if(!options.absolute){
             url = this.baseUrl + url;
         }
-        options = _.defaults(options, {
+        _.defaults(options, {
             contentType: this.defaultContentType,
             dataType: 'json',
             headers: {}
@@ -48,8 +48,8 @@ class API extends EventEmitter{
         });
     }
     
-    post(url, options){
-        options = _.defaults(options, {
+    post(url, options={}){
+        _.defaults(options, {
             type: 'POST'
         });
         return this.request(url, options);

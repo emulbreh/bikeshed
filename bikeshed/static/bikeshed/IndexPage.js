@@ -2,7 +2,7 @@ import {PageWithSidebar} from './PageWithSidebar'
 
 
 class IndexPage extends PageWithSidebar{
-    constructor(options){
+    constructor(options={}){
         super.constructor(options);
         this.addToSidebar($('<a href="/new/">New</a>'));
         this.addToSidebar($('<a href="/search/">Search</a>'));

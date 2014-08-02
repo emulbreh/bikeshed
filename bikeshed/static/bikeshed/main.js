@@ -25,7 +25,7 @@ class BikeshedAPI extends API{
 
 
 class BikeshedApp extends Application{
-    constructor(options){
+    constructor(options={}){
         super.constructor(options);
         this.api = options.api;
         this.user = null;

@@ -2,8 +2,7 @@ import {Component} from './Component'
 
 
 class Window extends Component{
-    constructor(options) {
-        options = options || {};
+    constructor(options={}) {
         super.constructor(options);
         this.$header = this.appendElement('<header><a href="/">promise less <b>|</b> do more</a><a href="#logout">Logout</a></header>');
         this.$pages = this.appendElement('<div class="pages"/>');

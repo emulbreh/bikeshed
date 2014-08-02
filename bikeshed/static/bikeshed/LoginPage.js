@@ -3,8 +3,8 @@ import {Document} from './Document'
 
 
 class LoginPage extends Page{
-    constructor(options){
-        options = _.defaults(options, {
+    constructor(options={}){
+        _.defaults(options, {
             cssClass: 'bikeshed-login'
         });
         super.constructor(options);

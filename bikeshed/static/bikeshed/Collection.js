@@ -2,8 +2,8 @@ import {EventEmitter} from '../EventEmitter'
 
 
 class Collection extends EventEmitter{
-    constructor(items){
-        this.items = items || [];
+    constructor(items = []){
+        this.items = items;
     }
     
 }

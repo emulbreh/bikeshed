@@ -2,7 +2,7 @@ import {Component} from './Component'
 
 
 class Popup extends Component{
-    constructor(options) {
+    constructor(options={}) {
         _.defaults(options, {
             cssClass: 'bikeshed-popup',
             title: '',

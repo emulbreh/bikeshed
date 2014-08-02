@@ -4,7 +4,7 @@ import {SearchForm} from './SearchForm'
 
 
 class Picker extends Component{
-    constructor(options){
+    constructor(options={}){
         _.defaults(options, {
             cssClass: 'bikeshed-picker'
         })

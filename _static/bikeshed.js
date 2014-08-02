@@ -213,7 +213,8 @@ System.register("../bikeshed/static/bikeshed/framework/Model", [], function() {
   "use strict";
   var __moduleName = "../bikeshed/static/bikeshed/framework/Model";
   var EventEmitter = $traceurRuntime.assertObject(System.get("../bikeshed/static/EventEmitter")).EventEmitter;
-  var Model = function Model(data, options) {
+  var Model = function Model(data) {
+    var options = arguments[1] !== (void 0) ? arguments[1] : {};
     $traceurRuntime.superCall(this, $Model.prototype, "constructor", []);
     this.load(data);
   };
@@ -420,8 +421,9 @@ System.register("../bikeshed/static/bikeshed/BoardColumn", [], function() {
   var __moduleName = "../bikeshed/static/bikeshed/BoardColumn";
   var Component = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Component")).Component;
   var Document = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Document")).Document;
-  var BoardColumn = function BoardColumn(options) {
-    options = _.defaults(options, {cssClass: 'column'});
+  var BoardColumn = function BoardColumn() {
+    var options = arguments[0] !== (void 0) ? arguments[0] : {};
+    _.defaults(options, {cssClass: 'column'});
     $traceurRuntime.superCall(this, $BoardColumn.prototype, "constructor", [options]);
     this.appendElement(("<div class=\"title\">" + options.title + "</div>"));
     this.status = options.status;
@@ -475,9 +477,10 @@ System.register("../bikeshed/static/bikeshed/Card", [], function() {
   var __moduleName = "../bikeshed/static/bikeshed/Card";
   var Component = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Component")).Component;
   var Document = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Document")).Document;
-  var Card = function Card(options) {
+  var Card = function Card() {
+    var options = arguments[0] !== (void 0) ? arguments[0] : {};
     var $__11 = this;
-    options = _.defaults(options, {cssClass: 'bikeshed-card'});
+    _.defaults(options, {cssClass: 'bikeshed-card'});
     $traceurRuntime.superCall(this, $Card.prototype, "constructor", [options]);
     this.document = options.document;
     this.$element.attr('draggable', 'true');
@@ -509,8 +512,9 @@ System.register("../bikeshed/static/bikeshed/framework/Page", [], function() {
   "use strict";
   var __moduleName = "../bikeshed/static/bikeshed/framework/Page";
   var Component = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Component")).Component;
-  var Page = function Page(options) {
-    options = _.defaults(options, {cssClass: 'bikeshed-page'});
+  var Page = function Page() {
+    var options = arguments[0] !== (void 0) ? arguments[0] : {};
+    _.defaults(options, {cssClass: 'bikeshed-page'});
     $traceurRuntime.superCall(this, $Page.prototype, "constructor", [options]);
     this.hide();
   };
@@ -542,7 +546,8 @@ System.register("../bikeshed/static/bikeshed/PageWithSidebar", [], function() {
   "use strict";
   var __moduleName = "../bikeshed/static/bikeshed/PageWithSidebar";
   var Page = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Page")).Page;
-  var PageWithSidebar = function PageWithSidebar(options) {
+  var PageWithSidebar = function PageWithSidebar() {
+    var options = arguments[0] !== (void 0) ? arguments[0] : {};
     $traceurRuntime.superCall(this, $PageWithSidebar.prototype, "constructor", [options]);
     this.$sidebar = this.appendElement('<div class="bikeshed-sidebar"/>');
   };
@@ -560,7 +565,8 @@ System.register("../bikeshed/static/bikeshed/DocumentPage", [], function() {
   var __moduleName = "../bikeshed/static/bikeshed/DocumentPage";
   var PageWithSidebar = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/PageWithSidebar")).PageWithSidebar;
   var Document = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Document")).Document;
-  var DocumentPage = function DocumentPage(options) {
+  var DocumentPage = function DocumentPage() {
+    var options = arguments[0] !== (void 0) ? arguments[0] : {};
     $traceurRuntime.superCall(this, $DocumentPage.prototype, "constructor", [options]);
     this.resource = options.resource;
     this.$path = this.appendElement('<div class="path"/>');
@@ -605,9 +611,10 @@ System.register("../bikeshed/static/bikeshed/BoardPage", [], function() {
   var Document = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Document")).Document;
   var Card = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Card")).Card;
   var BoardColumn = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/BoardColumn")).BoardColumn;
-  var BoardPage = function BoardPage(options) {
+  var BoardPage = function BoardPage() {
+    var options = arguments[0] !== (void 0) ? arguments[0] : {};
     var $__22 = this;
-    options = _.defaults(options, {cssClass: 'bikeshed-board bikeshed-page'});
+    _.defaults(options, {cssClass: 'bikeshed-board bikeshed-page'});
     $traceurRuntime.superCall(this, $BoardPage.prototype, "constructor", [options]);
     this.$columns = this.appendElement('<div class="columns"/>');
     var columns = [{
@@ -675,8 +682,9 @@ System.register("../bikeshed/static/bikeshed/Collection", [], function() {
   "use strict";
   var __moduleName = "../bikeshed/static/bikeshed/Collection";
   var EventEmitter = $traceurRuntime.assertObject(System.get("../bikeshed/static/EventEmitter")).EventEmitter;
-  var Collection = function Collection(items) {
-    this.items = items || [];
+  var Collection = function Collection() {
+    var items = arguments[0] !== (void 0) ? arguments[0] : [];
+    this.items = items;
   };
   ($traceurRuntime.createClass)(Collection, {}, {}, EventEmitter);
   var Collection = Collection;
@@ -690,8 +698,9 @@ System.register("../bikeshed/static/bikeshed/List", [], function() {
   var Component = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Component")).Component;
   var Document = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Document")).Document;
   var ITEM_INDEX_DATA_KEY = 'bikeshed-list-item-index';
-  var List = function List(options) {
-    options = _.defaults(options, {cssClass: 'bikeshed-list'});
+  var List = function List() {
+    var options = arguments[0] !== (void 0) ? arguments[0] : {};
+    _.defaults(options, {cssClass: 'bikeshed-list'});
     $traceurRuntime.superCall(this, $List.prototype, "constructor", [options]);
     this.resource = options.resource;
     this.$container = this.appendElement('<ul>');
@@ -799,8 +808,9 @@ System.register("../bikeshed/static/bikeshed/SearchForm", [], function() {
   var __moduleName = "../bikeshed/static/bikeshed/SearchForm";
   var Component = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Component")).Component;
   var Document = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Document")).Document;
-  var SearchForm = function SearchForm(options) {
-    options = _.defaults(options, {cssClass: 'bikeshed-searchform'});
+  var SearchForm = function SearchForm() {
+    var options = arguments[0] !== (void 0) ? arguments[0] : {};
+    _.defaults(options, {cssClass: 'bikeshed-searchform'});
     $traceurRuntime.superCall(this, $SearchForm.prototype, "constructor", [options]);
     this.$input = this.appendElement('<input type="text"/>');
     this.appendElement('<i class="fa fa-search" />');
@@ -849,7 +859,8 @@ System.register("../bikeshed/static/bikeshed/Picker", [], function() {
   var Component = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Component")).Component;
   var List = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/List")).List;
   var SearchForm = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/SearchForm")).SearchForm;
-  var Picker = function Picker(options) {
+  var Picker = function Picker() {
+    var options = arguments[0] !== (void 0) ? arguments[0] : {};
     _.defaults(options, {cssClass: 'bikeshed-picker'});
     $traceurRuntime.superCall(this, $Picker.prototype, "constructor", [options]);
     this.resource = options.resource;
@@ -915,7 +926,8 @@ System.register("../bikeshed/static/bikeshed/framework/Popup", [], function() {
   "use strict";
   var __moduleName = "../bikeshed/static/bikeshed/framework/Popup";
   var Component = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Component")).Component;
-  var Popup = function Popup(options) {
+  var Popup = function Popup() {
+    var options = arguments[0] !== (void 0) ? arguments[0] : {};
     var $__38 = this;
     _.defaults(options, {
       cssClass: 'bikeshed-popup',
@@ -1137,8 +1149,9 @@ System.register("../bikeshed/static/bikeshed/DocumentEditor", [], function() {
   var __moduleName = "../bikeshed/static/bikeshed/DocumentEditor";
   var Component = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Component")).Component;
   var Document = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Document")).Document;
-  var DocumentEditor = function DocumentEditor(options) {
-    options = _.defaults(options, {'cssClass': 'bikeshed-editor'});
+  var DocumentEditor = function DocumentEditor() {
+    var options = arguments[0] !== (void 0) ? arguments[0] : {};
+    _.defaults(options, {'cssClass': 'bikeshed-editor'});
     $traceurRuntime.superCall(this, $DocumentEditor.prototype, "constructor", [options]);
     this.doc = options.doc || new Document({
       headers: [],
@@ -1185,7 +1198,8 @@ System.register("../bikeshed/static/bikeshed/EditorPage", [], function() {
   var Document = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Document")).Document;
   var DocumentEditor = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/DocumentEditor")).DocumentEditor;
   var Completer = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Completer")).Completer;
-  var EditorPage = function EditorPage(options) {
+  var EditorPage = function EditorPage() {
+    var options = arguments[0] !== (void 0) ? arguments[0] : {};
     var $__46 = this;
     $traceurRuntime.superCall(this, $EditorPage.prototype, "constructor", [options]);
     this.addToSidebar($('<a href="#save"><i class="fa fa-check"/>Save</a>'));
@@ -1237,7 +1251,8 @@ System.register("../bikeshed/static/bikeshed/IndexPage", [], function() {
   "use strict";
   var __moduleName = "../bikeshed/static/bikeshed/IndexPage";
   var PageWithSidebar = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/PageWithSidebar")).PageWithSidebar;
-  var IndexPage = function IndexPage(options) {
+  var IndexPage = function IndexPage() {
+    var options = arguments[0] !== (void 0) ? arguments[0] : {};
     $traceurRuntime.superCall(this, $IndexPage.prototype, "constructor", [options]);
     this.addToSidebar($('<a href="/new/">New</a>'));
     this.addToSidebar($('<a href="/search/">Search</a>'));
@@ -1255,7 +1270,8 @@ System.register("../bikeshed/static/bikeshed/ListPage", [], function() {
   var __moduleName = "../bikeshed/static/bikeshed/ListPage";
   var PageWithSidebar = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/PageWithSidebar")).PageWithSidebar;
   var Picker = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Picker")).Picker;
-  var ListPage = function ListPage(options) {
+  var ListPage = function ListPage() {
+    var options = arguments[0] !== (void 0) ? arguments[0] : {};
     var $__51 = this;
     _.defaults(options, {cssClass: 'bikeshed-search'});
     $traceurRuntime.superCall(this, $ListPage.prototype, "constructor", [options]);
@@ -1283,9 +1299,10 @@ System.register("../bikeshed/static/bikeshed/LoginPage", [], function() {
   var __moduleName = "../bikeshed/static/bikeshed/LoginPage";
   var Page = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Page")).Page;
   var Document = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Document")).Document;
-  var LoginPage = function LoginPage(options) {
+  var LoginPage = function LoginPage() {
+    var options = arguments[0] !== (void 0) ? arguments[0] : {};
     var $__54 = this;
-    options = _.defaults(options, {cssClass: 'bikeshed-login'});
+    _.defaults(options, {cssClass: 'bikeshed-login'});
     $traceurRuntime.superCall(this, $LoginPage.prototype, "constructor", [options]);
     this.api = options.api;
     this.$loginForm = $('<form class="bikeshed-login" target="login_target" autocomplete="on" action="/void/" method="POST"/>');
@@ -1334,7 +1351,8 @@ System.register("../bikeshed/static/bikeshed/ViewerPage", [], function() {
   var __moduleName = "../bikeshed/static/bikeshed/ViewerPage";
   var DocumentPage = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/DocumentPage")).DocumentPage;
   var Document = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Document")).Document;
-  var ViewerPage = function ViewerPage(options) {
+  var ViewerPage = function ViewerPage() {
+    var options = arguments[0] !== (void 0) ? arguments[0] : {};
     var $__57 = this;
     $traceurRuntime.superCall(this, $ViewerPage.prototype, "constructor", [options]);
     this.$display = this.appendElement('<div class="document-display"/>');
@@ -1367,9 +1385,10 @@ System.register("../bikeshed/static/bikeshed/framework/API", [], function() {
   "use strict";
   var __moduleName = "../bikeshed/static/bikeshed/framework/API";
   var EventEmitter = $traceurRuntime.assertObject(System.get("../bikeshed/static/EventEmitter")).EventEmitter;
-  var API = function API(options) {
+  var API = function API() {
+    var options = arguments[0] !== (void 0) ? arguments[0] : {};
     $traceurRuntime.superCall(this, $API.prototype, "constructor", []);
-    options = _.defaults(options, {
+    _.defaults(options, {
       baseUrl: '',
       defaultContentType: 'application/json',
       defaultHeaders: {}
@@ -1386,12 +1405,13 @@ System.register("../bikeshed/static/bikeshed/framework/API", [], function() {
     removeDefaultHeader: function(name) {
       delete this.defaultHeaders[name];
     },
-    request: function(url, options) {
+    request: function(url) {
+      var options = arguments[1] !== (void 0) ? arguments[1] : {};
       var $__60 = this;
       if (!options.absolute) {
         url = this.baseUrl + url;
       }
-      options = _.defaults(options, {
+      _.defaults(options, {
         contentType: this.defaultContentType,
         dataType: 'json',
         headers: {}
@@ -1411,8 +1431,9 @@ System.register("../bikeshed/static/bikeshed/framework/API", [], function() {
         $.ajax(url, options);
       }));
     },
-    post: function(url, options) {
-      options = _.defaults(options, {type: 'POST'});
+    post: function(url) {
+      var options = arguments[1] !== (void 0) ? arguments[1] : {};
+      _.defaults(options, {type: 'POST'});
       return this.request(url, options);
     }
   }, {}, EventEmitter);
@@ -1425,9 +1446,10 @@ System.register("../bikeshed/static/bikeshed/framework/Session", [], function() 
   "use strict";
   var __moduleName = "../bikeshed/static/bikeshed/framework/Session";
   var EventEmitter = $traceurRuntime.assertObject(System.get("../bikeshed/static/EventEmitter")).EventEmitter;
-  var Session = function Session(options) {
+  var Session = function Session() {
+    var options = arguments[0] !== (void 0) ? arguments[0] : {};
     $traceurRuntime.superCall(this, $Session.prototype, "constructor", []);
-    options = _.defaults(options, {key: 'bikeshed.session'});
+    _.defaults(options, {key: 'bikeshed.session'});
     this.key = options.key;
     this.data = JSON.parse(localStorage[this.key] || '{}');
   };
@@ -1450,9 +1472,9 @@ System.register("../bikeshed/static/bikeshed/framework/Window", [], function() {
   "use strict";
   var __moduleName = "../bikeshed/static/bikeshed/framework/Window";
   var Component = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Component")).Component;
-  var Window = function Window(options) {
+  var Window = function Window() {
+    var options = arguments[0] !== (void 0) ? arguments[0] : {};
     var $__65 = this;
-    options = options || {};
     $traceurRuntime.superCall(this, $Window.prototype, "constructor", [options]);
     this.$header = this.appendElement('<header><a href="/">promise less <b>|</b> do more</a><a href="#logout">Logout</a></header>');
     this.$pages = this.appendElement('<div class="pages"/>');
@@ -1483,8 +1505,9 @@ System.register("../bikeshed/static/bikeshed/framework/Application", [], functio
   var EventEmitter = $traceurRuntime.assertObject(System.get("../bikeshed/static/EventEmitter")).EventEmitter;
   var Session = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Session")).Session;
   var Window = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Window")).Window;
-  var Application = function Application(options) {
-    options = _.defaults(options, {element: 'body'});
+  var Application = function Application() {
+    var options = arguments[0] !== (void 0) ? arguments[0] : {};
+    _.defaults(options, {element: 'body'});
     $traceurRuntime.superCall(this, $Application.prototype, "constructor", [options]);
     this.session = options.session || new Session({});
     this.root = new Window({
@@ -1623,34 +1646,38 @@ System.register("../bikeshed/static/bikeshed/framework/Resource", [], function()
   "use strict";
   var __moduleName = "../bikeshed/static/bikeshed/framework/Resource";
   var EventEmitter = $traceurRuntime.assertObject(System.get("../bikeshed/static/EventEmitter")).EventEmitter;
-  var Resource = function Resource(api, url, model, options) {
+  var Resource = function Resource(api, url, model) {
+    var options = arguments[3] !== (void 0) ? arguments[3] : {};
     this.api = api;
     this.url = url;
     this.model = model;
   };
   ($traceurRuntime.createClass)(Resource, {
-    request: function(options) {
-      console.log(options);
+    request: function() {
+      var options = arguments[0] !== (void 0) ? arguments[0] : {};
       return this.api.request(options.url || this.url, options);
     },
-    get: function(options) {
-      options = _.defaults(options, {type: 'GET'});
+    get: function() {
+      var options = arguments[0] !== (void 0) ? arguments[0] : {};
+      _.defaults(options, {type: 'GET'});
       return this.request(options);
     },
-    post: function(options) {
-      options = _.defaults({type: 'POST'});
+    post: function() {
+      var options = arguments[0] !== (void 0) ? arguments[0] : {};
+      _.defaults(options, {type: 'POST'});
       return this.request(options);
     },
-    fetch: function(id, options) {
+    fetch: function(id) {
+      var options = arguments[1] !== (void 0) ? arguments[1] : {};
       var $__73 = this;
-      options = _.defaults(options || {}, {url: ("" + this.url + id + "/")});
+      _.defaults(options, {url: ("" + this.url + id + "/")});
       console.log('fetch', id, options);
       return this.get(options).then((function(data) {
         return new $__73.model(data);
       }));
     },
-    save: function(model, options) {
-      options = options || {};
+    save: function(model) {
+      var options = arguments[1] !== (void 0) ? arguments[1] : {};
       if (model.url) {
         options.url = model.url;
         options.absolute = true;
@@ -1697,7 +1724,8 @@ System.register("../bikeshed/static/bikeshed/main", [], function() {
       this.removeDefaultHeader('Authorization');
     }
   }, {}, API);
-  var BikeshedApp = function BikeshedApp(options) {
+  var BikeshedApp = function BikeshedApp() {
+    var options = arguments[0] !== (void 0) ? arguments[0] : {};
     $traceurRuntime.superCall(this, $BikeshedApp.prototype, "constructor", [options]);
     this.api = options.api;
     this.user = null;

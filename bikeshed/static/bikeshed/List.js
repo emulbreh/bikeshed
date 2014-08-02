@@ -5,8 +5,8 @@ var ITEM_INDEX_DATA_KEY = 'bikeshed-list-item-index';
 
 
 class List extends Component{
-    constructor(options) {
-        options = _.defaults(options, {
+    constructor(options={}) {
+        _.defaults(options, {
             cssClass: 'bikeshed-list'
         });
         super.constructor(options);

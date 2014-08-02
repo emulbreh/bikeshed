@@ -2,29 +2,28 @@ import {EventEmitter} from '../../EventEmitter'
 
 
 class Resource extends EventEmitter{
-    constructor(api, url, model, options){
+    constructor(api, url, model, options={}){
         this.api = api;
         this.url = url;
         this.model = model;
     }
     
-    request(options){
-        console.log(options);
+    request(options={}){
         return this.api.request(options.url || this.url, options);
     }
     
-    get(options){
-        options = _.defaults(options, {type: 'GET'});
+    get(options={}){
+        _.defaults(options, {type: 'GET'});
         return this.request(options);
     }
 
-    post(options){
-        options = _.defaults({type: 'POST'});
+    post(options={}){
+        _.defaults(options, {type: 'POST'});
         return this.request(options);
     }
     
-    fetch(id, options){
-        options = _.defaults(options || {}, {
+    fetch(id, options={}){
+        _.defaults(options, {
             url: `${this.url}${id}/`
         });
         console.log('fetch', id, options);
@@ -33,8 +32,7 @@ class Resource extends EventEmitter{
         });
     }
 
-    save(model, options){
-        options = options || {};
+    save(model, options={}){
         if(model.url){
             options.url = model.url;
             options.absolute = true;

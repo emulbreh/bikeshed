@@ -3,7 +3,7 @@ import {Picker} from './Picker'
 
 
 class ListPage extends PageWithSidebar{
-    constructor(options){
+    constructor(options={}){
         _.defaults(options, {
             cssClass: 'bikeshed-search'
         });

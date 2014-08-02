@@ -3,7 +3,7 @@ import {Document} from './Document'
 
 
 class DocumentPage extends PageWithSidebar{
-    constructor(options){
+    constructor(options={}){
         super.constructor(options);
         this.resource = options.resource;
         this.$path = this.appendElement('<div class="path"/>');

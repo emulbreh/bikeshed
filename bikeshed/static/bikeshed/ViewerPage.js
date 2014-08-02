@@ -3,7 +3,7 @@ import {Document} from './Document'
 
 
 class ViewerPage extends DocumentPage{
-    constructor(options){
+    constructor(options={}){
         super.constructor(options);
         this.$display = this.appendElement('<div class="document-display"/>');
         this.addToSidebar('<a href="#edit"><i class="fa fa-edit"/> Edit</a>');

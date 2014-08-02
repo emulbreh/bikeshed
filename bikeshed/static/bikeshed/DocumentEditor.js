@@ -3,8 +3,8 @@ import {Document} from './Document'
 
 
 class DocumentEditor extends Component{
-    constructor(options) {
-        options = _.defaults(options, {
+    constructor(options={}) {
+        _.defaults(options, {
             'cssClass': 'bikeshed-editor'
         });
         super.constructor(options);

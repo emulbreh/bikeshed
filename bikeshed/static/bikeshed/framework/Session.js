@@ -2,9 +2,9 @@ import {EventEmitter} from '../../EventEmitter'
 
 
 class Session extends EventEmitter{
-    constructor(options){
+    constructor(options={}){
         super.constructor();
-        options = _.defaults(options, {
+        _.defaults(options, {
             key: 'bikeshed.session'
         });
         this.key = options.key;

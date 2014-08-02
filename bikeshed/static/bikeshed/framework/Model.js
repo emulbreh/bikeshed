@@ -2,7 +2,7 @@ import {EventEmitter} from '../../EventEmitter'
 
 
 class Model extends EventEmitter{
-    constructor(data, options){
+    constructor(data, options={}){
         super.constructor();
         this.load(data);
     }

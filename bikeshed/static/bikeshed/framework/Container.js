@@ -2,8 +2,7 @@ import {Component} from './Component'
 
 
 class Container extends Component{
-    constructor(options) {
-        options = options || {};
+    constructor(options={}) {
         super.constructor(options);
     }
 }
