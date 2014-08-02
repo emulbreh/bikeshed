@@ -41,8 +41,8 @@ bikeshed modules change:
 Licenses
 --------
 
-`EventEmitter`_: MIT License
-`traceur-runtime.js <https://github.com/google/traceur-compiler>`_: Apache License 2.0
+* `EventEmitter`_: MIT License
+* `traceur-runtime.js <https://github.com/google/traceur-compiler>`_: Apache License 2.0
 
 .. _traceur: https://github.com/google/traceur-compiler
 .. _sass: http://sass-lang.com/
