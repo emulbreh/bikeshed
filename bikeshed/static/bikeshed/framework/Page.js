@@ -1,7 +1,7 @@
 import {Component} from './Component'
 
 
-class Page extends Component{
+export class Page extends Component{
     constructor(options={}){
         _.defaults(options, {
             cssClass: 'bikeshed-page'
@@ -30,5 +30,3 @@ class Page extends Component{
     }
 
 }
-
-export var Page = Page;

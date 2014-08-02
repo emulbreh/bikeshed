@@ -4,7 +4,7 @@ import {Document} from './Document'
 var ITEM_INDEX_DATA_KEY = 'bikeshed-list-item-index';
 
 
-class List extends Component{
+export class List extends Component{
     constructor(options={}) {
         _.defaults(options, {
             cssClass: 'bikeshed-list'
@@ -112,5 +112,3 @@ class List extends Component{
         }
     }
 }
-
-export var List = List;

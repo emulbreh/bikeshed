@@ -60,7 +60,7 @@ class BikeshedApp extends Application{
 }
 
 
-function main(){
+export function main(){
     var api = new BikeshedAPI({
         baseUrl: '/api'
     });
@@ -107,5 +107,3 @@ function main(){
         
     app.start();
 }
-
-export var main = main;

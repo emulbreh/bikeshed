@@ -3,7 +3,7 @@ import {Session} from './Session'
 import {Window} from './Window'
 
 
-class Application extends EventEmitter{
+export class Application extends EventEmitter{
     constructor(options={}){
         _.defaults(options, {
             element: 'body'
@@ -125,5 +125,3 @@ class Application extends EventEmitter{
         this.visit(url);
     }
 }
-
-export var Application = Application;

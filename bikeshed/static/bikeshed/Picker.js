@@ -3,7 +3,7 @@ import {List} from './List'
 import {SearchForm} from './SearchForm'
 
 
-class Picker extends Component{
+export class Picker extends Component{
     constructor(options={}){
         _.defaults(options, {
             cssClass: 'bikeshed-picker'
@@ -69,5 +69,3 @@ class Picker extends Component{
         this.searchForm.focus();
     }
 }
-
-export var Picker = Picker;

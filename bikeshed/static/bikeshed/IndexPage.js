@@ -1,7 +1,7 @@
 import {PageWithSidebar} from './PageWithSidebar'
 
 
-class IndexPage extends PageWithSidebar{
+export class IndexPage extends PageWithSidebar{
     constructor(options={}){
         super.constructor(options);
         this.addToSidebar($('<a href="/new/">New</a>'));
@@ -10,5 +10,3 @@ class IndexPage extends PageWithSidebar{
     }
     
 }
-
-export var IndexPage = IndexPage;

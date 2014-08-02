@@ -1,7 +1,7 @@
 import {Component} from './Component'
 
 
-class Window extends Component{
+export class Window extends Component{
     constructor(options={}) {
         super.constructor(options);
         this.$header = this.appendElement('<header><a href="/">promise less <b>|</b> do more</a><a href="#logout">Logout</a></header>');
@@ -23,6 +23,3 @@ class Window extends Component{
         this.$pages.append(page.$element);
     }
 }
-
-
-export var Window = Window;

@@ -2,7 +2,7 @@ import {Component} from './framework/Component'
 import {Document} from './Document'
 
 
-class DocumentEditor extends Component{
+export class DocumentEditor extends Component{
     constructor(options={}) {
         _.defaults(options, {
             'cssClass': 'bikeshed-editor'
@@ -43,5 +43,3 @@ class DocumentEditor extends Component{
     }
 
 }
-
-export var DocumentEditor = DocumentEditor;

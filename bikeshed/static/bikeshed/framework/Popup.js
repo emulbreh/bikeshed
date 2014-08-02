@@ -1,7 +1,7 @@
 import {Component} from './Component'
 
 
-class Popup extends Component{
+export class Popup extends Component{
     constructor(options={}) {
         _.defaults(options, {
             cssClass: 'bikeshed-popup',
@@ -58,5 +58,3 @@ class Popup extends Component{
         this.emit('dispose');
     }
 }
-
-export var Popup = Popup;

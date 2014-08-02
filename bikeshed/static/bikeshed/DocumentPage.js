@@ -2,7 +2,7 @@ import {PageWithSidebar} from './PageWithSidebar'
 import {Document} from './Document'
 
 
-class DocumentPage extends PageWithSidebar{
+export class DocumentPage extends PageWithSidebar{
     constructor(options={}){
         super.constructor(options);
         this.resource = options.resource;
@@ -31,5 +31,3 @@ class DocumentPage extends PageWithSidebar{
         return done;
     }
 }
-
-export var DocumentPage = DocumentPage;

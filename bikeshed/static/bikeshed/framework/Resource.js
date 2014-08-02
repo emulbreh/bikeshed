@@ -1,7 +1,7 @@
 import {EventEmitter} from '../../EventEmitter'
 
 
-class Resource extends EventEmitter{
+export class Resource extends EventEmitter{
     constructor(api, url, model, options={}){
         this.api = api;
         this.url = url;
@@ -49,5 +49,3 @@ class Resource extends EventEmitter{
     }
 
 }
-
-export var Resource = Resource;

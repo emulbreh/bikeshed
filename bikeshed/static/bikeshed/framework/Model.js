@@ -1,7 +1,7 @@
 import {EventEmitter} from '../../EventEmitter'
 
 
-class Model extends EventEmitter{
+export class Model extends EventEmitter{
     constructor(data, options={}){
         super.constructor();
         this.load(data);
@@ -23,5 +23,3 @@ class Model extends EventEmitter{
     }
 
 }
-
-export var Model = Model;

@@ -1,7 +1,7 @@
 import {EventEmitter} from '../../EventEmitter'
 
 
-class Session extends EventEmitter{
+export class Session extends EventEmitter{
     constructor(options={}){
         super.constructor();
         _.defaults(options, {
@@ -20,5 +20,3 @@ class Session extends EventEmitter{
         return this.data[name];
     }
 }
-
-export var Session = Session;

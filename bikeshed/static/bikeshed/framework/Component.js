@@ -3,7 +3,7 @@ import {EventEmitter} from '../../EventEmitter'
 var ACTIONS_DATA_KEY = 'bikeshed-component-actions';
 
 
-class Component extends EventEmitter{
+export class Component extends EventEmitter{
     constructor(options) {
         options = _.defaults(options || {}, {
             element: '<div class="bikeshed-component"/>'
@@ -95,6 +95,3 @@ class Component extends EventEmitter{
         }
     }
 }
-
-
-export var Component = Component;

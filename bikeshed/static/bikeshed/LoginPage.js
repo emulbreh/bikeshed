@@ -2,7 +2,7 @@ import {Page} from './framework/Page'
 import {Document} from './Document'
 
 
-class LoginPage extends Page{
+export class LoginPage extends Page{
     constructor(options={}){
         _.defaults(options, {
             cssClass: 'bikeshed-login'
@@ -43,5 +43,3 @@ class LoginPage extends Page{
     }
 
 }
-
-export var LoginPage = LoginPage;

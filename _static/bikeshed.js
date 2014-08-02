@@ -231,7 +231,6 @@ System.register("../bikeshed/static/bikeshed/framework/Model", [], function() {
       };
     }
   }, {}, EventEmitter);
-  var Model = Model;
   return {get Model() {
       return Model;
     }};
@@ -319,7 +318,6 @@ System.register("../bikeshed/static/bikeshed/Document", [], function() {
       };
     }
   }, {}, Model);
-  var Document = Document;
   return {get Document() {
       return Document;
     }};
@@ -411,7 +409,6 @@ System.register("../bikeshed/static/bikeshed/framework/Component", [], function(
       }
     }
   }, {}, EventEmitter);
-  var Component = Component;
   return {get Component() {
       return Component;
     }};
@@ -467,7 +464,6 @@ System.register("../bikeshed/static/bikeshed/BoardColumn", [], function() {
       return false;
     }
   }, {}, Component);
-  var BoardColumn = BoardColumn;
   return {get BoardColumn() {
       return BoardColumn;
     }};
@@ -503,7 +499,6 @@ System.register("../bikeshed/static/bikeshed/Card", [], function() {
       this.$title.html(title);
     }
   }, {}, Component);
-  var Card = Card;
   return {get Card() {
       return Card;
     }};
@@ -537,7 +532,6 @@ System.register("../bikeshed/static/bikeshed/framework/Page", [], function() {
       this.hide();
     }
   }, {}, Component);
-  var Page = Page;
   return {get Page() {
       return Page;
     }};
@@ -555,7 +549,6 @@ System.register("../bikeshed/static/bikeshed/PageWithSidebar", [], function() {
   ($traceurRuntime.createClass)(PageWithSidebar, {addToSidebar: function(el) {
       this.$sidebar.append(el);
     }}, {}, Page);
-  var PageWithSidebar = PageWithSidebar;
   return {get PageWithSidebar() {
       return PageWithSidebar;
     }};
@@ -599,7 +592,6 @@ System.register("../bikeshed/static/bikeshed/DocumentPage", [], function() {
       return done;
     }
   }, {}, PageWithSidebar);
-  var DocumentPage = DocumentPage;
   return {get DocumentPage() {
       return DocumentPage;
     }};
@@ -673,7 +665,6 @@ System.register("../bikeshed/static/bikeshed/BoardPage", [], function() {
       return $traceurRuntime.superCall(this, $BoardPage.prototype, "open", [params]);
     }
   }, {}, DocumentPage);
-  var BoardPage = BoardPage;
   return {get BoardPage() {
       return BoardPage;
     }};
@@ -687,7 +678,6 @@ System.register("../bikeshed/static/bikeshed/Collection", [], function() {
     this.items = items;
   };
   ($traceurRuntime.createClass)(Collection, {}, {}, EventEmitter);
-  var Collection = Collection;
   return {get Collection() {
       return Collection;
     }};
@@ -798,7 +788,6 @@ System.register("../bikeshed/static/bikeshed/List", [], function() {
       }
     }
   }, {}, Component);
-  var List = List;
   return {get List() {
       return List;
     }};
@@ -848,7 +837,6 @@ System.register("../bikeshed/static/bikeshed/SearchForm", [], function() {
       this.$input.focus();
     }
   }, {}, Component);
-  var SearchForm = SearchForm;
   return {get SearchForm() {
       return SearchForm;
     }};
@@ -917,7 +905,6 @@ System.register("../bikeshed/static/bikeshed/Picker", [], function() {
       this.searchForm.focus();
     }
   }, {}, Component);
-  var Picker = Picker;
   return {get Picker() {
       return Picker;
     }};
@@ -977,7 +964,6 @@ System.register("../bikeshed/static/bikeshed/framework/Popup", [], function() {
       this.emit('dispose');
     }
   }, {}, Component);
-  var Popup = Popup;
   return {get Popup() {
       return Popup;
     }};
@@ -1139,7 +1125,6 @@ System.register("../bikeshed/static/bikeshed/Completer", [], function() {
       e.preventDefault();
     }
   }, {});
-  var Completer = Completer;
   return {get Completer() {
       return Completer;
     }};
@@ -1186,7 +1171,6 @@ System.register("../bikeshed/static/bikeshed/DocumentEditor", [], function() {
       this.editor.getSession().setValue(doc.text);
     }
   }, {}, Component);
-  var DocumentEditor = DocumentEditor;
   return {get DocumentEditor() {
       return DocumentEditor;
     }};
@@ -1242,7 +1226,6 @@ System.register("../bikeshed/static/bikeshed/EditorPage", [], function() {
       }));
     }
   }, {}, DocumentPage);
-  var EditorPage = EditorPage;
   return {get EditorPage() {
       return EditorPage;
     }};
@@ -1260,7 +1243,6 @@ System.register("../bikeshed/static/bikeshed/IndexPage", [], function() {
   };
   var $IndexPage = IndexPage;
   ($traceurRuntime.createClass)(IndexPage, {}, {}, PageWithSidebar);
-  var IndexPage = IndexPage;
   return {get IndexPage() {
       return IndexPage;
     }};
@@ -1289,7 +1271,6 @@ System.register("../bikeshed/static/bikeshed/ListPage", [], function() {
         return $__51.picker.focus();
       }));
     }}, {}, PageWithSidebar);
-  var ListPage = ListPage;
   return {get ListPage() {
       return ListPage;
     }};
@@ -1341,7 +1322,6 @@ System.register("../bikeshed/static/bikeshed/LoginPage", [], function() {
       }));
     }
   }, {}, Page);
-  var LoginPage = LoginPage;
   return {get LoginPage() {
       return LoginPage;
     }};
@@ -1376,7 +1356,6 @@ System.register("../bikeshed/static/bikeshed/ViewerPage", [], function() {
       $traceurRuntime.superCall(this, $ViewerPage.prototype, "onDocumentLoaded", [doc]);
       this.$display.html(doc.html);
     }}, {}, DocumentPage);
-  var ViewerPage = ViewerPage;
   return {get ViewerPage() {
       return ViewerPage;
     }};
@@ -1437,7 +1416,6 @@ System.register("../bikeshed/static/bikeshed/framework/API", [], function() {
       return this.request(url, options);
     }
   }, {}, EventEmitter);
-  var API = API;
   return {get API() {
       return API;
     }};
@@ -1463,7 +1441,6 @@ System.register("../bikeshed/static/bikeshed/framework/Session", [], function() 
       return this.data[name];
     }
   }, {}, EventEmitter);
-  var Session = Session;
   return {get Session() {
       return Session;
     }};
@@ -1494,7 +1471,6 @@ System.register("../bikeshed/static/bikeshed/framework/Window", [], function() {
   ($traceurRuntime.createClass)(Window, {addPage: function(page) {
       this.$pages.append(page.$element);
     }}, {}, Component);
-  var Window = Window;
   return {get Window() {
       return Window;
     }};
@@ -1637,7 +1613,6 @@ System.register("../bikeshed/static/bikeshed/framework/Application", [], functio
       this.visit(url);
     }
   }, {}, EventEmitter);
-  var Application = Application;
   return {get Application() {
       return Application;
     }};
@@ -1692,7 +1667,6 @@ System.register("../bikeshed/static/bikeshed/framework/Resource", [], function()
       }));
     }
   }, {}, EventEmitter);
-  var Resource = Resource;
   return {get Resource() {
       return Resource;
     }};
@@ -1776,7 +1750,6 @@ System.register("../bikeshed/static/bikeshed/main", [], function() {
     });
     app.start();
   }
-  var main = main;
   return {get main() {
       return main;
     }};

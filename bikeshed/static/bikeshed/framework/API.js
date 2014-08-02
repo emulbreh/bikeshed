@@ -1,7 +1,7 @@
 import {EventEmitter} from '../../EventEmitter'
 
 
-class API extends EventEmitter{
+export class API extends EventEmitter{
     constructor(options={}) {
         super.constructor();
         _.defaults(options, {
@@ -55,6 +55,3 @@ class API extends EventEmitter{
         return this.request(url, options);
     }
 }
-
-
-export var API = API;

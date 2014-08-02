@@ -4,7 +4,7 @@ import {Card} from './Card'
 import {BoardColumn} from './BoardColumn'
 
 
-class BoardPage extends DocumentPage{
+export class BoardPage extends DocumentPage{
     constructor(options={}){
         _.defaults(options, {
             cssClass: 'bikeshed-board bikeshed-page'
@@ -67,5 +67,3 @@ class BoardPage extends DocumentPage{
     }
 
 }
-
-export var BoardPage = BoardPage;

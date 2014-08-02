@@ -2,7 +2,7 @@ import {DocumentPage} from './DocumentPage'
 import {Document} from './Document'
 
 
-class ViewerPage extends DocumentPage{
+export class ViewerPage extends DocumentPage{
     constructor(options={}){
         super.constructor(options);
         this.$display = this.appendElement('<div class="document-display"/>');
@@ -27,5 +27,3 @@ class ViewerPage extends DocumentPage{
         this.$display.html(doc.html);
     }
 }
-
-export var ViewerPage = ViewerPage;

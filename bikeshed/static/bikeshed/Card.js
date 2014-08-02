@@ -2,7 +2,7 @@ import {Component} from './framework/Component'
 import {Document} from './Document'
 
 
-class Card extends Component{
+export class Card extends Component{
     constructor(options={}) {
         _.defaults(options, {
             cssClass: 'bikeshed-card'
@@ -32,5 +32,3 @@ class Card extends Component{
     }
 
 }
-
-export var Card = Card;

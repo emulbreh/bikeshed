@@ -8,7 +8,7 @@ function positionEqual(a, b){
 }
 
 
-class Completer{
+export class Completer{
     constructor(options){
         this.lookup = options.lookup || 'Number';
         this.resource = options.resource;
@@ -166,5 +166,3 @@ class Completer{
         e.preventDefault();
     }
 }
-
-export var Completer = Completer;

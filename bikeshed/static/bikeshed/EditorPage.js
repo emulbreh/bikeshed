@@ -4,7 +4,7 @@ import {DocumentEditor} from './DocumentEditor'
 import {Completer} from './Completer'
 
 
-class EditorPage extends DocumentPage{
+export class EditorPage extends DocumentPage{
     constructor(options={}){
         super.constructor(options);
         this.addToSidebar($('<a href="#save"><i class="fa fa-check"/>Save</a>'));
@@ -50,5 +50,3 @@ class EditorPage extends DocumentPage{
         return super.open(params).then((doc) => this.editor.focus());
     }
 }
-
-export var EditorPage = EditorPage;

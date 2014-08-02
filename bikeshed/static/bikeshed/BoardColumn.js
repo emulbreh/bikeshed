@@ -2,7 +2,7 @@ import {Component} from './framework/Component'
 import {Document} from './Document'
 
 
-class BoardColumn extends Component{
+export class BoardColumn extends Component{
     constructor(options={}) {
         _.defaults(options, {
             cssClass: 'column'
@@ -55,5 +55,3 @@ class BoardColumn extends Component{
         return false;
     }
 }
-
-export var BoardColumn = BoardColumn;

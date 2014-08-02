@@ -2,7 +2,7 @@ import {Component} from './framework/Component'
 import {Document} from './Document'
 
 
-class SearchForm extends Component{
+export class SearchForm extends Component{
     constructor(options={}) {
         _.defaults(options, {
             cssClass: 'bikeshed-searchform'
@@ -47,5 +47,3 @@ class SearchForm extends Component{
     }
 
 }
-
-export var SearchForm = SearchForm;

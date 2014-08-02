@@ -2,7 +2,7 @@ import {PageWithSidebar} from './PageWithSidebar'
 import {Picker} from './Picker'
 
 
-class ListPage extends PageWithSidebar{
+export class ListPage extends PageWithSidebar{
     constructor(options={}){
         _.defaults(options, {
             cssClass: 'bikeshed-search'
@@ -20,5 +20,3 @@ class ListPage extends PageWithSidebar{
         return super.open(params).then(() => this.picker.focus());
     }
 }
-
-export var ListPage = ListPage;

@@ -1,7 +1,7 @@
 import {Model} from './framework/Model'
 
 
-class Document extends Model{
+export class Document extends Model{
     load(data){
         this.headers = {};
         if(data.headers){
@@ -80,6 +80,3 @@ class Document extends Model{
         };
     }
 }
-
-
-export var Document = Document;
