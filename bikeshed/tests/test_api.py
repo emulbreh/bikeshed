@@ -1,6 +1,7 @@
 import random
 import tempfile
 import shutil
+import time
 import json
 import unittest
 
@@ -35,11 +36,13 @@ class ApiTestCase(unittest.TestCase):
         store.register(builtin_types.User)
         self.store = store
         store.create_index()
+        time.sleep(1)  # FIXME
+
         store.es.cluster.health(wait_for_nodes=1)
         self.app = WsgiApplication(store=store)
         self.client = Client(self.app, BaseResponse)
         super(ApiTestCase, self).setUp()
-        
+
     def tearDown(self):
         self.store.delete_index()
         shutil.rmtree(self.tmp_document_dir)
@@ -56,4 +59,3 @@ class DocumentSearchTests(ApiTestCase):
 class DocumentDetailsTests(ApiTestCase):
     def test_get_document_json(self):
         pass
-    
