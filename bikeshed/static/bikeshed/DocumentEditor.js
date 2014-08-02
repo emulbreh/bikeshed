@@ -1,5 +1,6 @@
 import {Component} from './framework/Component'
 import {Document} from './Document'
+import {DocumentMode} from './DocumentMode'
 
 
 export class DocumentEditor extends Component{
@@ -19,8 +20,9 @@ export class DocumentEditor extends Component{
         editor.setHighlightActiveLine(false);
         editor.setShowPrintMargin(false);
         editor.renderer.setShowGutter(false);
+
         var session = editor.getSession();
-        //.setMode("ace/mode/javascript");
+        session.setMode(new DocumentMode());
         session.setTabSize(4);
         session.setUseSoftTabs(true);
 

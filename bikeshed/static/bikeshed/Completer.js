@@ -76,7 +76,7 @@ export class Completer{
     }
 
     getLineHeight(){
-        return 21;
+        return 23;
     }
 
     deactivate(){

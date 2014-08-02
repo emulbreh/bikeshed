@@ -4,8 +4,8 @@ html, body {
   height: 100%; }
 
 body, textarea, input {
-  font-family: "Droid Sans Mono", monospace;
-  line-height: 21px;
+  font-family: "Liberation Mono", monospace;
+  line-height: 23px;
   font-size: 16px; }
 
 form {
@@ -102,8 +102,8 @@ a {
   /* ace sets padding: 0px 4px for .ace_text-layer. */
   margin-left: -4px;
   margin-right: 0px;
-  font-family: "Droid Sans Mono", monospace;
-  line-height: 21px;
+  font-family: "Liberation Mono", monospace;
+  line-height: 23px;
   font-size: 16px; }
 
 .bikeshed-overlay {
@@ -212,6 +212,9 @@ a {
   100% {
     opacity: 0; } }
 
+.ace-github .ace_variable {
+  color: #1099ee; }
+
 .bikeshed-sidebar {
   position: absolute;
   right: 0px;
@@ -231,13 +234,13 @@ a {
 
 h1 {
   margin: 0px;
-  padding-bottom: 21px;
+  padding-bottom: 23px;
   font-size: 26px;
   line-height: 30px;
   font-weight: normal; }
 
 .document-display > .headers {
-  margin-bottom: 21px; }
+  margin-bottom: 23px; }
   .document-display > .headers b {
     font-weight: normal; }
   .document-display > .headers > .extra {
@@ -259,7 +262,7 @@ h1 {
     padding-bottom: 21px; }
 
 .path {
-  padding-bottom: 21px;
+  padding-bottom: 23px;
   white-space: pre; }
   .path > a {
     display: inline-block;

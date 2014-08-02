@@ -1041,7 +1041,7 @@ System.register("../bikeshed/static/bikeshed/Completer", [], function() {
       this.deactivate();
     },
     getLineHeight: function() {
-      return 21;
+      return 23;
     },
     deactivate: function() {
       this.dropdownList.hide();
@@ -1129,11 +1129,109 @@ System.register("../bikeshed/static/bikeshed/Completer", [], function() {
       return Completer;
     }};
 });
+System.register("../bikeshed/static/bikeshed/DocumentHighlightRules", [], function() {
+  "use strict";
+  var __moduleName = "../bikeshed/static/bikeshed/DocumentHighlightRules";
+  var oop = ace.require("ace/lib/oop");
+  var TextHighlightRules = ace.require("ace/mode/text_highlight_rules").TextHighlightRules;
+  var DocumentHighlightRules = function() {
+    var keywordMapper = this.createKeywordMapper({
+      "variable.language": "this",
+      "keyword": "Type Project Assigned-To Status",
+      "constant.language": "TRUE FALSE NULL SPACE",
+      "support.type": "c n i p f d t x string xstring decfloat16 decfloat34",
+      "keyword.operator": ""
+    }, "text", true, " ");
+    this.$rules = {
+      "start": [{
+        token: "headsep",
+        next: 'body',
+        regex: /^\s*$/
+      }, {
+        token: keywordMapper,
+        regex: "\\b[\\w-_]+\\b"
+      }, {
+        token: "string",
+        regex: '"',
+        next: "string"
+      }, {
+        token: "string",
+        regex: "'",
+        next: "qstring"
+      }, {
+        token: "doc.comment",
+        regex: /^\*.+/
+      }, {
+        token: "comment",
+        regex: /#.*$/
+      }, {
+        token: "keyword.operator",
+        regex: /,/
+      }, {
+        token: "constant.numeric",
+        regex: "[+-]?\\d+\\b"
+      }, {
+        token: "variable.parameter",
+        regex: /\w+-\w+(?:-\w+)*/
+      }, {
+        token: "variable.parameter",
+        regex: '#\\d+'
+      }, {
+        token: "variable.parameter",
+        regex: '@\\w+'
+      }, {caseInsensitive: true}],
+      "body": [{
+        token: "variable.parameter",
+        regex: '#\\d+'
+      }, {
+        token: "variable.parameter",
+        regex: '@\\w+'
+      }],
+      "qstring": [{
+        token: "constant.language.escape",
+        regex: "''"
+      }, {
+        token: "string",
+        regex: "'",
+        next: "start"
+      }, {defaultToken: "string"}],
+      "string": [{
+        token: "constant.language.escape",
+        regex: '""'
+      }, {
+        token: "string",
+        regex: '"',
+        next: "start"
+      }, {defaultToken: "string"}]
+    };
+  };
+  oop.inherits(DocumentHighlightRules, TextHighlightRules);
+  return {get DocumentHighlightRules() {
+      return DocumentHighlightRules;
+    }};
+});
+System.register("../bikeshed/static/bikeshed/DocumentMode", [], function() {
+  "use strict";
+  var __moduleName = "../bikeshed/static/bikeshed/DocumentMode";
+  var oop = ace.require("ace/lib/oop");
+  var TextMode = ace.require("ace/mode/text").Mode;
+  var Tokenizer = ace.require("ace/tokenizer").Tokenizer;
+  var DocumentHighlightRules = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/DocumentHighlightRules")).DocumentHighlightRules;
+  var DocumentMode = function() {
+    this.HighlightRules = DocumentHighlightRules;
+  };
+  oop.inherits(DocumentMode, TextMode);
+  (function() {}).call(DocumentMode.prototype);
+  return {get DocumentMode() {
+      return DocumentMode;
+    }};
+});
 System.register("../bikeshed/static/bikeshed/DocumentEditor", [], function() {
   "use strict";
   var __moduleName = "../bikeshed/static/bikeshed/DocumentEditor";
   var Component = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Component")).Component;
   var Document = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Document")).Document;
+  var DocumentMode = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/DocumentMode")).DocumentMode;
   var DocumentEditor = function DocumentEditor() {
     var options = arguments[0] !== (void 0) ? arguments[0] : {};
     _.defaults(options, {'cssClass': 'bikeshed-editor'});
@@ -1152,6 +1250,7 @@ System.register("../bikeshed/static/bikeshed/DocumentEditor", [], function() {
     editor.setShowPrintMargin(false);
     editor.renderer.setShowGutter(false);
     var session = editor.getSession();
+    session.setMode(new DocumentMode());
     session.setTabSize(4);
     session.setUseSoftTabs(true);
     var text = options.text || this.doc.text;
@@ -1184,7 +1283,7 @@ System.register("../bikeshed/static/bikeshed/EditorPage", [], function() {
   var Completer = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Completer")).Completer;
   var EditorPage = function EditorPage() {
     var options = arguments[0] !== (void 0) ? arguments[0] : {};
-    var $__46 = this;
+    var $__47 = this;
     $traceurRuntime.superCall(this, $EditorPage.prototype, "constructor", [options]);
     this.addToSidebar($('<a href="#save"><i class="fa fa-check"/>Save</a>'));
     this.addToSidebar($('<a href="#cancel"><i class="fa fa-times"/>Cancel</a>'));
@@ -1192,20 +1291,20 @@ System.register("../bikeshed/static/bikeshed/EditorPage", [], function() {
     this.$element.append(this.editor.$element);
     this.addActions({
       cancel: (function(e) {
-        if ($__46.doc.uid) {
-          $__46.app.visit(("/view/" + $__46.doc.uid + "/"));
+        if ($__47.doc.uid) {
+          $__47.app.visit(("/view/" + $__47.doc.uid + "/"));
         } else {
-          $__46.app.visit('/');
+          $__47.app.visit('/');
         }
       }),
       save: (function(e) {
-        $__46.editor.save();
+        $__47.editor.save();
       })
     });
     this.editor.on('save', (function(doc) {
-      $__46.resource.save(doc).then((function(doc) {
+      $__47.resource.save(doc).then((function(doc) {
         console.log("postsave", doc);
-        $__46.app.visit(("/view/" + doc.uid + "/"));
+        $__47.app.visit(("/view/" + doc.uid + "/"));
       }));
     }));
     this.completer = new Completer({
@@ -1220,9 +1319,9 @@ System.register("../bikeshed/static/bikeshed/EditorPage", [], function() {
       this.editor.setDocument(doc);
     },
     open: function(params) {
-      var $__46 = this;
+      var $__47 = this;
       return $traceurRuntime.superCall(this, $EditorPage.prototype, "open", [params]).then((function(doc) {
-        return $__46.editor.focus();
+        return $__47.editor.focus();
       }));
     }
   }, {}, DocumentPage);
@@ -1254,21 +1353,21 @@ System.register("../bikeshed/static/bikeshed/ListPage", [], function() {
   var Picker = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Picker")).Picker;
   var ListPage = function ListPage() {
     var options = arguments[0] !== (void 0) ? arguments[0] : {};
-    var $__51 = this;
+    var $__52 = this;
     _.defaults(options, {cssClass: 'bikeshed-search'});
     $traceurRuntime.superCall(this, $ListPage.prototype, "constructor", [options]);
     this.resource = options.resource;
     this.picker = this.append(new Picker({resource: this.resource}));
     this.picker.on('select', (function(doc) {
-      $__51.app.visit(("/view/" + doc.uid + "/"));
+      $__52.app.visit(("/view/" + doc.uid + "/"));
     }));
   };
   var $ListPage = ListPage;
   ($traceurRuntime.createClass)(ListPage, {open: function(params) {
-      var $__51 = this;
+      var $__52 = this;
       this.picker.query = params.q || '';
       return $traceurRuntime.superCall(this, $ListPage.prototype, "open", [params]).then((function() {
-        return $__51.picker.focus();
+        return $__52.picker.focus();
       }));
     }}, {}, PageWithSidebar);
   return {get ListPage() {
@@ -1282,7 +1381,7 @@ System.register("../bikeshed/static/bikeshed/LoginPage", [], function() {
   var Document = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Document")).Document;
   var LoginPage = function LoginPage() {
     var options = arguments[0] !== (void 0) ? arguments[0] : {};
-    var $__54 = this;
+    var $__55 = this;
     _.defaults(options, {cssClass: 'bikeshed-login'});
     $traceurRuntime.superCall(this, $LoginPage.prototype, "constructor", [options]);
     this.api = options.api;
@@ -1294,7 +1393,7 @@ System.register("../bikeshed/static/bikeshed/LoginPage", [], function() {
     this.$element.append(this.$loginForm);
     this.$loginForm.on('keypress', (function(e) {
       if (e.keyCode == 13) {
-        $__54.submit();
+        $__55.submit();
         return false;
       }
     }));
@@ -1302,13 +1401,13 @@ System.register("../bikeshed/static/bikeshed/LoginPage", [], function() {
   var $LoginPage = LoginPage;
   ($traceurRuntime.createClass)(LoginPage, {
     open: function(params) {
-      var $__54 = this;
+      var $__55 = this;
       return $traceurRuntime.superCall(this, $LoginPage.prototype, "open", [params]).then((function() {
-        return $__54.$usernameInput.focus();
+        return $__55.$usernameInput.focus();
       }));
     },
     submit: function() {
-      var $__54 = this;
+      var $__55 = this;
       var credentials = {
         username: this.$usernameInput.val(),
         password: this.$passwordInput.val()
@@ -1318,7 +1417,7 @@ System.register("../bikeshed/static/bikeshed/LoginPage", [], function() {
         dataType: 'json',
         data: JSON.stringify(credentials)
       }).then((function(response) {
-        $__54.app.login(response.session_key, new Document(response.user));
+        $__55.app.login(response.session_key, new Document(response.user));
       }));
     }
   }, {}, Page);
@@ -1333,7 +1432,7 @@ System.register("../bikeshed/static/bikeshed/ViewerPage", [], function() {
   var Document = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Document")).Document;
   var ViewerPage = function ViewerPage() {
     var options = arguments[0] !== (void 0) ? arguments[0] : {};
-    var $__57 = this;
+    var $__58 = this;
     $traceurRuntime.superCall(this, $ViewerPage.prototype, "constructor", [options]);
     this.$display = this.appendElement('<div class="document-display"/>');
     this.addToSidebar('<a href="#edit"><i class="fa fa-edit"/> Edit</a>');
@@ -1341,13 +1440,13 @@ System.register("../bikeshed/static/bikeshed/ViewerPage", [], function() {
     this.addToSidebar('<a href="#board"><i class="fa fa-th"/> Board</a>');
     this.addActions({
       board: (function(e) {
-        $__57.app.visit(("/board/" + $__57.doc.uid + "/"));
+        $__58.app.visit(("/board/" + $__58.doc.uid + "/"));
       }),
       edit: (function(e) {
-        $__57.app.visit(("/edit/" + $__57.doc.uid + "/"));
+        $__58.app.visit(("/edit/" + $__58.doc.uid + "/"));
       }),
       children: (function(e) {
-        $__57.app.visit(("/search/?q=Project:" + $__57.doc.uid + "%20OR%20Parent:" + $__57.doc.uid));
+        $__58.app.visit(("/search/?q=Project:" + $__58.doc.uid + "%20OR%20Parent:" + $__58.doc.uid));
       })
     });
   };
@@ -1386,7 +1485,7 @@ System.register("../bikeshed/static/bikeshed/framework/API", [], function() {
     },
     request: function(url) {
       var options = arguments[1] !== (void 0) ? arguments[1] : {};
-      var $__60 = this;
+      var $__61 = this;
       if (!options.absolute) {
         url = this.baseUrl + url;
       }
@@ -1401,7 +1500,7 @@ System.register("../bikeshed/static/bikeshed/framework/API", [], function() {
         options.success = resolve;
         options.error = (function(xhr, status, error) {
           if (xhr.status == 401) {
-            $__60.emit('unauthorizedRequest', xhr);
+            $__61.emit('unauthorizedRequest', xhr);
           } else {
             console.log("ERROR", status, error, xhr);
           }
@@ -1451,7 +1550,7 @@ System.register("../bikeshed/static/bikeshed/framework/Window", [], function() {
   var Component = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Component")).Component;
   var Window = function Window() {
     var options = arguments[0] !== (void 0) ? arguments[0] : {};
-    var $__65 = this;
+    var $__66 = this;
     $traceurRuntime.superCall(this, $Window.prototype, "constructor", [options]);
     this.$header = this.appendElement('<header><a href="/">promise less <b>|</b> do more</a><a href="#logout">Logout</a></header>');
     this.$pages = this.appendElement('<div class="pages"/>');
@@ -1459,12 +1558,12 @@ System.register("../bikeshed/static/bikeshed/framework/Window", [], function() {
     this.$header.append(this.$userInfo);
     var app = options.app;
     app.on('login', (function(user) {
-      $__65.$userInfo.show();
-      $__65.$userInfo.text(user.label);
+      $__66.$userInfo.show();
+      $__66.$userInfo.text(user.label);
     }));
     app.on('logout', (function() {
-      $__65.$userInfo.hide();
-      $__65.$userInfo.text('');
+      $__66.$userInfo.hide();
+      $__66.$userInfo.text('');
     }));
   };
   var $Window = Window;
@@ -1522,10 +1621,10 @@ System.register("../bikeshed/static/bikeshed/framework/Application", [], functio
       this.root.addPage(page);
     },
     start: function() {
-      var $__68 = this;
+      var $__69 = this;
       this.visit(location.pathname + location.search).then((function() {
-        if ($__68.splash) {
-          $($__68.splash).remove();
+        if ($__69.splash) {
+          $($__69.splash).remove();
         }
       }));
     },
@@ -1547,9 +1646,9 @@ System.register("../bikeshed/static/bikeshed/framework/Application", [], functio
       if (querystring) {
         querystring = querystring.substring(1);
         querystring.split('&').forEach((function(pair) {
-          var $__72 = $traceurRuntime.assertObject(pair.split('=')),
-              key = $__72[0],
-              value = $__72[1];
+          var $__73 = $traceurRuntime.assertObject(pair.split('=')),
+              key = $__73[0],
+              value = $__73[1];
           params[decodeURIComponent(key)] = decodeURIComponent(value);
         }));
       }
@@ -1559,7 +1658,7 @@ System.register("../bikeshed/static/bikeshed/framework/Application", [], functio
       };
     },
     visit: function(url, pushstate) {
-      var $__68 = this;
+      var $__69 = this;
       console.log("VISIT", url);
       var pathInfo = this.parsePath(url);
       if (pushstate !== false) {
@@ -1568,9 +1667,9 @@ System.register("../bikeshed/static/bikeshed/framework/Application", [], functio
       var path = pathInfo.path;
       var page = null,
           params = pathInfo.params;
-      for (var $__70 = this.routes[Symbol.iterator](),
-          $__71; !($__71 = $__70.next()).done; ) {
-        var route = $__71.value;
+      for (var $__71 = this.routes[Symbol.iterator](),
+          $__72; !($__72 = $__71.next()).done; ) {
+        var route = $__72.value;
         {
           var match = route.re.exec(path);
           if (match) {
@@ -1591,7 +1690,7 @@ System.register("../bikeshed/static/bikeshed/framework/Application", [], functio
       }
       this.loading = true;
       return page.open(params).then((function() {
-        $__68.loading = false;
+        $__69.loading = false;
       })).catch((function(error) {
         console.log("failed to open page", error);
         page.close();
@@ -1644,11 +1743,11 @@ System.register("../bikeshed/static/bikeshed/framework/Resource", [], function()
     },
     fetch: function(id) {
       var options = arguments[1] !== (void 0) ? arguments[1] : {};
-      var $__73 = this;
+      var $__74 = this;
       _.defaults(options, {url: ("" + this.url + id + "/")});
       console.log('fetch', id, options);
       return this.get(options).then((function(data) {
-        return new $__73.model(data);
+        return new $__74.model(data);
       }));
     },
     save: function(model) {
