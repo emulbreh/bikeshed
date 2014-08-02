@@ -1,5 +1,5 @@
-import {Component} from './framework/Component'
-import {Document} from './Document'
+import {Component} from '../framework/Component'
+import {Document} from '../Document'
 import {DocumentMode} from './DocumentMode'
 
 

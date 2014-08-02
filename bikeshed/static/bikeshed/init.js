@@ -8,8 +8,8 @@ import {Session} from './framework/Session'
 import {Collection} from './Collection'
 
 import {List} from './List'
-import {Completer} from './Completer'
-import {DocumentEditor} from './DocumentEditor'
+import {Completer} from './editor/Completer'
+import {DocumentEditor} from './editor/DocumentEditor'
 import {Document} from './Document'
 import {EditorPage} from './EditorPage'
 import {ViewerPage} from './ViewerPage'
@@ -23,11 +23,14 @@ import {Card} from './Card'
 import {main} from './main'
 
 
+var editor = {DocumentEditor, Completer};
+
+
 export var bikeshed = { // FIXME
-    main,
+    main, editor,
     Application, Component, List, Page, 
     Document,
-    Completer, SearchForm, DocumentEditor, Card,
+    SearchForm, Card,
     PageWithSidebar, ListPage, IndexPage, EditorPage, ViewerPage, LoginPage
 };
 

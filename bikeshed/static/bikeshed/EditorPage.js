@@ -1,7 +1,7 @@
 import {DocumentPage} from './DocumentPage'
 import {Document} from './Document'
-import {DocumentEditor} from './DocumentEditor'
-import {Completer} from './Completer'
+import {DocumentEditor} from './editor/DocumentEditor'
+import {Completer} from './editor/Completer'
 
 
 export class EditorPage extends DocumentPage{

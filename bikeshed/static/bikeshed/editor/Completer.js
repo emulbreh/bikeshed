@@ -1,6 +1,6 @@
-import {List} from './List'
-import {Popup} from './framework/Popup'
-import {Picker} from './Picker'
+import {List} from '../List'
+import {Popup} from '../framework/Popup'
+import {Picker} from '../Picker'
 
 
 function positionEqual(a, b){
