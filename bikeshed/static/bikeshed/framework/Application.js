@@ -1,4 +1,5 @@
 import {EventEmitter} from '../../EventEmitter'
+import {Mousetrap} from '../../Mousetrap'
 import {Session} from './Session'
 import {Window} from './Window'
 
@@ -101,6 +102,13 @@ export class Application extends EventEmitter{
             this.currentPage = page;
         }
         this.loading = true;
+        Mousetrap.reset();
+        console.log(page.actions);
+        _.each(page.actions, (action) => {
+            if(action.keys){
+                Mousetrap.bindGlobal(action.keys, () => action.perform());
+            }
+        });
         return page.open(params).then(() => {
             this.loading = false;
         }).catch((error) => {

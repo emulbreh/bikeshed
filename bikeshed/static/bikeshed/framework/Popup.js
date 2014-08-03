@@ -9,7 +9,7 @@ export class Popup extends Component{
             autodispose: true
         });
         super.constructor(options);
-        this.appendElement(`<header><span>${options.title}</span><a href="#close">⨯</a></header>`);
+        this.appendElement(`<header><span>${options.title}</span><a href="#close"><i class="fa fa-times"/></a></header>`);
         this.autodispose = options.autodispose;
         this.content = options.content;
         if(this.content){

@@ -2,6 +2,7 @@ import {DocumentPage} from './DocumentPage'
 import {Document} from './Document'
 import {DocumentEditor} from './editor/DocumentEditor'
 import {Completer} from './editor/Completer'
+import {Action} from './framework/Action'
 
 
 export class EditorPage extends DocumentPage{
@@ -15,22 +16,27 @@ export class EditorPage extends DocumentPage{
         this.$element.append(this.editor.$element);
 
         this.addActions({
-            cancel: (e) => {
-                if(this.doc.uid){
-                    this.app.visit(`/view/${this.doc.uid}/`);
+            cancel: new Action({
+                keys: 'ctrl+c',
+                perform: (e) => {
+                    if(this.doc.uid){
+                        this.app.visit(`/view/${this.doc.uid}/`);
+                    }
+                    else{
+                        this.app.visit('/');
+                    }
                 }
-                else{
-                    this.app.visit('/');
+            }),
+            save: new Action({
+                keys: 'ctrl+s',
+                perform: () => {
+                    this.editor.save();
                 }
-            },
-            save: (e) => {
-                this.editor.save();
-            }
+            })
         });
 
         this.editor.on('save', (doc) => {
             this.resource.save(doc).then((doc) => {
-                console.log("postsave", doc);
                 this.app.visit(`/view/${doc.uid}/`);
             });
         });

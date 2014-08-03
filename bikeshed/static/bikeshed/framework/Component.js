@@ -50,7 +50,9 @@ export class Component extends EventEmitter{
     }
     
     onActionClick(name, e){
-        this.actions[name].call(this, e);
+        var func = this.actions[name];
+        func = func.perform || func;
+        func.call(this, e);
     }
     
     addAction(name, handler){

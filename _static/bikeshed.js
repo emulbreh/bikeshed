@@ -367,7 +367,9 @@ System.register("../bikeshed/static/bikeshed/framework/Component", [], function(
       return component;
     },
     onActionClick: function(name, e) {
-      this.actions[name].call(this, e);
+      var func = this.actions[name];
+      func = func.perform || func;
+      func.call(this, e);
     },
     addAction: function(name, handler) {
       if (!this.actions) {
@@ -922,7 +924,7 @@ System.register("../bikeshed/static/bikeshed/framework/Popup", [], function() {
       autodispose: true
     });
     $traceurRuntime.superCall(this, $Popup.prototype, "constructor", [options]);
-    this.appendElement(("<header><span>" + options.title + "</span><a href=\"#close\">⨯</a></header>"));
+    this.appendElement(("<header><span>" + options.title + "</span><a href=\"#close\"><i class=\"fa fa-times\"/></a></header>"));
     this.autodispose = options.autodispose;
     this.content = options.content;
     if (this.content) {
@@ -1270,6 +1272,19 @@ System.register("../bikeshed/static/bikeshed/editor/DocumentEditor", [], functio
       return DocumentEditor;
     }};
 });
+System.register("../bikeshed/static/bikeshed/framework/Action", [], function() {
+  "use strict";
+  var __moduleName = "../bikeshed/static/bikeshed/framework/Action";
+  var EventEmitter = $traceurRuntime.assertObject(System.get("../bikeshed/static/EventEmitter")).EventEmitter;
+  var Action = function Action(options) {
+    this.perform = options.perform;
+    this.keys = options.keys;
+  };
+  ($traceurRuntime.createClass)(Action, {}, {}, EventEmitter);
+  return {get Action() {
+      return Action;
+    }};
+});
 System.register("../bikeshed/static/bikeshed/EditorPage", [], function() {
   "use strict";
   var __moduleName = "../bikeshed/static/bikeshed/EditorPage";
@@ -1277,30 +1292,36 @@ System.register("../bikeshed/static/bikeshed/EditorPage", [], function() {
   var Document = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Document")).Document;
   var DocumentEditor = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/editor/DocumentEditor")).DocumentEditor;
   var Completer = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/editor/Completer")).Completer;
+  var Action = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Action")).Action;
   var EditorPage = function EditorPage() {
     var options = arguments[0] !== (void 0) ? arguments[0] : {};
-    var $__49 = this;
+    var $__51 = this;
     $traceurRuntime.superCall(this, $EditorPage.prototype, "constructor", [options]);
     this.addToSidebar($('<a href="#save"><i class="fa fa-check"/>Save</a>'));
     this.addToSidebar($('<a href="#cancel"><i class="fa fa-times"/>Cancel</a>'));
     this.editor = new DocumentEditor({resource: this.resource});
     this.$element.append(this.editor.$element);
     this.addActions({
-      cancel: (function(e) {
-        if ($__49.doc.uid) {
-          $__49.app.visit(("/view/" + $__49.doc.uid + "/"));
-        } else {
-          $__49.app.visit('/');
-        }
+      cancel: new Action({
+        keys: 'ctrl+c',
+        perform: (function(e) {
+          if ($__51.doc.uid) {
+            $__51.app.visit(("/view/" + $__51.doc.uid + "/"));
+          } else {
+            $__51.app.visit('/');
+          }
+        })
       }),
-      save: (function(e) {
-        $__49.editor.save();
+      save: new Action({
+        keys: 'ctrl+s',
+        perform: (function() {
+          $__51.editor.save();
+        })
       })
     });
     this.editor.on('save', (function(doc) {
-      $__49.resource.save(doc).then((function(doc) {
-        console.log("postsave", doc);
-        $__49.app.visit(("/view/" + doc.uid + "/"));
+      $__51.resource.save(doc).then((function(doc) {
+        $__51.app.visit(("/view/" + doc.uid + "/"));
       }));
     }));
     this.completer = new Completer({
@@ -1315,9 +1336,9 @@ System.register("../bikeshed/static/bikeshed/EditorPage", [], function() {
       this.editor.setDocument(doc);
     },
     open: function(params) {
-      var $__49 = this;
+      var $__51 = this;
       return $traceurRuntime.superCall(this, $EditorPage.prototype, "open", [params]).then((function(doc) {
-        return $__49.editor.focus();
+        return $__51.editor.focus();
       }));
     }
   }, {}, DocumentPage);
@@ -1349,21 +1370,21 @@ System.register("../bikeshed/static/bikeshed/ListPage", [], function() {
   var Picker = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Picker")).Picker;
   var ListPage = function ListPage() {
     var options = arguments[0] !== (void 0) ? arguments[0] : {};
-    var $__54 = this;
+    var $__56 = this;
     _.defaults(options, {cssClass: 'bikeshed-search'});
     $traceurRuntime.superCall(this, $ListPage.prototype, "constructor", [options]);
     this.resource = options.resource;
     this.picker = this.append(new Picker({resource: this.resource}));
     this.picker.on('select', (function(doc) {
-      $__54.app.visit(("/view/" + doc.uid + "/"));
+      $__56.app.visit(("/view/" + doc.uid + "/"));
     }));
   };
   var $ListPage = ListPage;
   ($traceurRuntime.createClass)(ListPage, {open: function(params) {
-      var $__54 = this;
+      var $__56 = this;
       this.picker.query = params.q || '';
       return $traceurRuntime.superCall(this, $ListPage.prototype, "open", [params]).then((function() {
-        return $__54.picker.focus();
+        return $__56.picker.focus();
       }));
     }}, {}, PageWithSidebar);
   return {get ListPage() {
@@ -1377,7 +1398,7 @@ System.register("../bikeshed/static/bikeshed/LoginPage", [], function() {
   var Document = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Document")).Document;
   var LoginPage = function LoginPage() {
     var options = arguments[0] !== (void 0) ? arguments[0] : {};
-    var $__57 = this;
+    var $__59 = this;
     _.defaults(options, {cssClass: 'bikeshed-login'});
     $traceurRuntime.superCall(this, $LoginPage.prototype, "constructor", [options]);
     this.api = options.api;
@@ -1389,7 +1410,7 @@ System.register("../bikeshed/static/bikeshed/LoginPage", [], function() {
     this.$element.append(this.$loginForm);
     this.$loginForm.on('keypress', (function(e) {
       if (e.keyCode == 13) {
-        $__57.submit();
+        $__59.submit();
         return false;
       }
     }));
@@ -1397,13 +1418,13 @@ System.register("../bikeshed/static/bikeshed/LoginPage", [], function() {
   var $LoginPage = LoginPage;
   ($traceurRuntime.createClass)(LoginPage, {
     open: function(params) {
-      var $__57 = this;
+      var $__59 = this;
       return $traceurRuntime.superCall(this, $LoginPage.prototype, "open", [params]).then((function() {
-        return $__57.$usernameInput.focus();
+        return $__59.$usernameInput.focus();
       }));
     },
     submit: function() {
-      var $__57 = this;
+      var $__59 = this;
       var credentials = {
         username: this.$usernameInput.val(),
         password: this.$passwordInput.val()
@@ -1413,7 +1434,7 @@ System.register("../bikeshed/static/bikeshed/LoginPage", [], function() {
         dataType: 'json',
         data: JSON.stringify(credentials)
       }).then((function(response) {
-        $__57.app.login(response.session_key, new Document(response.user));
+        $__59.app.login(response.session_key, new Document(response.user));
       }));
     }
   }, {}, Page);
@@ -1426,24 +1447,32 @@ System.register("../bikeshed/static/bikeshed/ViewerPage", [], function() {
   var __moduleName = "../bikeshed/static/bikeshed/ViewerPage";
   var DocumentPage = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/DocumentPage")).DocumentPage;
   var Document = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/Document")).Document;
+  var Action = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Action")).Action;
   var ViewerPage = function ViewerPage() {
     var options = arguments[0] !== (void 0) ? arguments[0] : {};
-    var $__60 = this;
+    var $__62 = this;
+    options.shortcuts = [{
+      keys: 'alt+e',
+      action: 'edit'
+    }];
     $traceurRuntime.superCall(this, $ViewerPage.prototype, "constructor", [options]);
     this.$display = this.appendElement('<div class="document-display"/>');
     this.addToSidebar('<a href="#edit"><i class="fa fa-edit"/> Edit</a>');
     this.addToSidebar('<a href="#children"><i class="fa fa-level-down"/> Children</a>');
     this.addToSidebar('<a href="#board"><i class="fa fa-th"/> Board</a>');
     this.addActions({
-      board: (function(e) {
-        $__60.app.visit(("/board/" + $__60.doc.uid + "/"));
+      board: new Action({perform: function(e) {
+          this.app.visit(("/board/" + this.doc.uid + "/"));
+        }}),
+      edit: new Action({
+        keys: 'ctrl+e',
+        perform: (function(e) {
+          $__62.app.visit(("/edit/" + $__62.doc.uid + "/"));
+        })
       }),
-      edit: (function(e) {
-        $__60.app.visit(("/edit/" + $__60.doc.uid + "/"));
-      }),
-      children: (function(e) {
-        $__60.app.visit(("/search/?q=Project:" + $__60.doc.uid + "%20OR%20Parent:" + $__60.doc.uid));
-      })
+      children: new Action({perform: function(e) {
+          this.app.visit(("/search/?q=Project:" + this.doc.uid + "%20OR%20Parent:" + this.doc.uid));
+        }})
     });
   };
   var $ViewerPage = ViewerPage;
@@ -1481,7 +1510,7 @@ System.register("../bikeshed/static/bikeshed/framework/API", [], function() {
     },
     request: function(url) {
       var options = arguments[1] !== (void 0) ? arguments[1] : {};
-      var $__63 = this;
+      var $__65 = this;
       if (!options.absolute) {
         url = this.baseUrl + url;
       }
@@ -1496,7 +1525,7 @@ System.register("../bikeshed/static/bikeshed/framework/API", [], function() {
         options.success = resolve;
         options.error = (function(xhr, status, error) {
           if (xhr.status == 401) {
-            $__63.emit('unauthorizedRequest', xhr);
+            $__65.emit('unauthorizedRequest', xhr);
           } else {
             console.log("ERROR", status, error, xhr);
           }
@@ -1513,6 +1542,268 @@ System.register("../bikeshed/static/bikeshed/framework/API", [], function() {
   }, {}, EventEmitter);
   return {get API() {
       return API;
+    }};
+});
+System.register("../bikeshed/static/Mousetrap", [], function() {
+  "use strict";
+  var __moduleName = "../bikeshed/static/Mousetrap";
+  (function(J, r, f) {
+    function s(a, b, d) {
+      a.addEventListener ? a.addEventListener(b, d, !1) : a.attachEvent("on" + b, d);
+    }
+    function A(a) {
+      if ("keypress" == a.type) {
+        var b = String.fromCharCode(a.which);
+        a.shiftKey || (b = b.toLowerCase());
+        return b;
+      }
+      return h[a.which] ? h[a.which] : B[a.which] ? B[a.which] : String.fromCharCode(a.which).toLowerCase();
+    }
+    function t(a) {
+      a = a || {};
+      var b = !1,
+          d;
+      for (d in n)
+        a[d] ? b = !0 : n[d] = 0;
+      b || (u = !1);
+    }
+    function C(a, b, d, c, e, v) {
+      var g,
+          k,
+          f = [],
+          h = d.type;
+      if (!l[a])
+        return [];
+      "keyup" == h && w(a) && (b = [a]);
+      for (g = 0; g < l[a].length; ++g)
+        if (k = l[a][g], !(!c && k.seq && n[k.seq] != k.level || h != k.action || ("keypress" != h || d.metaKey || d.ctrlKey) && b.sort().join(",") !== k.modifiers.sort().join(","))) {
+          var m = c && k.seq == c && k.level == v;
+          (!c && k.combo == e || m) && l[a].splice(g, 1);
+          f.push(k);
+        }
+      return f;
+    }
+    function K(a) {
+      var b = [];
+      a.shiftKey && b.push("shift");
+      a.altKey && b.push("alt");
+      a.ctrlKey && b.push("ctrl");
+      a.metaKey && b.push("meta");
+      return b;
+    }
+    function x(a, b, d, c) {
+      m.stopCallback(b, b.target || b.srcElement, d, c) || !1 !== a(b, d) || (b.preventDefault ? b.preventDefault() : b.returnValue = !1, b.stopPropagation ? b.stopPropagation() : b.cancelBubble = !0);
+    }
+    function y(a) {
+      "number" !== typeof a.which && (a.which = a.keyCode);
+      var b = A(a);
+      b && ("keyup" == a.type && z === b ? z = !1 : m.handleKey(b, K(a), a));
+    }
+    function w(a) {
+      return "shift" == a || "ctrl" == a || "alt" == a || "meta" == a;
+    }
+    function L(a, b, d, c) {
+      function e(b) {
+        return function() {
+          u = b;
+          ++n[a];
+          clearTimeout(D);
+          D = setTimeout(t, 1E3);
+        };
+      }
+      function v(b) {
+        x(d, b, a);
+        "keyup" !== c && (z = A(b));
+        setTimeout(t, 10);
+      }
+      for (var g = n[a] = 0; g < b.length; ++g) {
+        var f = g + 1 === b.length ? v : e(c || E(b[g + 1]).action);
+        F(b[g], f, c, a, g);
+      }
+    }
+    function E(a, b) {
+      var d,
+          c,
+          e,
+          f = [];
+      d = "+" === a ? ["+"] : a.split("+");
+      for (e = 0; e < d.length; ++e)
+        c = d[e], G[c] && (c = G[c]), b && "keypress" != b && H[c] && (c = H[c], f.push("shift")), w(c) && f.push(c);
+      d = c;
+      e = b;
+      if (!e) {
+        if (!p) {
+          p = {};
+          for (var g in h)
+            95 < g && 112 > g || h.hasOwnProperty(g) && (p[h[g]] = g);
+        }
+        e = p[d] ? "keydown" : "keypress";
+      }
+      "keypress" == e && f.length && (e = "keydown");
+      return {
+        key: c,
+        modifiers: f,
+        action: e
+      };
+    }
+    function F(a, b, d, c, e) {
+      q[a + ":" + d] = b;
+      a = a.replace(/\s+/g, " ");
+      var f = a.split(" ");
+      1 < f.length ? L(a, f, b, d) : (d = E(a, d), l[d.key] = l[d.key] || [], C(d.key, d.modifiers, {type: d.action}, c, a, e), l[d.key][c ? "unshift" : "push"]({
+        callback: b,
+        modifiers: d.modifiers,
+        action: d.action,
+        seq: c,
+        level: e,
+        combo: a
+      }));
+    }
+    var h = {
+      8: "backspace",
+      9: "tab",
+      13: "enter",
+      16: "shift",
+      17: "ctrl",
+      18: "alt",
+      20: "capslock",
+      27: "esc",
+      32: "space",
+      33: "pageup",
+      34: "pagedown",
+      35: "end",
+      36: "home",
+      37: "left",
+      38: "up",
+      39: "right",
+      40: "down",
+      45: "ins",
+      46: "del",
+      91: "meta",
+      93: "meta",
+      224: "meta"
+    },
+        B = {
+          106: "*",
+          107: "+",
+          109: "-",
+          110: ".",
+          111: "/",
+          186: ";",
+          187: "=",
+          188: ",",
+          189: "-",
+          190: ".",
+          191: "/",
+          192: "`",
+          219: "[",
+          220: "\\",
+          221: "]",
+          222: "'"
+        },
+        H = {
+          "~": "`",
+          "!": "1",
+          "@": "2",
+          "#": "3",
+          $: "4",
+          "%": "5",
+          "^": "6",
+          "&": "7",
+          "*": "8",
+          "(": "9",
+          ")": "0",
+          _: "-",
+          "+": "=",
+          ":": ";",
+          '"': "'",
+          "<": ",",
+          ">": ".",
+          "?": "/",
+          "|": "\\"
+        },
+        G = {
+          option: "alt",
+          command: "meta",
+          "return": "enter",
+          escape: "esc",
+          mod: /Mac|iPod|iPhone|iPad/.test(navigator.platform) ? "meta" : "ctrl"
+        },
+        p,
+        l = {},
+        q = {},
+        n = {},
+        D,
+        z = !1,
+        I = !1,
+        u = !1;
+    for (f = 1; 20 > f; ++f)
+      h[111 + f] = "f" + f;
+    for (f = 0; 9 >= f; ++f)
+      h[f + 96] = f;
+    s(r, "keypress", y);
+    s(r, "keydown", y);
+    s(r, "keyup", y);
+    var m = {
+      bind: function(a, b, d) {
+        a = a instanceof Array ? a : [a];
+        for (var c = 0; c < a.length; ++c)
+          F(a[c], b, d);
+        return this;
+      },
+      unbind: function(a, b) {
+        return m.bind(a, function() {}, b);
+      },
+      trigger: function(a, b) {
+        if (q[a + ":" + b])
+          q[a + ":" + b]({}, a);
+        return this;
+      },
+      reset: function() {
+        l = {};
+        q = {};
+        return this;
+      },
+      stopCallback: function(a, b) {
+        return -1 < (" " + b.className + " ").indexOf(" mousetrap ") ? !1 : "INPUT" == b.tagName || "SELECT" == b.tagName || "TEXTAREA" == b.tagName || b.isContentEditable;
+      },
+      handleKey: function(a, b, d) {
+        var c = C(a, b, d),
+            e;
+        b = {};
+        var f = 0,
+            g = !1;
+        for (e = 0; e < c.length; ++e)
+          c[e].seq && (f = Math.max(f, c[e].level));
+        for (e = 0; e < c.length; ++e)
+          c[e].seq ? c[e].level == f && (g = !0, b[c[e].seq] = 1, x(c[e].callback, d, c[e].combo, c[e].seq)) : g || x(c[e].callback, d, c[e].combo);
+        c = "keypress" == d.type && I;
+        d.type != u || w(a) || c || t(b);
+        I = g && "keydown" == d.type;
+      }
+    };
+    J.Mousetrap = m;
+    "function" === typeof define && define.amd && define(m);
+  })(window, document);
+  window.Mousetrap = function(a) {
+    var d = {},
+        e = a.stopCallback;
+    a.stopCallback = function(b, c, a) {
+      return d[a] ? !1 : e(b, c, a);
+    };
+    a.bindGlobal = function(b, c, e) {
+      a.bind(b, c, e);
+      if (b instanceof Array)
+        for (c = 0; c < b.length; c++)
+          d[b[c]] = !0;
+      else
+        d[b] = !0;
+    };
+    return a;
+  }(window.Mousetrap);
+  var Mousetrap = window.Mousetrap;
+  return {get Mousetrap() {
+      return Mousetrap;
     }};
 });
 System.register("../bikeshed/static/bikeshed/framework/Session", [], function() {
@@ -1546,7 +1837,7 @@ System.register("../bikeshed/static/bikeshed/framework/Window", [], function() {
   var Component = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Component")).Component;
   var Window = function Window() {
     var options = arguments[0] !== (void 0) ? arguments[0] : {};
-    var $__68 = this;
+    var $__70 = this;
     $traceurRuntime.superCall(this, $Window.prototype, "constructor", [options]);
     this.$header = this.appendElement('<header><a href="/">promise less <b>|</b> do more</a><a href="#logout">Logout</a></header>');
     this.$pages = this.appendElement('<div class="pages"/>');
@@ -1554,12 +1845,12 @@ System.register("../bikeshed/static/bikeshed/framework/Window", [], function() {
     this.$header.append(this.$userInfo);
     var app = options.app;
     app.on('login', (function(user) {
-      $__68.$userInfo.show();
-      $__68.$userInfo.text(user.label);
+      $__70.$userInfo.show();
+      $__70.$userInfo.text(user.label);
     }));
     app.on('logout', (function() {
-      $__68.$userInfo.hide();
-      $__68.$userInfo.text('');
+      $__70.$userInfo.hide();
+      $__70.$userInfo.text('');
     }));
   };
   var $Window = Window;
@@ -1574,6 +1865,7 @@ System.register("../bikeshed/static/bikeshed/framework/Application", [], functio
   "use strict";
   var __moduleName = "../bikeshed/static/bikeshed/framework/Application";
   var EventEmitter = $traceurRuntime.assertObject(System.get("../bikeshed/static/EventEmitter")).EventEmitter;
+  var Mousetrap = $traceurRuntime.assertObject(System.get("../bikeshed/static/Mousetrap")).Mousetrap;
   var Session = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Session")).Session;
   var Window = $traceurRuntime.assertObject(System.get("../bikeshed/static/bikeshed/framework/Window")).Window;
   var Application = function Application() {
@@ -1617,10 +1909,10 @@ System.register("../bikeshed/static/bikeshed/framework/Application", [], functio
       this.root.addPage(page);
     },
     start: function() {
-      var $__71 = this;
+      var $__73 = this;
       this.visit(location.pathname + location.search).then((function() {
-        if ($__71.splash) {
-          $($__71.splash).remove();
+        if ($__73.splash) {
+          $($__73.splash).remove();
         }
       }));
     },
@@ -1642,9 +1934,9 @@ System.register("../bikeshed/static/bikeshed/framework/Application", [], functio
       if (querystring) {
         querystring = querystring.substring(1);
         querystring.split('&').forEach((function(pair) {
-          var $__75 = $traceurRuntime.assertObject(pair.split('=')),
-              key = $__75[0],
-              value = $__75[1];
+          var $__77 = $traceurRuntime.assertObject(pair.split('=')),
+              key = $__77[0],
+              value = $__77[1];
           params[decodeURIComponent(key)] = decodeURIComponent(value);
         }));
       }
@@ -1654,7 +1946,7 @@ System.register("../bikeshed/static/bikeshed/framework/Application", [], functio
       };
     },
     visit: function(url, pushstate) {
-      var $__71 = this;
+      var $__73 = this;
       console.log("VISIT", url);
       var pathInfo = this.parsePath(url);
       if (pushstate !== false) {
@@ -1663,9 +1955,9 @@ System.register("../bikeshed/static/bikeshed/framework/Application", [], functio
       var path = pathInfo.path;
       var page = null,
           params = pathInfo.params;
-      for (var $__73 = this.routes[Symbol.iterator](),
-          $__74; !($__74 = $__73.next()).done; ) {
-        var route = $__74.value;
+      for (var $__75 = this.routes[Symbol.iterator](),
+          $__76; !($__76 = $__75.next()).done; ) {
+        var route = $__76.value;
         {
           var match = route.re.exec(path);
           if (match) {
@@ -1685,8 +1977,17 @@ System.register("../bikeshed/static/bikeshed/framework/Application", [], functio
         this.currentPage = page;
       }
       this.loading = true;
+      Mousetrap.reset();
+      console.log(page.actions);
+      _.each(page.actions, (function(action) {
+        if (action.keys) {
+          Mousetrap.bindGlobal(action.keys, (function() {
+            return action.perform();
+          }));
+        }
+      }));
       return page.open(params).then((function() {
-        $__71.loading = false;
+        $__73.loading = false;
       })).catch((function(error) {
         console.log("failed to open page", error);
         page.close();
@@ -1739,11 +2040,11 @@ System.register("../bikeshed/static/bikeshed/framework/Resource", [], function()
     },
     fetch: function(id) {
       var options = arguments[1] !== (void 0) ? arguments[1] : {};
-      var $__76 = this;
+      var $__78 = this;
       _.defaults(options, {url: ("" + this.url + id + "/")});
       console.log('fetch', id, options);
       return this.get(options).then((function(data) {
-        return new $__76.model(data);
+        return new $__78.model(data);
       }));
     },
     save: function(model) {
