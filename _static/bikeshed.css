@@ -24,11 +24,13 @@ textarea, input[type=text], input[type=password] {
   padding: 6px;
   outline: none;
   border: none;
-  border: 1px solid #eee; }
+  border: 1px solid transparent;
+  background-color: #eeeeee; }
   textarea:hover, input[type=text]:hover, input[type=password]:hover {
-    border-color: #ccc; }
+    border-color: #000; }
   textarea:focus, input[type=text]:focus, input[type=password]:focus {
-    border-color: #1099ee; }
+    border-color: #000;
+    background-color: #fcfcfc; }
 
 input:-moz-placeholder, ::-webkit-input-placeholder, ::-moz-placeholder, :-ms-input-placeholder {
   color: #999999;
@@ -92,10 +94,10 @@ a {
       border-top: 1px solid transparent;
       border-bottom: 1px solid transparent; }
       .bikeshed-autocomplete > ul > li:hover {
-        background-color: #cceeff; }
+        background-color: #2c5e35; }
       .bikeshed-autocomplete > ul > li.selected {
-        background-color: #cceeff;
-        border-color: #a3becc; }
+        background-color: #2c5e35;
+        border-color: #234b2a; }
 
 .bikeshed-editor > div.ace_editor {
   width: 100%;
@@ -129,17 +131,12 @@ a {
   min-height: 200px;
   margin-top: 50px; }
   .bikeshed-popup > header {
-    padding: 3px 10px;
-    height: 30px;
+    padding: 5px 10px 3px 10px;
     border-bottom: 1px solid #eee;
     overflow: hidden; }
     .bikeshed-popup > header > a[href="#close"] {
       float: right;
-      text-align: center;
-      font-size: 30px;
-      color: #ccc;
-      position: relative;
-      top: -4px; }
+      font-size: 20px; }
       .bikeshed-popup > header > a[href="#close"]:hover {
         text-decoration: none;
         color: #1099ee; }
@@ -149,13 +146,14 @@ a {
 .bikeshed-list > ul > li {
   list-style: none;
   padding: 2px 0px;
-  border-top: 1px solid transparent;
-  border-bottom: 1px solid transparent;
+  border: 1px solid transparent;
   padding-right: 20px; }
+  .bikeshed-list > ul > li:nth-child(even) {
+    background-color: #f9f9f9; }
   .bikeshed-list > ul > li:hover, .bikeshed-list > ul > li:hover > b {
-    text-decoration: underline; }
+    font-weight: bold; }
   .bikeshed-list > ul > li.selected {
-    border-color: #a3becc; }
+    border-color: #000; }
   .bikeshed-list > ul > li > b {
     color: black;
     width: 70px;
@@ -219,9 +217,10 @@ a {
   position: absolute;
   right: 0px;
   top: 0px;
-  width: 300px;
+  width: 279px;
   height: 100%;
-  padding: 10px 10px;
+  padding: 20px 0px;
+  margin-left: 20px;
   border-left: 1px solid #eee; }
   .bikeshed-sidebar a {
     display: block;
@@ -276,11 +275,14 @@ h1 {
     display: inline-block;
     color: #999999; }
 
-.bikeshed-searchform > .fa-search {
-  margin-left: -26px; }
-.bikeshed-searchform > input[type=text] {
-  margin-left: -7px;
-  width: 600px; }
+.bikeshed-searchform {
+  position: relative; }
+  .bikeshed-searchform > .fa-search {
+    margin-left: -26px; }
+  .bikeshed-searchform > input[type=text] {
+    padding-bottom: 2px;
+    box-sizing: border-box;
+    width: 100%; }
 
 .deadref {
   color: #ff6600; }

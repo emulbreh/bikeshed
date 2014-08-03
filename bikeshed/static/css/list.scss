@@ -3,17 +3,21 @@
         & > li{
             list-style: none;
             padding: 2px 0px;
-            border-top: 1px solid transparent;
-            border-bottom: 1px solid transparent;
+            border: 1px solid transparent;
+            //border-bottom: 1px solid transparent;
             padding-right: $defaultpadding;
+            
+            &:nth-child(even){
+                background-color: $zebra-color;
+            }
             
             &:hover, &:hover > b{
                 //background-color: $dropdown-selection-color;
-                text-decoration: underline;
+                font-weight: bold;
             }
             
             &.selected{
-                border-color: $dropdown-selection-color * 0.8;
+                border-color: #000;
             }
             
             & > b{

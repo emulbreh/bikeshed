@@ -19,8 +19,8 @@
     margin-top: 50px;
     
     & > header{
-        padding: 3px 10px;
-        height: 30px;
+        padding: 5px 10px 3px 10px;
+        //height: 30px;
         border-bottom: 1px solid #eee;
         overflow: hidden;
         
@@ -33,11 +33,7 @@
 
         & > a[href="#close"]{
             float: right;
-            text-align: center;
-            font-size: 30px;
-            color: #ccc;
-            position: relative;
-            top: -4px;
+            font-size: 20px;
             
             &:hover{
                 text-decoration: none;

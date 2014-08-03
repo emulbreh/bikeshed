@@ -1,17 +1,23 @@
+$base-color: #59BC6A;
+$link-color: #1099ee;
+$textcolor: #000;
+$soft-textcolor: #999;
+$light-color: #ffc;
+
 $dropdown-shadow-color: #fff;
-$dropdown-selection-color: #cceeff;
 $dropdown-background-color: #ffffff;
 
-$link-color: #1099ee;
+$dropdown-selection-color: $base-color * 0.5;
+$zebra-color: #f9f9f9;
+$text-input-background-color: #eee;
 
 $sidebar-width: 300px;
 
 $lineheight: 23px;
 
-$textcolor: #000;
-$soft-textcolor: #999;
 
 $defaultpadding: 20px;
+
 
 
 @mixin font{
