@@ -1,0 +1,4 @@
+Type: User
+Name: demo
+Password: $2a$12$yyl0dd.SzcWizChP7AID8.oFP7c603whBQXglj7g6Kss2NWL8VXNa
+

@@ -2,7 +2,6 @@ import sys
 import logging
 import time
 
-from bikeshed.server.app import Application
 from bikeshed.commands.base import get_store
 
 

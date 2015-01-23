@@ -15,6 +15,8 @@ Install elasticsearch and redis, listening on default ports on localhost.
 
 Go to http://127.0.0.1:8000
 
+Log in with username "demo" and password "123".
+
 Development
 -----------
 
